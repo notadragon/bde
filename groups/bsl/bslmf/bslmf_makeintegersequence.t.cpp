@@ -234,7 +234,7 @@ struct LargeSequenceUtil<T, false> : LargeSequenceUtil_Impl<T>
 /// Ensure that `MakeIntegerSequence<T, 1023>` factory-function
 /// generates correct integer sequence type.
 template <class T>
-struct LargeSequenceUtil_Impl<T, bsl::integral_constant<T, 127> >
+struct LargeSequenceUtil_Impl<T, bsl::integral_constant<T, static_cast<T>(127)> >
 {
     static void test()
     {
@@ -268,7 +268,7 @@ struct LargeSequenceUtil_Impl<T, bsl::integral_constant<T, 127> >
 /// Ensure that `MakeIntegerSequence<T, 1023>` factory-function
 /// generates correct integer sequence type.
 template <class T>
-struct LargeSequenceUtil_Impl<T, bsl::integral_constant<T, 255> >
+struct LargeSequenceUtil_Impl<T, bsl::integral_constant<T, static_cast<T>(255)> >
 {
     static void test()
     {

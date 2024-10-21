@@ -144,26 +144,26 @@ void Review::invokeHandler(const ReviewViolation& violation)
 
 #ifdef BSLS_ASSERT_USE_CONTRACTS
 void Review::invokeLanguageContractHandler(
-                                      const std::contract_violation &violation)
+                                      const std::contracts::contract_violation &violation)
 {
     static std::map<std::pair<std::string,int>,
-                              Review::Count>              counts;
-    static std::mutex                                     counts_mutex;
+                    Review::Count>              counts;
+    static std::mutex                           counts_mutex;
 
     Review::Count *myCount;
     {
         std::lock_guard<std::mutex> guard(counts_mutex);
-        std::pair<const std::string,int> key(violation.file_name(),
-                                             violation.line_number());
+        std::pair<const std::string,int> key(violation.location().file_name(),
+                                             violation.location().line());
         myCount = &counts[key];
     }
     int count = Review::updateCount(myCount);
 
     BloombergLP::bsls::ReviewViolation bslsViolation(
-        violation.comment().data(),
-        violation.file_name().data(),
-        violation.line_number(),
-        violation.assertion_level().data(),
+        violation.comment(),
+        violation.location().file_name(),
+        violation.location().line(),
+        "UNK",
         count);
     BloombergLP::bsls::Review::invokeHandler(bslsViolation);
 }

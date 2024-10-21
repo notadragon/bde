@@ -681,6 +681,7 @@ void testRelationalOperations(const INIT_TYPE& lesserVal,
         bsl::three_way_comparable_with<FIRST_NV_TYPE, SECOND_NV_TYPE> ==
         bsl::three_way_comparable_with<FIRST_BO_TYPE, SECOND_BO_TYPE>));
 
+#ifdef BSLSTL_OPTIONAL_HAS_STD_OPTIONAL
     ASSERTV((
         bsl::three_way_comparable_with<FIRST_TYPE, SECOND_NV_TYPE> ==
         bsl::three_way_comparable_with<FIRST_TYPE, SECOND_SO_TYPE>));
@@ -696,6 +697,7 @@ void testRelationalOperations(const INIT_TYPE& lesserVal,
     ASSERTV((
         bsl::three_way_comparable_with<FIRST_NV_TYPE, SECOND_NV_TYPE> ==
         bsl::three_way_comparable_with<FIRST_SO_TYPE, SECOND_SO_TYPE>));
+#endif  // BSLSTL_OPTIONAL_HAS_STD_OPTIONAL    
 #endif
 
 }

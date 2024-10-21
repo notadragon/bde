@@ -798,7 +798,11 @@ bool RegEx::isJitAvailable()
     // Currently pcre2_config incorrectly reports JIT support is available for
     // Apple M1 hardware, but it currently does not work.
 
-    BSLS_ASSERT(0 <= pcre2_config(PCRE2_CONFIG_JIT, &result));
+    unsigned int result = 0;
+    (void) result;
+
+    BSLS_ASSERT(0 <= pcre2_config(PCRE2_CONFIG_JIT,
+                                  &BSLS_ASSERT_UNCONST(result)));
     BSLS_ASSERT(k_IS_JIT_SUPPORTED == (0 != result));
 #endif
     return k_IS_JIT_SUPPORTED;

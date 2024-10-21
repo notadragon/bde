@@ -31,7 +31,8 @@ BSLS_IDENT("$Id$ $CSID$")
 
 #ifdef BSLS_ASSERT_USE_CONTRACTS
 
-void handle_contract_violation(const std::contract_violation &violation)
+extern "C++" {
+void handle_contract_violation(const std::contracts::contract_violation &violation)
     // Call 'bsls::Review::invokeLanguageContractHandler' or
     // 'bsls::Assert::invokeLanguageContractHandler' based on the semantic of
     // the specified 'violation'.  Note that this is the replacable function
@@ -41,13 +42,14 @@ void handle_contract_violation(const std::contract_violation &violation)
     // violation handler, and components below 'bsls_assert' should not do so
     // outside of their test drivers (see 'bsls_review.t').
 {
-    if (violation.continuation_mode() ==
-                   std::contract_violation_continuation_mode::MAYBE_CONTINUE) {
+    if (violation.semantic() ==
+        std::contracts::evaluation_semantic::observe) {
         BloombergLP::bsls::Review::invokeLanguageContractHandler(violation);
     }
     else {
         BloombergLP::bsls::Assert::invokeLanguageContractHandler(violation);
     }
+}
 }
 
 #endif
@@ -302,13 +304,13 @@ void Assert::invokeHandlerNoReturn(const bsls::AssertViolation &violation)
 
 #ifdef BSLS_ASSERT_USE_CONTRACTS
 void Assert::invokeLanguageContractHandler(
-                                      const std::contract_violation &violation)
+                                      const std::contracts::contract_violation &violation)
 {
     BloombergLP::bsls::AssertViolation bslsViolation(
-        violation.comment().data(),
-        violation.file_name().data(),
-        violation.line_number(),
-        violation.assertion_level().data());
+        violation.comment(),
+        violation.location().file_name(),
+        violation.location().line(),
+        "UNK");
     BloombergLP::bsls::Assert::invokeHandler(bslsViolation);
 }
 #endif

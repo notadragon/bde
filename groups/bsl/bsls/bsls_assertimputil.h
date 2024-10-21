@@ -143,16 +143,14 @@ namespace bsls {
 // future, so we will coerce the use of distinct names to protect against mixed
 // builds.
 
+#ifndef BSLS_ASSERT_USE_CONTRACTS
+#error This branch must be built using contracts
+#endif
+
 #ifdef BSLS_ASSERT_USE_CONTRACTS
 
-// The Lock3 branch of GCC supports a contract implementation sufficient to
-// build 'bsls_assert' and 'bsls_review' on.  Full documentation for the
-// extensions it makes available can be found at
-// 'https://github.com/lock3/gcc/wiki/contracts'.
-
-#if !defined(__cpp_contracts_literal_semantics)
-#error BSLS_ASSERT_USE_CONTRACTS requires compiler contract support           \
-    (__cpp_contracts_literal_semantics)
+#if !defined(__cpp_contracts)
+#error BSLS_ASSERT_USE_CONTRACTS requires enabling contracts in compiler
 #endif
 
 #ifndef BSLS_ASSERT_NORETURN_INVOKE_HANDLER

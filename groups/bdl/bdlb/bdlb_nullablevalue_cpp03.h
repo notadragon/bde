@@ -73,7 +73,7 @@ concept NullableValue_DerivedFromOptional =
     NullableValue_DerivedFromBslOptional<t_TYPE>   ||
     NullableValue_DerivedFromStdOptional<t_TYPE>;
 
-#endif // BSLS_LIBRARYFEATURES_HAS_CPP20_CONCEPTS
+#endif // BSLSTL_OPTIONAL_HAS_STD_OPTIONAL
 
                       // =========================
                       // class NullableValue<TYPE>

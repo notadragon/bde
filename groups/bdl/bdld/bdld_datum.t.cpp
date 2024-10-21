@@ -1516,7 +1516,7 @@ void BenchmarkSuite::run(int   iterations,
 
         Decimal64 aDecimal64(BDLDFP_DECIMAL_DD(1.23456789));
         BSLS_ASSERT(bdldfp::DecimalConvertUtil::
-                    decimal64ToVariableWidthEncoding(buffer,
+                    decimal64ToVariableWidthEncoding(BSLS_ASSERT_UNCONST(buffer),
                                                      aDecimal64) > buffer + 6);
         BENCHMARK(createDecimal64(aDecimal64, &alloc),
                   isDecimal64(),

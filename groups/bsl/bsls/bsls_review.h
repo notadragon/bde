@@ -641,7 +641,7 @@ BSLS_IDENT("$Id: $")
 #include <bsls_platform.h>
 
 #ifdef BSLS_ASSERT_USE_CONTRACTS
-#include <contract>
+#include <contracts>
 #endif
 
                        // =============================
@@ -775,10 +775,10 @@ BSLS_IDENT("$Id: $")
                            // ======================
 
 #ifdef BSLS_ASSERT_USE_CONTRACTS
-#define BSLS_REVIEW_REVIEW_IMP(X,LVL) [[ assert check_maybe_continue : X ]]
+#define BSLS_REVIEW_REVIEW_IMP(X,LVL) contract_assert( X )
 
 #ifdef BSLS_REVIEW_VALIDATE_DISABLED_MACROS
-#define BSLS_REVIEW_DISABLED_IMP(X,LVL)   [[ assert ignore : X ]]
+#define BSLS_REVIEW_DISABLED_IMP(X,LVL)   (void)sizeof((X)?true:false)
 #else
 #define BSLS_REVIEW_DISABLED_IMP(X,LVL)
 #endif
@@ -1082,7 +1082,7 @@ class Review {
 
 #ifdef BSLS_ASSERT_USE_CONTRACTS
     static void invokeLanguageContractHandler(
-                                     const std::contract_violation& violation);
+        const std::contracts::contract_violation& violation);
         // Call 'invokeHandler' with a 'ReviewViolation' with properties from
         // the specified 'violation', tracking a 'count' of repeated violations
         // statically.

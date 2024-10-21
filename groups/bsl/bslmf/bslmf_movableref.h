@@ -969,10 +969,10 @@ MovableRef<t_TYPE>::operator t_TYPE&() const
 // CLASS METHODS
 template <class t_TYPE>
 inline
-typename bsl::remove_reference<t_TYPE>::type& MovableRefUtil::access(
-                                            t_TYPE&& ref) BSLS_KEYWORD_NOEXCEPT
+typename bsl::remove_reference<t_TYPE>::type&
+MovableRefUtil::access(t_TYPE&& ref) BSLS_KEYWORD_NOEXCEPT                                            
 {
-    return ref;
+    return static_cast<typename bsl::remove_reference<t_TYPE>::type&>(ref);
 }
 
 #else // if !defined(BSLMF_MOVABLEREF_USES_RVALUE_REFERENCES)
@@ -981,14 +981,14 @@ template <class t_TYPE>
 inline
 t_TYPE& MovableRefUtil::access(t_TYPE& ref) BSLS_KEYWORD_NOEXCEPT
 {
-    return ref;
+    return static_cast<t_TYPE&>(ref);
 }
 
 template <class t_TYPE>
 inline
 t_TYPE& MovableRefUtil::access(MovableRef<t_TYPE> ref) BSLS_KEYWORD_NOEXCEPT
 {
-    return ref;
+    return static_cast<t_TYPE&>(ref);
 }
 
 #endif // !defined(BSLMF_MOVABLEREF_USES_RVALUE_REFERENCES)

@@ -2938,7 +2938,8 @@ int u::Resolver::HiddenRec::dwarfReadDebugLineFrameRec(u::FrameRec *frameRec)
         int ii = 0;    (void) ii;
 #undef  CHECK_ARG_COUNT
 #define CHECK_ARG_COUNT(argCount, id)                                         \
-        BSLS_ASSERT(ii++ == id);                                         \
+        BSLS_ASSERT(ii == id);                                                \
+        ii++;                                                                 \
         u_ASSERT_BAIL(id >= opcodeBase || argCount == opcodeLengths[id]);
 
         CHECK_ARG_COUNT(0, 0);

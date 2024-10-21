@@ -216,12 +216,11 @@ class Stack {
     }
 
     // ACCESSORS
-
     /// Return `true` if the stack is not empty, and `false` otherwise.
-    bool empty() { return 0 == d_size; }
+    bool empty() const { return 0 == d_size; }
 
     /// Return the number of elements in the container.
-    int size() { return d_size; }
+    int size() const { return d_size; }
 
     /// Return the top value in the stack.
     void *top()
@@ -1694,9 +1693,8 @@ void TestDriver<VALUE>::testCase2()
         /// behavior is undefined unless `1 <= size()`.
         int top();
 //
-
         /// Return the number of elements in this stack.
-        std::size_t size();
+        std::size_t size() const;
     };
 // ```
 // Now, we define the implementation of the stack.  Notice how
@@ -1728,7 +1726,7 @@ void TestDriver<VALUE>::testCase2()
     template <class ALLOCATOR>
     void my_Stack<ALLOCATOR>::pop()
     {
-        BSLS_ASSERT(0 != size());
+        BSLS_ASSERT(0 != size()); 
 //
         Node *n = d_head_p;
         d_head_p = d_head_p->d_next_p;
@@ -1746,7 +1744,7 @@ void TestDriver<VALUE>::testCase2()
     }
 //
     template <class ALLOCATOR>
-    std::size_t my_Stack<ALLOCATOR>::size()
+    std::size_t my_Stack<ALLOCATOR>::size() const
     {
         return d_size;
     }

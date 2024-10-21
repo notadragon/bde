@@ -97,7 +97,7 @@
 #include <bsl_cctype.h>
 #include <bsl_cerrno.h>
 #include <bsl_cfloat.h>
-#include <bsl_ciso646.h>
+//#include <bsl_ciso646.h>
 #include <bsl_climits.h>
 #include <bsl_clocale.h>
 #include <bsl_cmath.h>
@@ -184,8 +184,8 @@
     #include <bsl_chrono.h>
     #include <bsl_cinttypes.h>
     #include <bsl_condition_variable.h>
-    #include <bsl_cstdbool.h>
-    #include <bsl_ctgmath.h>
+//    #include <bsl_cstdbool.h>
+//    #include <bsl_ctgmath.h>
     #include <bsl_forward_list.h>
     #include <bsl_future.h>
     #include <bsl_initializer_list.h>

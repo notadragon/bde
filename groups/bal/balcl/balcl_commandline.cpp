@@ -702,7 +702,7 @@ void initialize(bsl::vector<OptionValue>       *data,
     BSLS_ASSERT(nonOptionIndices);
 
     bsl::ostringstream oss;  (void)oss;
-    BSLS_ASSERT_SAFE(0 == validate(options, oss));
+    BSLS_ASSERT_SAFE(0 == validate(options, BSLS_ASSERT_UNCONST(oss)));
 
     *environmentVariablesPresent = false;
 

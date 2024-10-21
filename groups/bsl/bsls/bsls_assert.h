@@ -1472,7 +1472,7 @@ BSLS_IDENT("$Id: $")
 #include <bsls_review.h>
 
 #ifdef BSLS_ASSERT_USE_CONTRACTS
-#include <contract>
+#include <experimental/contract>
 #endif
 
                        // =============================
@@ -1574,18 +1574,25 @@ BSLS_IDENT("$Id: $")
 #endif
 
 #ifdef BSLS_ASSERT_USE_CONTRACTS
-#define BSLS_ASSERT_ASSERT_IMP(X,LVL) [[ assert check_never_continue : X ]]
 
-#define BSLS_ASSERT_ASSUME_IMP(X,LVL) [[ assert assume : X ]]
-#define BSLS_ASSERT_ASSUME_ENABLED
+#define BSLS_ASSERT_UNCONST(X) const_cast<decltype(X)&>(X)
+
+#define BSLS_ASSERT_ASSERT_IMP(X,LVL) contract_assert( X ) 
+
+#if !defined(BSLS_ASSERT_ASSUME_IMP)
+#define BSLS_ASSERT_ASSUME_IMP(X,LVL) BSLS_ASSERT_DISABLED_IMP(X,LVL)
+#endif
 
 #ifdef BSLS_ASSERT_VALIDATE_DISABLED_MACROS
-#define BSLS_ASSERT_DISABLED_IMP(X,LVL) [[ assert ignore : X ]]
+#define BSLS_ASSERT_DISABLED_IMP(X,LVL) (void)sizeof((!(X))?true:false)
 #else
 #define BSLS_ASSERT_DISABLED_IMP(X,LVL)
 #endif
 
-#else
+#else // !BSLS_ASSERT_USE_CONTRACTS
+
+#define BSLS_ASSERT_UNCONST(X) X
+
 #define BSLS_ASSERT_ASSERT_IMP(X,LVL) do {                                    \
         if (BSLS_PERFORMANCEHINT_PREDICT_UNLIKELY(!(X))) {                    \
             BSLS_PERFORMANCEHINT_UNLIKELY_HINT;                               \
@@ -2036,7 +2043,7 @@ class Assert {
 
 #ifdef BSLS_ASSERT_USE_CONTRACTS
     static void invokeLanguageContractHandler(
-                                     const std::contract_violation& violation);
+                                     const std::contracts::contract_violation& violation);
         // Call 'invokeHandler' with an 'AssertViolation' with properties from
         // the specified 'violation'.
 #endif

@@ -198,9 +198,9 @@ static bool globalReturnOnTestReview = false;
 
 #ifdef BSLS_ASSERT_USE_CONTRACTS
 
-void handle_contract_violation(const std::contract_violation& violation)
-    // Call `bsls::Review::invokeLanguageContractHandler` with the specified
-    // `violation`.  Note that this is the replacable function that GCC will
+void handle_contract_violation(const std::contracts::contract_violation& violation)
+    // Call 'bsls::Review::invokeLanguageContractHandler' with the specified
+    // 'violation'.  Note that this is the replacable function that GCC will
     // look for when handling a contract violation.
 {
     BloombergLP::bsls::Review::invokeLanguageContractHandler(violation);

@@ -4058,8 +4058,8 @@ int BerUtil_BooleanImpUtil::putBoolValue(bsl::streambuf *streamBuf, bool value)
     // the 'char *'.
 
     BSLMF_ASSERT(sizeof(bool) == sizeof(char));
-    BSLS_ASSERT(0 == *static_cast<char *>(static_cast<void *>(&value)) ||
-                1 == *static_cast<char *>(static_cast<void *>(&value)));
+    BSLS_ASSERT(0 == *static_cast<const char *>(static_cast<const void *>(&value)) ||
+                1 == *static_cast<const char *>(static_cast<const void *>(&value)));
 
     typedef bsl::streambuf::char_type char_type;
 
