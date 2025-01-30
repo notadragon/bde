@@ -1577,7 +1577,10 @@ BSLS_IDENT("$Id: $")
 
 #define BSLS_ASSERT_UNCONST(X) const_cast<decltype(X)&>(X)
 
-#define BSLS_ASSERT_ASSERT_IMP(X,LVL) contract_assert( X ) 
+#define BSLS_ASSERT_ASSERT_IMP(X,LVL) contract_assert( X )
+
+#define BSLS_ASSERT_PRE_BODY_IMP(X,LVL) BSLS_ASSERT_DISABLED_IMP(X,LVL)
+#define BSLS_ASSERT_PRE_IMP(X,LVL) pre( X )
 
 #if !defined(BSLS_ASSERT_ASSUME_IMP)
 #define BSLS_ASSERT_ASSUME_IMP(X,LVL) BSLS_ASSERT_DISABLED_IMP(X,LVL)
@@ -1604,6 +1607,9 @@ BSLS_IDENT("$Id: $")
             BloombergLP::bsls::Assert::invokeHandler(violation);              \
         }                                                                     \
     } while (false)
+
+#define BSLS_ASSERT_PRE_BODY_IMP(X,LVL) BSLS_ASSERT_ASSERT_IMP(X,LVL)
+#define BSLS_ASSERT_PRE_IMP(X,LVL)
 
 #if defined(BSLS_PLATFORM_CMP_CLANG)
 

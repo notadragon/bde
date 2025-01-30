@@ -70,6 +70,7 @@ bsls_performancehint
 bsls_platform
 bsls_platformutil
 bsls_pointercastutil
+bsls_pre
 bsls_preconditions
 bsls_protocoltest
 bsls_review
