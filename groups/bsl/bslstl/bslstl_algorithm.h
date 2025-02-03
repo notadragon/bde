@@ -29,6 +29,7 @@ BSLS_IDENT("$Id: $")
 #include <bsls_compilerfeatures.h>
 #include <bsls_keyword.h>
 #include <bsls_libraryfeatures.h>
+#include <bsls_pre.h>
 
 #include <bslstl_iterator.h>  // iterator tags
 #include <bslstl_pair.h>
@@ -464,7 +465,8 @@ namespace ranges {
     template<class TYPE, class COMPARE>
     BSLS_KEYWORD_CONSTEXPR_CPP14
     const TYPE&
-    clamp(const TYPE& value, const TYPE& low, const TYPE& high, COMPARE comp);
+    clamp(const TYPE& value, const TYPE& low, const TYPE& high, COMPARE comp)
+            BSLS_PRE(!comp(high, low));
 
     /// Return the specified `value` adjusted so that it is in the range
     /// [`low`, `high`).
@@ -660,7 +662,7 @@ BSLS_KEYWORD_CONSTEXPR_CPP14
 inline const TYPE&
 bsl::clamp(const TYPE& value, const TYPE& low, const TYPE& high, COMPARE comp)
 {
-    BSLS_ASSERT(!comp(high, low));
+    BSLS_PRE_BODY(!comp(high, low));
     return comp(value, low) ? low : comp(high, value) ? high : value;
 }
 

@@ -39,6 +39,7 @@ BSLS_IDENT("$Id: $")
 #include <bslscm_version.h>
 
 #include <bsls_assert.h>
+#include <bsls_pre.h>
 
 namespace BloombergLP {
 
@@ -86,7 +87,8 @@ class ExceptionGuard {
     /// Destroy the exception guard.  If the guard was not released, verify
     /// that the state of the object supplied at construction has not
     /// change.
-    ~ExceptionGuard();
+    ~ExceptionGuard()
+        BSLS_PRE_OPT(!d_object_p || (d_copy == *d_object_p));
 
     // MANIPULATORS
 
@@ -141,7 +143,7 @@ ExceptionGuard<OBJECT>::~ExceptionGuard()
         // throws an exception.  Note that as this assertion is the whole
         // purpose of the class, we use 'BSLS_ASSERT_OPT' so that it is active
         // in most build modes.
-        BSLS_ASSERT_OPT(d_copy == *d_object_p);
+        BSLS_PRE_BODY_OPT(d_copy == *d_object_p);
     }
 }
 

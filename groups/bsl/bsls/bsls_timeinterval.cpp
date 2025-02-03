@@ -85,8 +85,8 @@ TimeInterval& TimeInterval::addInterval(bsls::Types::Int64 seconds,
                                         int                nanoseconds)
 {
     BSLS_PRECONDITIONS_BEGIN();
-    BSLS_ASSERT(isSumValidInt64(d_seconds, seconds));
-    BSLS_ASSERT(isSumValidInt64(
+    BSLS_PRE_BODY(isSumValidInt64(d_seconds, seconds));
+    BSLS_PRE_BODY(isSumValidInt64(
        d_seconds + seconds,
        (static_cast<bsls::Types::Int64>(d_nanoseconds) + nanoseconds) /
                                                           k_NANOSECS_PER_SEC));

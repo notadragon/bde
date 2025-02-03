@@ -269,6 +269,7 @@ BSLS_IDENT("$Id$ $CSID$")
 
 #include <bsls_assert.h>
 #include <bsls_atomic.h>
+#include <bsls_pre.h>
 
 #include <typeinfo>
 
@@ -402,7 +403,8 @@ class SharedPtrRep {
     /// Atomically acquire a weak reference to the shared object referred to
     /// by this representation.  The behavior is undefined unless
     /// `0 < numWeakReferences() || 0 < numReferences()`.
-    void acquireWeakRef();
+    void acquireWeakRef()
+        BSLS_PRE(0 < numWeakReferences() || 0 < numReferences());
 
 #ifndef BDE_OMIT_INTERNAL_DEPRECATED
     /// Atomically increment the number of shared references to the shared
@@ -420,7 +422,8 @@ class SharedPtrRep {
     /// representation if all (shared and weak) references to that object
     /// are released.  The behavior is undefined unless
     /// `0 < numReferences()`.
-    void releaseRef();
+    void releaseRef()
+        BSLS_PRE_SAFE(0 < numReferences());
 
     /// Atomically release a weak reference to the shared object referred to
     /// by this representation, disposing of this representation if all
@@ -436,14 +439,18 @@ class SharedPtrRep {
     /// function.  Note that this function updates the counts, but does not
     /// dispose of the representation or the object irrespective of the
     /// values of `numSharedReferences` and `numWeakReferences`.
-    void resetCountsRaw(int numSharedReferences, int numWeakReferences);
+    void resetCountsRaw(int numSharedReferences, int numWeakReferences)
+        BSLS_PRE_SAFE(0 <= numSharedReferences)
+        BSLS_PRE_SAFE(0 <= numWeakReferences);
+        
 
     /// Atomically acquire a shared reference to the shared object referred
     /// to by this representation, if the number of shared references is
     /// greater than 0, and do nothing otherwise.  Return `true` if the
     /// acquire succeeds, and `false` otherwise.  The behavior is undefined
     /// unless `0 < numWeakReferences() || 0 < numReferences()`.
-    bool tryAcquireRef();
+    bool tryAcquireRef()
+        BSLS_PRE(0 < numWeakReferences() || 0 < numReferences());
 
     // ACCESSORS
 

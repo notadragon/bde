@@ -313,6 +313,7 @@ BSLS_IDENT("$Id: $")
 
 #include <bsls_assert.h>
 #include <bsls_performancehint.h>
+#include <bsls_pre.h>
 
 namespace BloombergLP {
 
@@ -398,7 +399,10 @@ class AutoRawDeleter {
     /// ```
     AutoRawDeleter(TYPE      **origin,
                    ALLOCATOR  *allocator,
-                   int         length = 0);
+                   int         length = 0)
+        BSLS_PRE_SAFE(allocator)
+        BSLS_PRE_SAFE(origin || !length);
+
 
     /// Destroy this range proctor and delete the contiguous sequence of
     /// objects it manages (if any) by iterating over each (managed) object,
@@ -407,7 +411,8 @@ class AutoRawDeleter {
     /// supplied with the sequence of (managed) objects at construction.
     /// Note that the order in which the managed objects are deleted is
     /// undefined.
-    ~AutoRawDeleter();
+    ~AutoRawDeleter()
+        BSLS_PRE_SAFE(d_origin_p || !d_length);
 
     // MANIPULATORS
 
@@ -419,7 +424,8 @@ class AutoRawDeleter {
     /// currently negative, the number of managed objects will decrease by
     /// one, whereas if the length is non-negative, the number of managed
     /// objects will increase by one.
-    void operator++();
+    void operator++()
+        BSLS_PRE_SAFE(d_origin_p);
 
     /// Decrease by one the (signed) length of the sequence of objects
     /// managed by this range proctor.  The behavior is undefined unless the
@@ -429,7 +435,8 @@ class AutoRawDeleter {
     /// currently positive, the number of managed objects will decrease by
     /// one, whereas if the length is non-positive, the number of managed
     /// objects will increase by one.
-    void operator--();
+    void operator--()
+        BSLS_PRE_SAFE(d_origin_p);
 
     /// Release from management the sequence of objects currently managed by
     /// this range proctor by setting the length of the managed sequence to
@@ -450,13 +457,16 @@ class AutoRawDeleter {
     /// releases any previously-managed objects from management (without
     /// deleting them), and so may be called with or without having called
     /// `release` when reusing this object.
-    void reset(TYPE **origin);
+    void reset(TYPE **origin)
+        BSLS_PRE_SAFE(origin);
+   
 
     /// Set the (signed) length of the sequence of objects managed by this
     /// range proctor to the specified `length`.  The behavior is undefined
     /// unless the origin of this range proctor is non-zero.
-    void setLength(int length);
-
+    void setLength(int length)
+        BSLS_PRE_SAFE(d_origin_p);
+    
     // ACCESSORS
 
     /// Return the (signed) length of the sequence of objects managed by
@@ -500,15 +510,15 @@ AutoRawDeleter(TYPE **origin, ALLOCATOR *allocator, int length)
 , d_length(length)
 , d_allocator_p(allocator)
 {
-    BSLS_ASSERT_SAFE(allocator);
-    BSLS_ASSERT_SAFE(origin || !length);
+    BSLS_PRE_BODY_SAFE(allocator);
+    BSLS_PRE_BODY_SAFE(origin || !length);
 }
 
 template <class TYPE, class ALLOCATOR>
 inline
 AutoRawDeleter<TYPE, ALLOCATOR>::~AutoRawDeleter()
 {
-    BSLS_ASSERT_SAFE(d_origin_p || !d_length);
+    BSLS_PRE_BODY_SAFE(d_origin_p || !d_length);
 
     if (BSLS_PERFORMANCEHINT_PREDICT_UNLIKELY(d_length)) {
         rawDelete();
@@ -520,7 +530,7 @@ template <class TYPE, class ALLOCATOR>
 inline
 void AutoRawDeleter<TYPE, ALLOCATOR>::operator++()
 {
-    BSLS_ASSERT_SAFE(d_origin_p);
+    BSLS_PRE_BODY_SAFE(d_origin_p);
 
     ++d_length;
 }
@@ -529,7 +539,7 @@ template <class TYPE, class ALLOCATOR>
 inline
 void AutoRawDeleter<TYPE, ALLOCATOR>::operator--()
 {
-    BSLS_ASSERT_SAFE(d_origin_p);
+    BSLS_PRE_BODY_SAFE(d_origin_p);
 
     --d_length;
 }
@@ -545,7 +555,7 @@ template <class TYPE, class ALLOCATOR>
 inline
 void AutoRawDeleter<TYPE, ALLOCATOR>::reset(TYPE **origin)
 {
-    BSLS_ASSERT_SAFE(origin);
+    BSLS_PRE_BODY_SAFE(origin);
 
     d_origin_p = origin;
 }
@@ -554,7 +564,7 @@ template <class TYPE, class ALLOCATOR>
 inline
 void AutoRawDeleter<TYPE, ALLOCATOR>::setLength(int length)
 {
-    BSLS_ASSERT_SAFE(d_origin_p);
+    BSLS_PRE_BODY_SAFE(d_origin_p);
 
     d_length = length;
 }

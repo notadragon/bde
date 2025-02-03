@@ -101,7 +101,7 @@ void FuzzTestPreconditionTracker::handlePreconditionsBegin()
 
 void FuzzTestPreconditionTracker::handlePreconditionsEnd()
 {
-    BSLS_ASSERT(0 < s_level);
+    BSLS_PRE_BODY(0 < s_level);
     if (0 == --s_level) {
         s_isInFirstPreconditionBlock = false;
     }

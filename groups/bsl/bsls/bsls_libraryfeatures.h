@@ -2318,14 +2318,14 @@ BSLS_IDENT("$Id: $")
   #if (defined(__cpp_lib_format) && __cpp_lib_format >= 202110L) ||           \
       (defined(BSLS_LIBRARYFEATURES_STDCPP_GNU) && _GLIBCXX_RELEASE >= 13) || \
       (defined(BSLS_LIBRARYFEATURES_STDCPP_LLVM) && _LIBCPP_VERSION >= 17)
-    #define BSLS_LIBRARYFEATURES_HAS_CPP20_FORMAT                             1
+//#define BSLS_LIBRARYFEATURES_HAS_CPP20_FORMAT                             1
   #endif
   // But also, an older version of Clang might be used with a newer version of
   // libstdc++.  In that case, the use of `std::format` may result in bugs
   // because Clang `consteval` support was buggy prior to version 17 (see
   // https://github.com/llvm/llvm-project/commit/e328d68).
   #if (defined(BSLS_PLATFORM_CMP_CLANG) && BSLS_PLATFORM_CMP_CLANG < 170000L)
-    #undef BSLS_LIBRARYFEATURES_HAS_CPP20_FORMAT
+//#undef BSLS_LIBRARYFEATURES_HAS_CPP20_FORMAT
   #endif
 #endif  // BSLS_LIBRARYFEATURES_HAS_CPP20_VERSION && _CPP20_BASELINE_LIBRARY
 

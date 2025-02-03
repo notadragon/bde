@@ -269,6 +269,7 @@ BSLS_IDENT("$: $")
 #include <bsls_compilerfeatures.h>
 #include <bsls_keyword.h>
 #include <bsls_platform.h>
+#include <bsls_pre.h>
 #include <bsls_performancehint.h>
 
 #if (BSLS_COMPILERFEATURES_CPLUSPLUS < 201703L)
@@ -445,7 +446,8 @@ struct SpinLock {
 
     /// Release the lock.  The behavior is undefined unless the current
     /// thread holds the lock.
-    void unlock();
+    void unlock()
+        BSLS_PRE_SAFE(e_LOCKED == AtomicOperations::getInt(&d_state));
 };
 
                          // ===================
@@ -469,7 +471,8 @@ class SpinLockGuard {
 
     /// Create a proctor object that manages the specified `lock`.  Invoke
     /// `lock->lock()`.
-    explicit SpinLockGuard(SpinLock *lock);
+    explicit SpinLockGuard(SpinLock *lock)
+        BSLS_PRE_SAFE(0 != lock);
 
     /// Destroy this proctor object and invoke `unlock()` on the lock
     /// managed by this object.
@@ -597,7 +600,7 @@ int SpinLock::tryLock(int numRetries) {
 
 inline
 void SpinLock::unlock() {
-    BSLS_ASSERT_SAFE(e_LOCKED == AtomicOperations::getInt(&d_state));
+    BSLS_PRE_BODY_SAFE(e_LOCKED == AtomicOperations::getInt(&d_state));
 
     AtomicOperations::setIntRelease(&d_state, e_UNLOCKED);
 }
@@ -608,7 +611,7 @@ void SpinLock::unlock() {
 inline
 SpinLockGuard::SpinLockGuard(SpinLock *lock)
 : d_lock_p(lock) {
-    BSLS_ASSERT_SAFE(0 != lock);
+    BSLS_PRE_BODY_SAFE(0 != lock);
     lock->lock();
 }
 

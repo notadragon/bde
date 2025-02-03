@@ -139,7 +139,7 @@ OutputRedirector::OutputRedirector(Stream which,
 , d_verbose(verbose)
 , d_veryVerbose(veryVerbose)
 {
-    BSLS_ASSERT(which == e_STDOUT_STREAM || which == e_STDERR_STREAM);
+    BSLS_PRE_BODY(which == e_STDOUT_STREAM || which == e_STDERR_STREAM);
 }
 
 OutputRedirector::~OutputRedirector()
@@ -276,7 +276,7 @@ void OutputRedirector::enable()
 
 bool OutputRedirector::load()
 {
-    BSLS_ASSERT(d_isRedirectingFlag);
+    BSLS_PRE_BODY(d_isRedirectingFlag);
 
     if (ferror(redirectedStream()) != 0) {
         if (d_veryVerbose) {
@@ -396,7 +396,7 @@ bool OutputRedirector::load()
 
 void OutputRedirector::clear()
 {
-    BSLS_ASSERT(d_isRedirectingFlag);
+    BSLS_PRE_BODY(d_isRedirectingFlag);
 
     d_outputSize = 0u;
     d_isOutputReadyFlag = false;
@@ -407,7 +407,7 @@ void OutputRedirector::clear()
 // ACCESSORS
 int OutputRedirector::compare(const char *expected) const
 {
-    BSLS_ASSERT(expected);
+    BSLS_PRE_BODY(expected);
 
     return compare(expected, strlen(expected));
 }
@@ -415,7 +415,7 @@ int OutputRedirector::compare(const char *expected) const
 int
 OutputRedirector::compare(const char *expected, size_t expectedLength) const
 {
-    BSLS_ASSERT(expected || ! expectedLength);
+    BSLS_PRE_BODY(expected || ! expectedLength);
 
     if (!d_isOutputReadyFlag) {
         if (d_veryVerbose) {

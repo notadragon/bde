@@ -283,6 +283,7 @@ BSLS_IDENT("$Id: $")
 #include <bsls_compilerfeatures.h>
 #include <bsls_keyword.h>
 #include <bsls_libraryfeatures.h>
+#include <bsls_pre.h>
 #include <bsls_util.h>     // 'forward<T>(V)', `Util::addressOf`
 
 #if BSLS_COMPILERFEATURES_SIMULATE_CPP11_FEATURES
@@ -457,7 +458,8 @@ class polymorphic_allocator {
     ///  this->resource() == r
     /// ```
     /// The behavior is undefined if `r` is null.
-    polymorphic_allocator(memory_resource *r);                      // IMPLICIT
+    polymorphic_allocator(memory_resource *r)                       // IMPLICIT
+        BSLS_PRE(r != 0);
 
     /// Create an allocator sharing the same resource object as the
     /// specified `original`.  The newly constructed allocator will compare
@@ -867,7 +869,7 @@ inline
 polymorphic_allocator<TYPE>::polymorphic_allocator(memory_resource *r)
 : d_resource(r)
 {
-    BSLS_ASSERT(r != 0);
+    BSLS_PRE_BODY(r != 0);
 }
 
 #ifndef BSLS_COMPILERFEATURES_SUPPORT_DEFAULTED_FUNCTIONS

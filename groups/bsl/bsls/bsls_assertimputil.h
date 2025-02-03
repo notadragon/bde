@@ -150,7 +150,7 @@ namespace bsls {
 #ifdef BSLS_ASSERT_USE_CONTRACTS
 
 #if !defined(__cpp_contracts)
-#error BSLS_ASSERT_USE_CONTRACTS requires enabling contracts in compiler
+  //#error BSLS_ASSERT_USE_CONTRACTS requires enabling contracts in compiler
 #endif
 
 #ifndef BSLS_ASSERT_NORETURN_INVOKE_HANDLER

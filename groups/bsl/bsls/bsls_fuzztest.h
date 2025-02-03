@@ -216,6 +216,7 @@ BSLS_IDENT("$Id: $")
 
 #include <bsls_assert.h>
 #include <bsls_fuzztestpreconditionexception.h>
+#include <bsls_pre.h>
 #include <bsls_preconditions.h>
 #include <bsls_review.h>
 
@@ -320,7 +321,8 @@ struct FuzzTestPreconditionTracker {
     /// Decrement the assertion/review block depth level counter and record
     /// that the first precondition block has ended if the depth level changed
     /// to 0.  The behavior is undefined unless the depth level is positive.
-    static void handlePreconditionsEnd();
+    static void handlePreconditionsEnd()
+        BSLS_PRE(0 < s_level);
 
     /// Throw a `FuzzTestPreconditionException` constructed from the specified
     /// `violation` if the review violation occurred after the first invocation

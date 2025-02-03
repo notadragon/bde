@@ -656,7 +656,9 @@ struct HashTableImpUtil {
     /// `HASHER(extractKey<KEY_CONFIG>(link))` returns `hashCode`.
     static void insertAtFrontOfBucket(HashTableAnchor   *anchor,
                                       BidirectionalLink *link,
-                                      std::size_t        hashCode);
+                                      std::size_t        hashCode)
+        BSLS_PRE(anchor)
+        BSLS_PRE(link);        
 
     /// Insert the specified `link`, having the specified (non-adjusted)
     /// `hashCode`, into the specified `anchor`, into the bucket with index
@@ -668,7 +670,10 @@ struct HashTableImpUtil {
     /// `HASHER(extractKey<KEY_CONFIG>(link))` returns `hashCode`.
     static void insertAtBackOfBucket(HashTableAnchor   *anchor,
                                      BidirectionalLink *link,
-                                     std::size_t        hashCode);
+                                     std::size_t        hashCode)
+        BSLS_PRE(anchor)
+        BSLS_PRE(link);
+
 
     /// Insert the specified `link`, having the specified (non-adjusted)
     /// `hashCode`, into the specified `anchor` immediately before the
@@ -682,7 +687,11 @@ struct HashTableImpUtil {
     static void insertAtPosition(HashTableAnchor   *anchor,
                                  BidirectionalLink *link,
                                  std::size_t        hashCode,
-                                 BidirectionalLink *position);
+                                 BidirectionalLink *position)
+        BSLS_PRE(anchor)
+        BSLS_PRE(link)
+        BSLS_PRE(position);
+
 
     /// Remove the specified `link`, having the specified (non-adjusted)
     /// `hashCode`, from the specified `anchor`.  The behavior is undefined
@@ -692,7 +701,10 @@ struct HashTableImpUtil {
     /// `HASHER(extractKey<KEY_CONFIG>(link))` returns `hashCode`.
     static void remove(HashTableAnchor   *anchor,
                        BidirectionalLink *link,
-                       std::size_t        hashCode);
+                       std::size_t        hashCode)
+        BSLS_PRE(link)
+        BSLS_PRE(anchor)
+        BSLS_PRE(link->previousLink() || anchor->listRootAddress() == link);
 
     /// Return the address of the first link in the list element of
     /// the specified `anchor`, having a value matching (according to the

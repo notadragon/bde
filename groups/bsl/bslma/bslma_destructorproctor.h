@@ -203,6 +203,7 @@ BSLS_IDENT("$Id: $")
 
 #include <bsls_assert.h>
 #include <bsls_performancehint.h>
+#include <bsls_pre.h>
 
 namespace BloombergLP {
 
@@ -251,7 +252,8 @@ class DestructorProctor {
     /// Note that this method releases any previously-managed object from
     /// management (without destroying it), and so may be invoked with or
     /// without having called `release` when reusing this object.
-    void reset(TYPE *object);
+    void reset(TYPE *object)
+        BSLS_PRE_SAFE(object);
 };
 
 // ============================================================================
@@ -291,7 +293,7 @@ template <class TYPE>
 inline
 void DestructorProctor<TYPE>::reset(TYPE *object)
 {
-    BSLS_ASSERT_SAFE(object);
+    BSLS_PRE_BODY_SAFE(object);
 
     d_object_p = object;
 }

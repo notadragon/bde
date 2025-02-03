@@ -193,7 +193,7 @@ SequentialPool::SequentialPool(
 // MANIPULATORS
 void *SequentialPool::allocate(int size)
 {
-    BSLS_ASSERT(0 <= size);
+    BSLS_PRE_BODY(0 <= size);
 
     if (BSLS_PERFORMANCEHINT_PREDICT_UNLIKELY(0 == size)) {
         return 0;                                                     // RETURN
@@ -237,7 +237,7 @@ void SequentialPool::release()
 
 void SequentialPool::reserveCapacity(int numBytes)
 {
-    BSLS_ASSERT(0 <= numBytes);
+    BSLS_PRE_BODY(0 <= numBytes);
 
     if (numBytes) {
         int   cursor = d_cursor;
@@ -268,7 +268,7 @@ void SequentialPool::reserveCapacity(int numBytes)
 
 void *SequentialPool::allocateAndExpand(int *size)
 {
-    BSLS_ASSERT(0 <= *size);
+    BSLS_PRE_BODY(0 <= *size);
 
     void *memory = allocate(*size);
     if (memory) {
@@ -288,7 +288,8 @@ void *SequentialPool::allocateAndExpand(int *size)
 
 void *SequentialPool::allocateAndExpand(int *size, int maxNumBytes)
 {
-    BSLS_ASSERT(0 <= *size);  BSLS_ASSERT(*size <= maxNumBytes);
+    BSLS_PRE_BODY(0 <= *size);
+    BSLS_PRE_BODY(*size <= maxNumBytes);
 
     void *memory = allocate(*size);
     if (memory) {
@@ -312,7 +313,7 @@ void *SequentialPool::allocateAndExpand(int *size, int maxNumBytes)
 
 int SequentialPool::expand(void *address, int originalNumBytes)
 {
-    BSLS_ASSERT(0 <= originalNumBytes);
+    BSLS_PRE_BODY(0 <= originalNumBytes);
 
     if ((char *)address + originalNumBytes == d_buffer + d_cursor) {
         // Memory is managed and not directly from the block list.
@@ -329,8 +330,8 @@ int SequentialPool::expand(void *address,
                            int   originalNumBytes,
                            int   maxNumBytes)
 {
-    BSLS_ASSERT(               0 <= originalNumBytes);
-    BSLS_ASSERT(originalNumBytes <= maxNumBytes);
+    BSLS_PRE_BODY(               0 <= originalNumBytes);
+    BSLS_PRE_BODY(originalNumBytes <= maxNumBytes);
 
     if ((char *)address + originalNumBytes == d_buffer + d_cursor) {
         // Memory is managed and not directly from the block list.
@@ -351,7 +352,7 @@ int SequentialPool::truncate(void *address,
                              int   originalNumBytes,
                              int   newNumBytes)
 {
-    BSLS_ASSERT_SAFE(newNumBytes <= originalNumBytes);
+    BSLS_PRE_BODY_SAFE(newNumBytes <= originalNumBytes);
 
     if ((char *)address + originalNumBytes == d_buffer + d_cursor) {
         // Memory is managed and not directly from the block list.

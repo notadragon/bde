@@ -649,6 +649,7 @@ BSLS_IDENT("$Id: $")
 #include <bsls_compilerfeatures.h>
 #include <bsls_libraryfeatures.h>
 #include <bsls_platform.h>
+#include <bsls_pre.h>
 #include <bsls_util.h>     // 'forward<T>(V)'
 
 #include <stddef.h>
@@ -771,7 +772,10 @@ struct ConstructionUtil {
     template <class TARGET_TYPE, class ALLOCATOR>
     static void destructiveMove(TARGET_TYPE      *address,
                                 const ALLOCATOR&  allocator,
-                                TARGET_TYPE      *original);
+                                TARGET_TYPE      *original)
+        BSLS_PRE_SAFE(address)
+        BSLS_PRE_SAFE(original);
+
 
 #if defined(BSLS_COMPILERFEATURES_GUARANTEED_COPY_ELISION)
     /// Return, by value, an object of the specified (template parameter)
@@ -1254,8 +1258,8 @@ ConstructionUtil::destructiveMove(TARGET_TYPE      *address,
                                   const ALLOCATOR&  allocator,
                                   TARGET_TYPE      *original)
 {
-    BSLS_ASSERT_SAFE(address);
-    BSLS_ASSERT_SAFE(original);
+    BSLS_PRE_BODY_SAFE(address);
+    BSLS_PRE_BODY_SAFE(original);
 
     enum {
         k_VALUE = bslmf::IsBitwiseMoveable<TARGET_TYPE>::value

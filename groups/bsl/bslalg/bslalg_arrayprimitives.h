@@ -366,7 +366,781 @@ namespace BloombergLP {
 
 namespace bslalg {
 
-struct ArrayPrimitives_Imp;
+                     // ==========================
+                     // struct ArrayPrimitives_Imp
+                     // ==========================
+
+/// This `struct` provides a namespace for a suite of independent utility
+/// functions that operate on arrays of elements of a parameterized
+/// `TARGET_TYPE`.  These utility functions are only for the purpose of
+/// implementing those in the `ArrayPrimitives` utility.  For brevity, we do
+/// not repeat the main contracts here, but instead refer to the
+/// corresponding contract in the `ArrayPrimitives` utility.
+struct ArrayPrimitives_Imp {
+
+  private:
+    // PRIVATE METHODS
+
+    /// Copy-assign the specified `value` to the range starting at the
+    /// specified `srcStart` and ending immediately before the specified
+    /// `srcEnd`.  Note that the (template parameter) `TARGET_TYPE` must be
+    /// copy-assignable.  Also note that `value` should not be an element in
+    /// the range `[srcStart, srcEnd)`.
+    template <class TARGET_TYPE>
+    static void assign(TARGET_TYPE *srcStart,
+                       TARGET_TYPE *srcEnd,
+                       TARGET_TYPE& value);
+
+    /// Copy-assign the elements in reverse order from the range starting at
+    /// the specified `srcStart` and ending immediately before the specified
+    /// `srcEnd` to the range starting at the specified `dest` and ending
+    /// immediately before `dest + (srcEnd - srcStart)`.  The behavior is
+    /// undefined unless each element is both range `[srcStart, srcEnd)` and
+    /// range `[dest, dest + (srcEnd - srcStart))` is valid.  Note that the
+    /// (template parameter) `TARGET_TYPE` must be copy-assignable.  Also
+    /// note that this method is intended to support range assignment when
+    /// the two ranges may be overlapped, and `srcStart <= dest`.
+    template <class TARGET_TYPE>
+    static void reverseAssign(TARGET_TYPE *dest,
+                              TARGET_TYPE *srcStart,
+                              TARGET_TYPE *srcEnd);
+
+  public:
+    // TYPES
+    typedef std::size_t                 size_type;
+    typedef std::ptrdiff_t              difference_type;
+
+    enum {
+        // These constants are used in the overloads below, when the last
+        // argument is of type 'bslmf::integral_constant<int,N>', indicating
+        // that 'TARGET_TYPE' has the traits for which the enumerator equal to
+        // 'N' is named.
+
+        e_IS_ITERATOR_TO_FUNCTION_POINTER  = 6,
+        e_IS_POINTER_TO_POINTER            = 5,
+        e_IS_FUNDAMENTAL_OR_POINTER        = 4,
+        e_HAS_TRIVIAL_DEFAULT_CTOR_TRAITS  = 3,
+        e_BITWISE_COPYABLE_TRAITS          = 2,
+        e_BITWISE_MOVEABLE_TRAITS          = 1,
+        e_NIL_TRAITS                       = 0
+    };
+
+    enum {
+        // Number of bytes for which a stack-allocated buffer can be
+        // comfortably obtained to optimize bitwise moves.
+
+        k_INPLACE_BUFFER_SIZE = 16 * bsls::AlignmentUtil::BSLS_MAX_ALIGNMENT
+    };
+
+    // CLASS METHODS
+
+    /// Fill the specified `numBytes` in the array starting at the specified
+    /// `begin` address, as if by bit-wise copying the specified
+    /// `numBytesInitialized` at every offset that is a multiple of
+    /// `numBytesInitialized` within the output array.  The behavior is
+    /// undefined unless `numBytesInitialized <= numBytes`.  Note that
+    /// `numBytes` usually is, but does not have to be, a multiple of
+    /// `numBytesInitialized`.
+    static void bitwiseFillN(char      *begin,
+                             size_type  numBytesInitialized,
+                             size_type  numBytes)
+        BSLS_PRE_SAFE(begin || 0 == numBytes)
+        BSLS_PRE(numBytesInitialized <= numBytes);
+
+
+    /// Copy the specified `value` of the parameterized `TARGET_TYPE` into
+    /// every of the specified `numElements` in the array starting at the
+    /// specified `begin` address.  Pass the specified `allocator` to the
+    /// copy constructor if appropriate.  Note that if `TARGET_TYPE` is
+    /// bit-wise copyable or is not based on `bslma::Allocator`, `allocator`
+    /// is ignored.  The last argument is for removing overload ambiguities
+    /// and is not used.
+    static void uninitializedFillN(
+                bool      *begin,
+                bool       value,
+                size_type  numElements,
+                void      * = 0,
+                bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER> =
+                   bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>())
+        BSLS_PRE_SAFE(begin || 0 == numElements);
+    static void uninitializedFillN(
+                char                                        *begin,
+                char                                         value,
+                size_type                                    numElements,
+                void                                        * = 0,
+                bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER> =
+                   bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>())
+        BSLS_PRE_SAFE(begin || 0 == numElements);
+    static void uninitializedFillN(
+                unsigned char                               *begin,
+                unsigned char                                value,
+                size_type                                    numElements,
+                void                                        * = 0,
+                bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER> =
+                   bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>())
+        BSLS_PRE_SAFE(begin || 0 == numElements);
+    static void uninitializedFillN(
+                signed char                                 *begin,
+                signed char                                  value,
+                size_type                                    numElements,
+                void                                        * = 0,
+                bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER> =
+                   bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>())
+        BSLS_PRE_SAFE(begin || 0 == numElements);
+    static void uninitializedFillN(
+                wchar_t                                     *begin,
+                wchar_t                                      value,
+                size_type                                    numElements,
+                void                                        * = 0,
+                bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER> =
+                   bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>())
+        BSLS_PRE_SAFE(begin || 0 == numElements);
+    static void uninitializedFillN(
+                short                                       *begin,
+                short                                        value,
+                size_type                                    numElements,
+                void                                        * = 0,
+                bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER> =
+                   bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>())
+        BSLS_PRE_SAFE(begin || 0 == numElements);
+    static void uninitializedFillN(
+                unsigned short                              *begin,
+                unsigned short                               value,
+                size_type                                    numElements,
+                void                                        * = 0,
+                bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER> =
+                  bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>())
+        BSLS_PRE_SAFE(begin || 0 == numElements);
+    static void uninitializedFillN(
+                int                                         *begin,
+                int                                          value,
+                size_type                                    numElements,
+                void                                        * = 0,
+                bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER> =
+                  bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>())
+        BSLS_PRE_SAFE(begin || 0 == numElements);
+    static void uninitializedFillN(
+                unsigned int                                *begin,
+                unsigned int                                 value,
+                size_type                                    numElements,
+                void                                        * = 0,
+                bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER> =
+                   bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>())
+        BSLS_PRE_SAFE(begin || 0 == numElements);
+    static void uninitializedFillN(
+                long                                        *begin,
+                long                                         value,
+                size_type                                    numElements,
+                void                                        * = 0,
+                bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER> =
+                   bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>())
+        BSLS_PRE_SAFE(begin || 0 == numElements);
+    static void uninitializedFillN(
+                unsigned long                               *begin,
+                unsigned long                                value,
+                size_type                                    numElements,
+                void                                        * = 0,
+                bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER> =
+                   bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>())
+        BSLS_PRE_SAFE(begin || 0 == numElements);
+    static void uninitializedFillN(
+                bsls::Types::Int64                          *begin,
+                bsls::Types::Int64                           value,
+                size_type                                    numElements,
+                void                                        * = 0,
+                bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER> =
+                   bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>())
+        BSLS_PRE_SAFE(begin || 0 == numElements);
+    static void uninitializedFillN(
+                bsls::Types::Uint64                         *begin,
+                bsls::Types::Uint64                          value,
+                size_type                                    numElements,
+                void                                        * = 0,
+                bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER> =
+                   bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>())
+        BSLS_PRE_SAFE(begin || 0 == numElements);
+    static void uninitializedFillN(
+                float                                       *begin,
+                float                                        value,
+                size_type                                    numElements,
+                void                                        * = 0,
+                bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER> =
+                   bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>())
+        BSLS_PRE_SAFE(begin || 0 == numElements);
+    static void uninitializedFillN(
+                double                                      *begin,
+                double                                       value,
+                size_type                                    numElements,
+                void                                        * = 0,
+                bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER> =
+                   bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>())
+        BSLS_PRE_SAFE(begin || 0 == numElements);
+    static void uninitializedFillN(
+                long double                                 *begin,
+                long double                                  value,
+                size_type                                    numElements,
+                void                                        * = 0,
+                bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER> =
+                   bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>())
+        BSLS_PRE_SAFE(begin || 0 == numElements);
+    static void uninitializedFillN(
+                void                                        **begin,
+                void                                         *value,
+                size_type                                     numElements,
+                void                                         * = 0,
+                bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER> =
+                   bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>())
+        BSLS_PRE_SAFE(begin || 0 == numElements);
+    static void uninitializedFillN(
+                const void                                  **begin,
+                const void                                   *value,
+                size_type                                     numElements,
+                void                                         * = 0,
+                bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER> =
+                   bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>())
+        BSLS_PRE_SAFE(begin || 0 == numElements);
+    static void uninitializedFillN(
+                volatile void                               **begin,
+                volatile void                                *value,
+                size_type                                     numElements,
+                void                                         * = 0,
+                bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER> =
+                   bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>())
+        BSLS_PRE_SAFE(begin || 0 == numElements);
+    static void uninitializedFillN(
+                const volatile void                         **begin,
+                const volatile void                          *value,
+                size_type                                     numElements,
+                void                                         * = 0,
+                bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER> =
+                   bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>())
+        BSLS_PRE_SAFE(begin || 0 == numElements);
+    template <class TARGET_TYPE>
+    static void uninitializedFillN(
+                TARGET_TYPE                                 **begin,
+                TARGET_TYPE                                  *value,
+                size_type                                     numElements,
+                void                                         * = 0,
+                bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER> =
+                   bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>())
+        BSLS_PRE_SAFE(begin || 0 == numElements);
+    template <class TARGET_TYPE>
+    static void uninitializedFillN(
+                const TARGET_TYPE                           **begin,
+                const TARGET_TYPE                            *value,
+                size_type                                     numElements,
+                void                                         * = 0,
+                bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER> =
+                   bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>())
+        BSLS_PRE_SAFE(begin || 0 == numElements);
+    template <class TARGET_TYPE>
+    static void uninitializedFillN(
+                volatile  TARGET_TYPE                       **begin,
+                volatile TARGET_TYPE                         *value,
+                size_type                                     numElements,
+                void                                         * = 0,
+                bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER> =
+                   bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>())
+        BSLS_PRE_SAFE(begin || 0 == numElements);
+    template <class TARGET_TYPE>
+    static void uninitializedFillN(
+                const volatile TARGET_TYPE                  **begin,
+                const volatile TARGET_TYPE                   *value,
+                size_type                                     numElements,
+                void                                         * = 0,
+                bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER> =
+                   bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>())
+        BSLS_PRE_SAFE(begin || 0 == numElements);
+    template <class TARGET_TYPE, class ALLOCATOR>
+    static void uninitializedFillN(
+                TARGET_TYPE                                  *begin,
+                const TARGET_TYPE&                            value,
+                size_type                                     numElements,
+                ALLOCATOR                                    *allocator,
+                bsl::integral_constant<int, e_BITWISE_COPYABLE_TRAITS>)
+        BSLS_PRE_SAFE(begin || 0 == numElements);
+    template <class TARGET_TYPE, class ALLOCATOR>
+    static void uninitializedFillN(
+                TARGET_TYPE                                  *begin,
+                const TARGET_TYPE&                            value,
+                size_type                                     numElements,
+                ALLOCATOR                                    *allocator,
+                bsl::integral_constant<int, e_NIL_TRAITS>)
+        BSLS_PRE_SAFE(begin || 0 == numElements)
+        BSLS_PRE_SAFE(allocator);
+
+    /// These functions follow the `copyConstruct` contract.  If the
+    /// (template parameter) `ALLOCATOR` type is based on `bslma::Allocator`
+    /// and the `TARGET_TYPE` constructors take an allocator argument, then
+    /// pass the specified `allocator` to the copy constructor.  The
+    /// behavior is undefined unless the output array has length at least
+    /// the distance from the specified `fromBegin` to the specified
+    /// `fromEnd`.  Note that if `FWD_ITER` is the `TARGET_TYPE *` pointer
+    /// type and `TARGET_TYPE` is bit-wise copyable, then this operation is
+    /// simply `memcpy`.  The last argument is for removing overload
+    /// ambiguities and is not used.
+    template <class TARGET_TYPE, class FWD_ITER, class ALLOCATOR>
+    static void copyConstruct(
+             TARGET_TYPE                                          *toBegin,
+             FWD_ITER                                              fromBegin,
+             FWD_ITER                                              fromEnd,
+             ALLOCATOR                                             allocator,
+             bsl::integral_constant<int, e_IS_POINTER_TO_POINTER>);
+    template <class TARGET_TYPE, class ALLOCATOR>
+    static void copyConstruct(
+             TARGET_TYPE                                           *toBegin,
+             const TARGET_TYPE                                     *fromBegin,
+             const TARGET_TYPE                                     *fromEnd,
+             ALLOCATOR                                              allocator,
+             bsl::integral_constant<int, e_BITWISE_COPYABLE_TRAITS>)
+        BSLS_PRE_SAFE(toBegin)
+        BSLS_PRE_SAFE(!ArrayPrimitives_Imp::isInvalidRange(fromBegin,
+                                                           fromEnd));
+//    template <class TARGET_TYPE, class FWD_ITER, class ALLOCATOR>
+//    static void copyConstruct(
+//             TARGET_TYPE                                           *toBegin,
+//             FWD_ITER                                               fromBegin,
+//             FWD_ITER                                               fromEnd,
+//             ALLOCATOR                                              allocator,
+//             bsl::integral_constant<int, e_IS_ITERATOR_TO_FUNCTION_POINTER>);
+    template <class FWD_ITER, class ALLOCATOR>
+    static void copyConstruct(
+             void                                                 **toBegin,
+             FWD_ITER                                               fromBegin,
+             FWD_ITER                                               fromEnd,
+             ALLOCATOR                                              allocator,
+             bsl::integral_constant<int, e_IS_ITERATOR_TO_FUNCTION_POINTER>)
+        BSLS_PRE_SAFE(toBegin || fromBegin == fromEnd)
+        BSLS_PRE_SAFE(!ArrayPrimitives_Imp::isInvalidRange(fromBegin, fromEnd));
+    template <class TARGET_TYPE, class FWD_ITER, class ALLOCATOR>
+    static void copyConstruct(
+             TARGET_TYPE                                           *toBegin,
+             FWD_ITER                                               fromBegin,
+             FWD_ITER                                               fromEnd,
+             ALLOCATOR                                              allocator,
+             bsl::integral_constant<int, e_NIL_TRAITS>)
+        BSLS_PRE_SAFE(toBegin || fromBegin == fromEnd)
+        BSLS_PRE_SAFE(!ArrayPrimitives_Imp::isInvalidRange(fromBegin,
+                                                           fromEnd));
+
+    /// TBD: improve comment
+    /// Move-insert into an uninitialized array beginning at the specified
+    /// `toBegin` pointer, elements of type given by the `allocator_traits`
+    /// class template for (template parameter) `ALLOCATOR` from elements
+    /// starting at the specified `fromBegin` pointer and ending immediately
+    /// before the specified `fromEnd` pointer.  The elements in the range
+    /// `[fromBegin...fromEnd)` are left in a valid but unspecified state.
+    /// If a constructor throws an exception during the operation, then the
+    /// destructor is called on any newly-constructed elements, leaving the
+    /// output array in an uninitialized state.  The behavior is undefined
+    /// unless `toBegin` refers to space sufficient to hold
+    /// `fromEnd - fromBegin` elements.
+    template <class TARGET_TYPE, class ALLOCATOR>
+    static void moveConstruct(
+             TARGET_TYPE                                            *toBegin,
+             TARGET_TYPE                                            *fromBegin,
+             TARGET_TYPE                                            *fromEnd,
+             ALLOCATOR                                               allocator,
+             bsl::integral_constant<int, e_BITWISE_COPYABLE_TRAITS>)
+        BSLS_PRE_SAFE(toBegin || fromBegin == fromEnd)
+        BSLS_PRE_SAFE(!ArrayPrimitives_Imp::isInvalidRange(fromBegin,
+                                                           fromEnd));
+    template <class TARGET_TYPE, class ALLOCATOR>
+    static void moveConstruct(
+             TARGET_TYPE                                            *toBegin,
+             TARGET_TYPE                                            *fromBegin,
+             TARGET_TYPE                                            *fromEnd,
+             ALLOCATOR                                               allocator,
+             bsl::integral_constant<int, e_NIL_TRAITS>)
+        BSLS_PRE_SAFE(toBegin || fromBegin == fromEnd)
+        BSLS_PRE_SAFE(!ArrayPrimitives_Imp::isInvalidRange(fromBegin,
+                                                           fromEnd));
+
+    /// TBD: improve comment
+    /// Either move- or copy-insert into an uninitialized array beginning at
+    /// the specified `toBegin` pointer, elements of type given by the
+    /// `allocator_traits` class template for (template parameter)
+    /// `ALLOCATOR` from elements starting at the specified `fromBegin`
+    /// pointer and ending immediately before the specified `fromEnd`
+    /// pointer.  The elements in the range `[fromBegin...fromEnd)` are left
+    /// in a valid but unspecified state.  Use the move constructor if it is
+    /// guaranteed to not throw or if the target type does not define a copy
+    /// constructor; otherwise use the copy constructor.  If a constructor
+    /// throws an exception during the operation, then the destructor is
+    /// called on any newly-constructed elements, leaving the output array
+    /// in an uninitialized state.  The behavior is undefined unless
+    /// `toBegin` refers to space sufficient to hold `fromEnd - fromBegin`
+    /// elements.
+    template <class TARGET_TYPE, class ALLOCATOR>
+    static void moveIfNoexcept(
+                          TARGET_TYPE                               *toBegin,
+                          TARGET_TYPE                               *fromBegin,
+                          TARGET_TYPE                               *fromEnd,
+                          ALLOCATOR                                  allocator,
+                          bsl::integral_constant<int, e_NIL_TRAITS>);
+
+    /// Use the default constructor of the (template parameter)
+    /// `TARGET_TYPE` (or `memset` to 0 if `TARGET_TYPE` has a trivial
+    /// default constructor) on each element of the array starting at the
+    /// specified `begin` address and ending immediately before the `end`
+    /// address.  Pass the specified `allocator` to the default constructor
+    /// if appropriate.  The last argument is for traits overloading
+    /// resolution only and its value is ignored.
+    template <class TARGET_TYPE, class ALLOCATOR>
+    static void defaultConstruct(
+           TARGET_TYPE                                            *begin,
+           size_type                                               numElements,
+           ALLOCATOR                                               allocator,
+           bsl::integral_constant<int, e_HAS_TRIVIAL_DEFAULT_CTOR_TRAITS>)
+        BSLS_PRE_SAFE(begin || 0 == numElements);
+    template <class TARGET_TYPE, class ALLOCATOR>
+    static void defaultConstruct(
+           TARGET_TYPE                                            *begin,
+           size_type                                               numElements,
+           ALLOCATOR                                               allocator,
+           bsl::integral_constant<int, e_BITWISE_COPYABLE_TRAITS>)
+        BSLS_PRE_SAFE(begin || 0 == numElements);
+    template <class TARGET_TYPE, class ALLOCATOR>
+    static void defaultConstruct(
+           TARGET_TYPE                                            *begin,
+           size_type                                               numElements,
+           ALLOCATOR                                               allocator,
+           bsl::integral_constant<int, e_NIL_TRAITS>)
+        BSLS_PRE_SAFE(begin || 0 == numElements);
+
+    /// These functions follow the `destructiveMove` contract.  Note that
+    /// both arrays cannot overlap (one contains only initialized elements
+    /// and the other only uninitialized elements), and that if
+    /// `TARGET_TYPE` is bit-wise moveable, then this operation is simply
+    /// `memcpy`.  The last argument is for removing overload ambiguities
+    /// and is not used.
+    template <class TARGET_TYPE, class ALLOCATOR>
+    static void destructiveMove(
+             TARGET_TYPE                                            *toBegin,
+             TARGET_TYPE                                            *fromBegin,
+             TARGET_TYPE                                            *fromEnd,
+             ALLOCATOR                                               allocator,
+             bsl::integral_constant<int, e_BITWISE_MOVEABLE_TRAITS>)
+        BSLS_PRE_SAFE(toBegin || fromBegin == fromEnd)
+        BSLS_PRE_SAFE(!ArrayPrimitives_Imp::isInvalidRange(fromBegin,
+                                                           fromEnd));
+    template <class TARGET_TYPE, class ALLOCATOR>
+    static void destructiveMove(
+             TARGET_TYPE                                            *toBegin,
+             TARGET_TYPE                                            *fromBegin,
+             TARGET_TYPE                                            *fromEnd,
+             ALLOCATOR                                               allocator,
+             bsl::integral_constant<int, e_NIL_TRAITS>)
+        BSLS_PRE_SAFE(toBegin || fromBegin == fromEnd)
+        BSLS_PRE_SAFE(!ArrayPrimitives_Imp::isInvalidRange(fromBegin,
+                                                           fromEnd));
+    
+#if !BSLS_COMPILERFEATURES_SIMULATE_CPP11_FEATURES
+    /// TBD: document this
+    template <class TARGET_TYPE, class ALLOCATOR, class... ARGS>
+    static void emplace(
+             TARGET_TYPE                                            *toBegin,
+             TARGET_TYPE                                            *toEnd,
+             ALLOCATOR                                               allocator,
+             bsl::integral_constant<int, e_BITWISE_COPYABLE_TRAITS>,
+             ARGS&&...                                               args);
+    template <class TARGET_TYPE, class ALLOCATOR, class... ARGS>
+    static void emplace(
+             TARGET_TYPE                                            *toBegin,
+             TARGET_TYPE                                            *toEnd,
+             ALLOCATOR                                               allocator,
+             bsl::integral_constant<int, e_BITWISE_MOVEABLE_TRAITS>,
+             ARGS&&...                                               args)
+        BSLS_PRE_SAFE(!ArrayPrimitives_Imp::isInvalidRange(toBegin,
+                                                           toEnd));
+    template <class TARGET_TYPE, class ALLOCATOR, class... ARGS>
+    static void emplace(
+             TARGET_TYPE                                            *toBegin,
+             TARGET_TYPE                                            *toEnd,
+             ALLOCATOR                                               allocator,
+             bsl::integral_constant<int, e_NIL_TRAITS>,
+             ARGS&&...                                               args)
+        BSLS_PRE_SAFE(!ArrayPrimitives_Imp::isInvalidRange(toBegin,
+                                                           toEnd));
+#endif
+
+    /// These functions follow the `erase` contract.  Note that if (template
+    /// parameter) `TARGET_TYPE` is bit-wise moveable, then this operation
+    /// can be implemented by first bit-wise moving the elements in
+    /// `[middle, last)` towards first, and destroying
+    /// `[ last - (middle - first), last)`; note that this cannot throw
+    /// exceptions.
+    template <class TARGET_TYPE, class ALLOCATOR>
+    static void erase(
+             TARGET_TYPE                                            *first,
+             TARGET_TYPE                                            *middle,
+             TARGET_TYPE                                            *last,
+             ALLOCATOR                                               allocator,
+             bsl::integral_constant<int, e_BITWISE_MOVEABLE_TRAITS>)
+        BSLS_PRE_SAFE(!ArrayPrimitives_Imp::isInvalidRange(first, middle))
+        BSLS_PRE_SAFE(!ArrayPrimitives_Imp::isInvalidRange(middle, last));
+    template <class TARGET_TYPE, class ALLOCATOR>
+    static void erase(
+             TARGET_TYPE                                            *first,
+             TARGET_TYPE                                            *middle,
+             TARGET_TYPE                                            *last,
+             ALLOCATOR                                               allocator,
+             bsl::integral_constant<int, e_NIL_TRAITS>)
+        BSLS_PRE_SAFE(!ArrayPrimitives_Imp::isInvalidRange(first, middle))
+        BSLS_PRE_SAFE(!ArrayPrimitives_Imp::isInvalidRange(middle, last));
+
+    /// These functions follow the `insert` contract.  Note that if
+    /// `TARGET_TYPE` is bit-wise copyable, then this operation is simply
+    /// `memmove` followed by `bitwiseFillN`.  If `TARGET_TYPE` is bit-wise
+    /// moveable, then this operation can still be optimized using `memmove`
+    /// followed by repeated assignments, but a guard needs to be set up.
+    /// The last argument is for removing overload ambiguities and is not
+    /// used.
+    template <class TARGET_TYPE, class ALLOCATOR>
+    static void insert(
+           TARGET_TYPE                                            *toBegin,
+           TARGET_TYPE                                            *toEnd,
+           const TARGET_TYPE&                                      value,
+           size_type                                               numElements,
+           ALLOCATOR                                               allocator,
+           bsl::integral_constant<int, e_BITWISE_COPYABLE_TRAITS>)
+        BSLS_PRE_SAFE(!ArrayPrimitives_Imp::isInvalidRange(toBegin, toEnd));
+    template <class TARGET_TYPE, class ALLOCATOR>
+    static void insert(
+           TARGET_TYPE                                            *toBegin,
+           TARGET_TYPE                                            *toEnd,
+           const TARGET_TYPE&                                      value,
+           size_type                                               numElements,
+           ALLOCATOR                                               allocator,
+           bsl::integral_constant<int, e_BITWISE_MOVEABLE_TRAITS>)
+        BSLS_PRE_SAFE(!ArrayPrimitives_Imp::isInvalidRange(toBegin, toEnd));
+    template <class TARGET_TYPE, class ALLOCATOR>
+    static void insert(
+           TARGET_TYPE                                            *toBegin,
+           TARGET_TYPE                                            *toEnd,
+           const TARGET_TYPE&                                      value,
+           size_type                                               numElements,
+           ALLOCATOR                                               allocator,
+           bsl::integral_constant<int, e_NIL_TRAITS>)
+        BSLS_PRE_SAFE(!ArrayPrimitives_Imp::isInvalidRange(toBegin, toEnd));
+    
+    /// These functions follow the `insert` contract.  Note that if
+    /// `TARGET_TYPE` is bit-wise copyable and `FWD_ITER` is convertible to
+    /// `const TARGET_TYPE *`, then this operation is simply `memmove`
+    /// followed by `memcpy`.  If `TARGET_TYPE` is bit-wise moveable and
+    /// `FWD_ITER` is convertible to `const TARGET_TYPE *`, then this
+    /// operation can still be optimized using `memmove` followed by
+    /// repeated copies.  The last argument is for removing overload
+    /// ambiguities and is not used.
+    template <class TARGET_TYPE, class FWD_ITER, class ALLOCATOR>
+    static void insert(
+           TARGET_TYPE                                            *toBegin,
+           TARGET_TYPE                                            *toEnd,
+           FWD_ITER                                                fromBegin,
+           FWD_ITER                                                fromEnd,
+           size_type                                               numElements,
+           ALLOCATOR                                               allocator,
+           bsl::integral_constant<int, e_IS_POINTER_TO_POINTER>);
+    template <class TARGET_TYPE, class ALLOCATOR>
+    static void insert(
+           TARGET_TYPE                                            *toBegin,
+           TARGET_TYPE                                            *toEnd,
+           const TARGET_TYPE                                      *fromBegin,
+           const TARGET_TYPE                                      *fromEnd,
+           size_type                                               numElements,
+           ALLOCATOR                                               allocator,
+           bsl::integral_constant<int, e_BITWISE_COPYABLE_TRAITS>)
+        BSLS_PRE_SAFE(!ArrayPrimitives_Imp::isInvalidRange(toBegin, toEnd))
+        BSLS_PRE_SAFE(!ArrayPrimitives_Imp::isInvalidRange(fromBegin, fromEnd))
+        BSLS_PRE_SAFE(fromBegin || 0 == numElements)
+        BSLS_PRE_SAFE(fromBegin + numElements == fromEnd)
+        BSLS_PRE_SAFE(fromEnd <= toBegin || toEnd + numElements <= fromBegin);
+    template <class TARGET_TYPE, class FWD_ITER, class ALLOCATOR>
+    static void insert(
+           TARGET_TYPE                                            *toBegin,
+           TARGET_TYPE                                            *toEnd,
+           FWD_ITER                                                fromBegin,
+           FWD_ITER                                                fromEnd,
+           size_type                                               numElements,
+           ALLOCATOR                                               allocator,
+           bsl::integral_constant<int, e_BITWISE_MOVEABLE_TRAITS>)
+        BSLS_PRE_SAFE(!ArrayPrimitives_Imp::isInvalidRange(toBegin, toEnd));
+    template <class FWD_ITER, class ALLOCATOR>
+    static void insert(
+           void                                                  **toBegin,
+           void                                                  **toEnd,
+           FWD_ITER                                                fromBegin,
+           FWD_ITER                                                fromEnd,
+           size_type                                               numElements,
+           ALLOCATOR                                               allocator,
+           bsl::integral_constant<int, e_IS_ITERATOR_TO_FUNCTION_POINTER>)
+        BSLS_PRE_SAFE(!ArrayPrimitives_Imp::isInvalidRange(toBegin, toEnd));
+    template <class TARGET_TYPE, class FWD_ITER, class ALLOCATOR>
+    static void insert(
+           TARGET_TYPE                                            *toBegin,
+           TARGET_TYPE                                            *toEnd,
+           FWD_ITER                                                fromBegin,
+           FWD_ITER                                                fromEnd,
+           size_type                                               numElements,
+           ALLOCATOR                                               allocator,
+           bsl::integral_constant<int, e_NIL_TRAITS>)
+        BSLS_PRE_SAFE(!ArrayPrimitives_Imp::isInvalidRange(toBegin, toEnd));
+
+    /// These functions follow the `moveInsert` contract.  Note that if
+    /// `TARGET_TYPE` is at least bit-wise moveable, then this operation is
+    /// simply `memmove` followed by `memcpy`.
+    template <class TARGET_TYPE, class ALLOCATOR>
+    static void moveInsert(
+          TARGET_TYPE                                             *toBegin,
+          TARGET_TYPE                                             *toEnd,
+          TARGET_TYPE                                            **lastPtr,
+          TARGET_TYPE                                             *first,
+          TARGET_TYPE                                             *last,
+          size_type                                                numElements,
+          ALLOCATOR                                                allocator,
+          bsl::integral_constant<int, e_BITWISE_MOVEABLE_TRAITS>)
+        BSLS_PRE_SAFE(!ArrayPrimitives_Imp::isInvalidRange(toBegin, toEnd))
+        BSLS_PRE_SAFE(!ArrayPrimitives_Imp::isInvalidRange(first, last))
+        BSLS_PRE_SAFE(first || 0 == numElements)
+        BSLS_PRE_SAFE(lastPtr);
+
+    template <class TARGET_TYPE, class ALLOCATOR>
+    static void moveInsert(
+          TARGET_TYPE                                             *toBegin,
+          TARGET_TYPE                                             *toEnd,
+          TARGET_TYPE                                            **lastPtr,
+          TARGET_TYPE                                             *first,
+          TARGET_TYPE                                             *last,
+          size_type                                                numElements,
+          ALLOCATOR                                                allocator,
+          bsl::integral_constant<int, e_NIL_TRAITS>)
+        BSLS_PRE_SAFE(!ArrayPrimitives_Imp::isInvalidRange(toBegin, toEnd))
+        BSLS_PRE_SAFE(!ArrayPrimitives_Imp::isInvalidRange(first, last))
+        BSLS_PRE_SAFE(first || 0 == numElements)
+        BSLS_PRE_SAFE(lastPtr);
+
+    /// These functions follow the `rotate` contract, but the first overload
+    /// is optimized when the parameterized `TARGET_TYPE` is bit-wise
+    /// moveable.  The last argument is for removing overload ambiguities
+    /// and is not used.  Note that if `TARGET_TYPE` is bit-wise moveable,
+    /// the `rotate(char*, char*, char*)` can be used, enabling to take the
+    /// whole implementation out-of-line.
+    template <class TARGET_TYPE>
+    static void rotate(
+                TARGET_TYPE                                            *begin,
+                TARGET_TYPE                                            *middle,
+                TARGET_TYPE                                            *end,
+                bsl::integral_constant<int, e_BITWISE_MOVEABLE_TRAITS>)
+        BSLS_PRE_SAFE(!ArrayPrimitives_Imp::isInvalidRange(begin, middle))
+        BSLS_PRE_SAFE(!ArrayPrimitives_Imp::isInvalidRange(middle, end));
+    template <class TARGET_TYPE>
+    static void rotate(
+                TARGET_TYPE                                            *begin,
+                TARGET_TYPE                                            *middle,
+                TARGET_TYPE                                            *end,
+                bsl::integral_constant<int, e_NIL_TRAITS>)
+        BSLS_PRE_SAFE(!ArrayPrimitives_Imp::isInvalidRange(begin, middle))
+        BSLS_PRE_SAFE(!ArrayPrimitives_Imp::isInvalidRange(middle, end));
+
+    /// Shift the specified `[begin, end)` sequence one position right, then
+    /// insert the specified `value` at the position pointed by `begin`.
+    /// The specified `allocator` is used for the element construction.  The
+    /// behavior is undefined unless the specified `[begin, end)` sequence
+    /// contains at least one element.
+    template <class ALLOCATOR>
+    static void shiftAndInsert(
+          typename bsl::allocator_traits<ALLOCATOR>::pointer         begin,
+          typename bsl::allocator_traits<ALLOCATOR>::pointer         end,
+          bslmf::MovableRef<
+              typename bsl::allocator_traits<ALLOCATOR>::value_type> value,
+          ALLOCATOR                                                  allocator,
+          bsl::integral_constant<int, e_BITWISE_COPYABLE_TRAITS>)
+        BSLS_PRE_SAFE(begin != end); // the range is non-empty
+    template <class ALLOCATOR>
+    static void shiftAndInsert(
+          typename bsl::allocator_traits<ALLOCATOR>::pointer         begin,
+          typename bsl::allocator_traits<ALLOCATOR>::pointer         end,
+          bslmf::MovableRef<
+              typename bsl::allocator_traits<ALLOCATOR>::value_type> value,
+          ALLOCATOR                                                  allocator,
+          bsl::integral_constant<int, e_BITWISE_MOVEABLE_TRAITS>)
+        BSLS_PRE_SAFE(begin != end); // the range is non-empty
+    template <class ALLOCATOR>
+    static void shiftAndInsert(
+          typename bsl::allocator_traits<ALLOCATOR>::pointer         begin,
+          typename bsl::allocator_traits<ALLOCATOR>::pointer         end,
+          bslmf::MovableRef<
+              typename bsl::allocator_traits<ALLOCATOR>::value_type> value,
+          ALLOCATOR                                                  allocator,
+          bsl::integral_constant<int, e_NIL_TRAITS>)
+        BSLS_PRE_SAFE(begin != end); // the range is non-empty
+    
+    // 'bitwise' METHODS
+
+    /// This function follows the `rotate` contract, but by using bit-wise
+    /// moves on the underlying `char` array.
+    static void bitwiseRotate(char *begin, char *middle, char *end)
+        BSLS_PRE_SAFE(!begin  == !middle)
+        BSLS_PRE_SAFE(!middle == !end)
+        BSLS_PRE_SAFE(begin  <= middle)
+        BSLS_PRE_SAFE(middle <= end);
+        
+
+    /// Move the characters in the array starting at the specified `first`
+    /// address and ending immediately before the specified `middle` address
+    /// to the array of the same length ending at the specified `last`
+    /// address (and thus starting at the `last - (middle - first)`
+    /// address), and move the elements previously in the array starting at
+    /// `middle` and ending at `last` down to the `first` address.  The
+    /// behavior is undefined unless
+    /// `middle - begin <= k_INPLACE_BUFFER_SIZE`.
+    static void bitwiseRotateBackward(char *begin, char *middle, char *end)
+        BSLS_PRE_SAFE(!begin  == !middle)
+        BSLS_PRE_SAFE(!middle == !end)
+        BSLS_PRE_SAFE(begin  <= middle)
+        BSLS_PRE_SAFE(middle <= end);
+
+    /// Move the characters in the array starting at the specified `first`
+    /// address and ending immediately before the specified `middle` address
+    /// to the array of the same length ending at the specified `last`
+    /// address (and thus starting at the `last - (middle - first)`
+    /// address), and move the elements previously in the array starting at
+    /// `middle` and ending at `last` down to the `first` address.  The
+    /// behavior is undefined unless
+    /// `end - middle <= k_INPLACE_BUFFER_SIZE`.
+    static void bitwiseRotateForward(char *begin, char *middle, char *end)
+        BSLS_PRE_SAFE(!begin  == !middle)
+        BSLS_PRE_SAFE(!middle == !end)
+        BSLS_PRE_SAFE(begin  <= middle)
+        BSLS_PRE_SAFE(middle <= end);
+
+    /// Swap the characters in the array starting at the specified `first`
+    /// address and ending immediately before the specified `middle` address
+    /// with the array of the same length starting at the `middle` address
+    /// and ending at the specified `last` address.  The behavior is
+    /// undefined unless `middle - begin == end - middle`.
+    static void bitwiseSwapRanges(char *begin, char *middle, char *end)
+        BSLS_PRE_SAFE(!begin  == !middle)
+        BSLS_PRE_SAFE(!middle == !end)
+        BSLS_PRE_SAFE(begin  <= middle)
+        BSLS_PRE_SAFE(middle <= end);
+
+
+    /// Return `true` if the specified `begin` and the specified `end`
+    /// provably do not form a valid semi-open range, `[begin, end)`, and
+    /// `false` otherwise.  Note that `begin == null == end` produces a
+    /// valid range, and any other use of the null pointer value will return
+    /// `true`.  Also note that this function is intended to support
+    /// testing, primarily through assertions, so will return `false` unless
+    /// it can *prove* that the passed range is invalid.  Currently, this
+    /// function can prove invalid ranges only for pointers, although should
+    /// also encompass generic random access iterators in a future update,
+    /// where iterator tag types are levelized below `bslalg`.
+    template <class FORWARD_ITERATOR>
+    static bool isInvalidRange(FORWARD_ITERATOR begin, FORWARD_ITERATOR end);
+    template <class TARGET_TYPE>
+    static bool isInvalidRange(TARGET_TYPE *begin, TARGET_TYPE *end);
+};
 
                         // ======================
                         // struct ArrayPrimitives
@@ -381,9 +1155,9 @@ struct ArrayPrimitives {
 
   public:
     // TYPES
-    typedef ArrayPrimitives_Imp         Imp;
-    typedef std::size_t                 size_type;
-    typedef std::ptrdiff_t              difference_type;
+    typedef ArrayPrimitives_Imp  Imp;
+    typedef Imp::size_type       size_type;
+    typedef Imp::difference_type difference_type;
 
     // CLASS METHODS
 
@@ -402,14 +1176,16 @@ struct ArrayPrimitives {
                  typename bsl::allocator_traits<ALLOCATOR>::pointer toBegin,
                  FWD_ITER                                           fromBegin,
                  FWD_ITER                                           fromEnd,
-                 ALLOCATOR                                          allocator);
+                 ALLOCATOR                                          allocator)
+        BSLS_PRE_SAFE(toBegin || fromBegin == fromEnd);
     template <class ALLOCATOR, class SOURCE_TYPE>
     static void
     copyConstruct(
                 typename bsl::allocator_traits<ALLOCATOR>::pointer  toBegin,
                 SOURCE_TYPE                                        *fromBegin,
                 SOURCE_TYPE                                        *fromEnd,
-                ALLOCATOR                                           allocator);
+                ALLOCATOR                                           allocator)
+        BSLS_PRE_SAFE(toBegin || fromBegin == fromEnd);
 
     /// Copy into an uninitialized array of (the template parameter)
     /// `TARGET_TYPE` beginning at the specified `toBegin` address, the
@@ -465,7 +1241,8 @@ struct ArrayPrimitives {
     static void moveConstruct(TARGET_TYPE      *toBegin,
                               TARGET_TYPE      *fromBegin,
                               TARGET_TYPE      *fromEnd,
-                              bslma::Allocator *allocator);
+                              bslma::Allocator *allocator)
+        BSLS_PRE_SAFE(toBegin || fromBegin == fromEnd);
 
     /// Value-inititalize the specified `numElements` objects of type
     /// `allocator_traits<ALLOCATOR>::value_type` into the uninitialized
@@ -479,7 +1256,8 @@ struct ArrayPrimitives {
     static void defaultConstruct(
                typename bsl::allocator_traits<ALLOCATOR>::pointer  begin,
                size_type                                           numElements,
-               ALLOCATOR                                           allocator);
+               ALLOCATOR                                           allocator)
+        BSLS_PRE_SAFE(begin || 0 == numElements);
 
     /// Construct each of the elements of an array of the specified
     /// `numElements` of the parameterized `TARGET_TYPE` starting at the
@@ -518,7 +1296,9 @@ struct ArrayPrimitives {
                  typename bsl::allocator_traits<ALLOCATOR>::pointer toBegin,
                  typename bsl::allocator_traits<ALLOCATOR>::pointer fromBegin,
                  typename bsl::allocator_traits<ALLOCATOR>::pointer fromEnd,
-                 ALLOCATOR                                          allocator);
+                 ALLOCATOR                                          allocator)
+        BSLS_PRE_SAFE(toBegin || fromBegin == fromEnd)
+        BSLS_PRE_SAFE(!ArrayPrimitives_Imp::isInvalidRange(fromBegin, fromEnd));
 
     /// Move the elements of the parameterized `TARGET_TYPE` in the array
     /// starting at the specified `fromBegin` address and ending immediately
@@ -849,7 +1629,9 @@ struct ArrayPrimitives {
                 typename bsl::allocator_traits<ALLOCATOR>::pointer  toBegin,
                 typename bsl::allocator_traits<ALLOCATOR>::pointer  toEnd,
                 ALLOCATOR                                           allocator,
-                ARGS&&...                                           arguments);
+                ARGS&&...                                           arguments)
+        BSLS_PRE_SAFE(!ArrayPrimitives_Imp::isInvalidRange(toBegin,
+                                                           toEnd));
 
     /// Insert a newly created object of the (template parameter) type
     /// `TARGET_TYPE`, constructed by forwarding the specified `allocator`
@@ -902,7 +1684,9 @@ struct ArrayPrimitives {
     erase(typename bsl::allocator_traits<ALLOCATOR>::pointer first,
           typename bsl::allocator_traits<ALLOCATOR>::pointer middle,
           typename bsl::allocator_traits<ALLOCATOR>::pointer last,
-          ALLOCATOR                                          allocator);
+          ALLOCATOR                                          allocator)
+        BSLS_PRE_SAFE(!ArrayPrimitives_Imp::isInvalidRange(first, middle))
+        BSLS_PRE_SAFE(!ArrayPrimitives_Imp::isInvalidRange(middle, last));
 
     /// Destroy the elements of the parameterized `TARGET_TYPE` in the array
     /// starting at the specified `first` address and ending immediately
@@ -935,7 +1719,8 @@ struct ArrayPrimitives {
            typename bsl::allocator_traits<ALLOCATOR>::pointer     toEnd,
            bslmf::MovableRef<
            typename bsl::allocator_traits<ALLOCATOR>::value_type> value,
-           ALLOCATOR                                              allocator);
+           ALLOCATOR                                              allocator)
+        BSLS_PRE_SAFE(!ArrayPrimitives_Imp::isInvalidRange(toBegin, toEnd));
 
     /// Insert the specified `value` into the array of the (template
     /// parameter) type `TARGET_TYPE` at the specified `toBegin` address,
@@ -970,7 +1755,8 @@ struct ArrayPrimitives {
       typename bsl::allocator_traits<ALLOCATOR>::pointer           toEnd,
       const typename bsl::allocator_traits<ALLOCATOR>::value_type& value,
       size_type                                                    numElements,
-      ALLOCATOR                                                    allocator);
+      ALLOCATOR                                                    allocator)
+        BSLS_PRE_SAFE(!ArrayPrimitives_Imp::isInvalidRange(toBegin, toEnd));                                                         
 
     /// Insert the specified `numElements` copies of the specified `value`
     /// into the array of (template parameter) `TARGET_TYPE` starting at the
@@ -1125,7 +1911,12 @@ struct ArrayPrimitives {
     template <class TARGET_TYPE>
     static void rotate(TARGET_TYPE *first,
                        TARGET_TYPE *middle,
-                       TARGET_TYPE *last);
+                       TARGET_TYPE *last)
+        BSLS_PRE_SAFE(!ArrayPrimitives_Imp::isInvalidRange(first,
+                                                           middle))
+        BSLS_PRE_SAFE(!ArrayPrimitives_Imp::isInvalidRange(middle,
+                                                           last));
+
 
     /// TBD: improve comment
     /// Construct copies of the specified `value` of type given by the
@@ -1142,7 +1933,8 @@ struct ArrayPrimitives {
       typename bsl::allocator_traits<ALLOCATOR>::pointer           begin,
       size_type                                                    numElements,
       const typename bsl::allocator_traits<ALLOCATOR>::value_type& value,
-      ALLOCATOR                                                    allocator);
+      ALLOCATOR                                                    allocator)
+        BSLS_PRE_SAFE(begin || 0 == numElements);
 
     /// Construct copies of the specified `value` of the parameterized type
     /// `TARGET_TYPE` into the uninitialized array containing the specified
@@ -1162,676 +1954,6 @@ struct ArrayPrimitives {
                                    size_type           numElements,
                                    const TARGET_TYPE&  value,
                                    bslma::Allocator   *allocator);
-};
-
-                     // ==========================
-                     // struct ArrayPrimitives_Imp
-                     // ==========================
-
-/// This `struct` provides a namespace for a suite of independent utility
-/// functions that operate on arrays of elements of a parameterized
-/// `TARGET_TYPE`.  These utility functions are only for the purpose of
-/// implementing those in the `ArrayPrimitives` utility.  For brevity, we do
-/// not repeat the main contracts here, but instead refer to the
-/// corresponding contract in the `ArrayPrimitives` utility.
-struct ArrayPrimitives_Imp {
-
-  private:
-    // PRIVATE METHODS
-
-    /// Copy-assign the specified `value` to the range starting at the
-    /// specified `srcStart` and ending immediately before the specified
-    /// `srcEnd`.  Note that the (template parameter) `TARGET_TYPE` must be
-    /// copy-assignable.  Also note that `value` should not be an element in
-    /// the range `[srcStart, srcEnd)`.
-    template <class TARGET_TYPE>
-    static void assign(TARGET_TYPE *srcStart,
-                       TARGET_TYPE *srcEnd,
-                       TARGET_TYPE& value);
-
-    /// Copy-assign the elements in reverse order from the range starting at
-    /// the specified `srcStart` and ending immediately before the specified
-    /// `srcEnd` to the range starting at the specified `dest` and ending
-    /// immediately before `dest + (srcEnd - srcStart)`.  The behavior is
-    /// undefined unless each element is both range `[srcStart, srcEnd)` and
-    /// range `[dest, dest + (srcEnd - srcStart))` is valid.  Note that the
-    /// (template parameter) `TARGET_TYPE` must be copy-assignable.  Also
-    /// note that this method is intended to support range assignment when
-    /// the two ranges may be overlapped, and `srcStart <= dest`.
-    template <class TARGET_TYPE>
-    static void reverseAssign(TARGET_TYPE *dest,
-                              TARGET_TYPE *srcStart,
-                              TARGET_TYPE *srcEnd);
-
-  public:
-    // TYPES
-    typedef ArrayPrimitives::size_type       size_type;
-    typedef ArrayPrimitives::difference_type difference_type;
-
-    enum {
-        // These constants are used in the overloads below, when the last
-        // argument is of type 'bslmf::integral_constant<int,N>', indicating
-        // that 'TARGET_TYPE' has the traits for which the enumerator equal to
-        // 'N' is named.
-
-        e_IS_ITERATOR_TO_FUNCTION_POINTER  = 6,
-        e_IS_POINTER_TO_POINTER            = 5,
-        e_IS_FUNDAMENTAL_OR_POINTER        = 4,
-        e_HAS_TRIVIAL_DEFAULT_CTOR_TRAITS  = 3,
-        e_BITWISE_COPYABLE_TRAITS          = 2,
-        e_BITWISE_MOVEABLE_TRAITS          = 1,
-        e_NIL_TRAITS                       = 0
-    };
-
-    enum {
-        // Number of bytes for which a stack-allocated buffer can be
-        // comfortably obtained to optimize bitwise moves.
-
-        k_INPLACE_BUFFER_SIZE = 16 * bsls::AlignmentUtil::BSLS_MAX_ALIGNMENT
-    };
-
-    // CLASS METHODS
-
-    /// Fill the specified `numBytes` in the array starting at the specified
-    /// `begin` address, as if by bit-wise copying the specified
-    /// `numBytesInitialized` at every offset that is a multiple of
-    /// `numBytesInitialized` within the output array.  The behavior is
-    /// undefined unless `numBytesInitialized <= numBytes`.  Note that
-    /// `numBytes` usually is, but does not have to be, a multiple of
-    /// `numBytesInitialized`.
-    static void bitwiseFillN(char      *begin,
-                             size_type  numBytesInitialized,
-                             size_type  numBytes);
-
-    /// Copy the specified `value` of the parameterized `TARGET_TYPE` into
-    /// every of the specified `numElements` in the array starting at the
-    /// specified `begin` address.  Pass the specified `allocator` to the
-    /// copy constructor if appropriate.  Note that if `TARGET_TYPE` is
-    /// bit-wise copyable or is not based on `bslma::Allocator`, `allocator`
-    /// is ignored.  The last argument is for removing overload ambiguities
-    /// and is not used.
-    static void uninitializedFillN(
-                bool      *begin,
-                bool       value,
-                size_type  numElements,
-                void      * = 0,
-                bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER> =
-                   bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>());
-    static void uninitializedFillN(
-                char                                        *begin,
-                char                                         value,
-                size_type                                    numElements,
-                void                                        * = 0,
-                bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER> =
-                   bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>());
-    static void uninitializedFillN(
-                unsigned char                               *begin,
-                unsigned char                                value,
-                size_type                                    numElements,
-                void                                        * = 0,
-                bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER> =
-                   bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>());
-    static void uninitializedFillN(
-                signed char                                 *begin,
-                signed char                                  value,
-                size_type                                    numElements,
-                void                                        * = 0,
-                bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER> =
-                   bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>());
-    static void uninitializedFillN(
-                wchar_t                                     *begin,
-                wchar_t                                      value,
-                size_type                                    numElements,
-                void                                        * = 0,
-                bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER> =
-                   bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>());
-    static void uninitializedFillN(
-                short                                       *begin,
-                short                                        value,
-                size_type                                    numElements,
-                void                                        * = 0,
-                bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER> =
-                   bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>());
-    static void uninitializedFillN(
-                unsigned short                              *begin,
-                unsigned short                               value,
-                size_type                                    numElements,
-                void                                        * = 0,
-                bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER> =
-                  bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>());
-    static void uninitializedFillN(
-                int                                         *begin,
-                int                                          value,
-                size_type                                    numElements,
-                void                                        * = 0,
-                bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER> =
-                  bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>());
-    static void uninitializedFillN(
-                unsigned int                                *begin,
-                unsigned int                                 value,
-                size_type                                    numElements,
-                void                                        * = 0,
-                bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER> =
-                   bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>());
-    static void uninitializedFillN(
-                long                                        *begin,
-                long                                         value,
-                size_type                                    numElements,
-                void                                        * = 0,
-                bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER> =
-                   bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>());
-    static void uninitializedFillN(
-                unsigned long                               *begin,
-                unsigned long                                value,
-                size_type                                    numElements,
-                void                                        * = 0,
-                bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER> =
-                   bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>());
-    static void uninitializedFillN(
-                bsls::Types::Int64                          *begin,
-                bsls::Types::Int64                           value,
-                size_type                                    numElements,
-                void                                        * = 0,
-                bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER> =
-                   bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>());
-    static void uninitializedFillN(
-                bsls::Types::Uint64                         *begin,
-                bsls::Types::Uint64                          value,
-                size_type                                    numElements,
-                void                                        * = 0,
-                bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER> =
-                   bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>());
-    static void uninitializedFillN(
-                float                                       *begin,
-                float                                        value,
-                size_type                                    numElements,
-                void                                        * = 0,
-                bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER> =
-                   bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>());
-    static void uninitializedFillN(
-                double                                      *begin,
-                double                                       value,
-                size_type                                    numElements,
-                void                                        * = 0,
-                bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER> =
-                   bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>());
-    static void uninitializedFillN(
-                long double                                 *begin,
-                long double                                  value,
-                size_type                                    numElements,
-                void                                        * = 0,
-                bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER> =
-                   bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>());
-    static void uninitializedFillN(
-                void                                        **begin,
-                void                                         *value,
-                size_type                                     numElements,
-                void                                         * = 0,
-                bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER> =
-                   bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>());
-    static void uninitializedFillN(
-                const void                                  **begin,
-                const void                                   *value,
-                size_type                                     numElements,
-                void                                         * = 0,
-                bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER> =
-                   bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>());
-    static void uninitializedFillN(
-                volatile void                               **begin,
-                volatile void                                *value,
-                size_type                                     numElements,
-                void                                         * = 0,
-                bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER> =
-                   bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>());
-    static void uninitializedFillN(
-                const volatile void                         **begin,
-                const volatile void                          *value,
-                size_type                                     numElements,
-                void                                         * = 0,
-                bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER> =
-                   bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>());
-    template <class TARGET_TYPE>
-    static void uninitializedFillN(
-                TARGET_TYPE                                 **begin,
-                TARGET_TYPE                                  *value,
-                size_type                                     numElements,
-                void                                         * = 0,
-                bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER> =
-                   bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>());
-    template <class TARGET_TYPE>
-    static void uninitializedFillN(
-                const TARGET_TYPE                           **begin,
-                const TARGET_TYPE                            *value,
-                size_type                                     numElements,
-                void                                         * = 0,
-                bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER> =
-                   bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>());
-    template <class TARGET_TYPE>
-    static void uninitializedFillN(
-                volatile  TARGET_TYPE                       **begin,
-                volatile TARGET_TYPE                         *value,
-                size_type                                     numElements,
-                void                                         * = 0,
-                bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER> =
-                   bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>());
-    template <class TARGET_TYPE>
-    static void uninitializedFillN(
-                const volatile TARGET_TYPE                  **begin,
-                const volatile TARGET_TYPE                   *value,
-                size_type                                     numElements,
-                void                                         * = 0,
-                bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER> =
-                   bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>());
-    template <class TARGET_TYPE, class ALLOCATOR>
-    static void uninitializedFillN(
-                TARGET_TYPE                                  *begin,
-                const TARGET_TYPE&                            value,
-                size_type                                     numElements,
-                ALLOCATOR                                    *allocator,
-                bsl::integral_constant<int, e_BITWISE_COPYABLE_TRAITS>);
-    template <class TARGET_TYPE, class ALLOCATOR>
-    static void uninitializedFillN(
-                TARGET_TYPE                                  *begin,
-                const TARGET_TYPE&                            value,
-                size_type                                     numElements,
-                ALLOCATOR                                    *allocator,
-                bsl::integral_constant<int, e_NIL_TRAITS>);
-
-    /// These functions follow the `copyConstruct` contract.  If the
-    /// (template parameter) `ALLOCATOR` type is based on `bslma::Allocator`
-    /// and the `TARGET_TYPE` constructors take an allocator argument, then
-    /// pass the specified `allocator` to the copy constructor.  The
-    /// behavior is undefined unless the output array has length at least
-    /// the distance from the specified `fromBegin` to the specified
-    /// `fromEnd`.  Note that if `FWD_ITER` is the `TARGET_TYPE *` pointer
-    /// type and `TARGET_TYPE` is bit-wise copyable, then this operation is
-    /// simply `memcpy`.  The last argument is for removing overload
-    /// ambiguities and is not used.
-    template <class TARGET_TYPE, class FWD_ITER, class ALLOCATOR>
-    static void copyConstruct(
-             TARGET_TYPE                                          *toBegin,
-             FWD_ITER                                              fromBegin,
-             FWD_ITER                                              fromEnd,
-             ALLOCATOR                                             allocator,
-             bsl::integral_constant<int, e_IS_POINTER_TO_POINTER>);
-    template <class TARGET_TYPE, class ALLOCATOR>
-    static void copyConstruct(
-             TARGET_TYPE                                           *toBegin,
-             const TARGET_TYPE                                     *fromBegin,
-             const TARGET_TYPE                                     *fromEnd,
-             ALLOCATOR                                              allocator,
-             bsl::integral_constant<int, e_BITWISE_COPYABLE_TRAITS>);
-    template <class TARGET_TYPE, class FWD_ITER, class ALLOCATOR>
-    static void copyConstruct(
-             TARGET_TYPE                                           *toBegin,
-             FWD_ITER                                               fromBegin,
-             FWD_ITER                                               fromEnd,
-             ALLOCATOR                                              allocator,
-             bsl::integral_constant<int, e_IS_ITERATOR_TO_FUNCTION_POINTER>);
-    template <class FWD_ITER, class ALLOCATOR>
-    static void copyConstruct(
-             void                                                 **toBegin,
-             FWD_ITER                                               fromBegin,
-             FWD_ITER                                               fromEnd,
-             ALLOCATOR                                              allocator,
-             bsl::integral_constant<int, e_IS_ITERATOR_TO_FUNCTION_POINTER>);
-    template <class TARGET_TYPE, class FWD_ITER, class ALLOCATOR>
-    static void copyConstruct(
-             TARGET_TYPE                                           *toBegin,
-             FWD_ITER                                               fromBegin,
-             FWD_ITER                                               fromEnd,
-             ALLOCATOR                                              allocator,
-             bsl::integral_constant<int, e_NIL_TRAITS>);
-
-    /// TBD: improve comment
-    /// Move-insert into an uninitialized array beginning at the specified
-    /// `toBegin` pointer, elements of type given by the `allocator_traits`
-    /// class template for (template parameter) `ALLOCATOR` from elements
-    /// starting at the specified `fromBegin` pointer and ending immediately
-    /// before the specified `fromEnd` pointer.  The elements in the range
-    /// `[fromBegin...fromEnd)` are left in a valid but unspecified state.
-    /// If a constructor throws an exception during the operation, then the
-    /// destructor is called on any newly-constructed elements, leaving the
-    /// output array in an uninitialized state.  The behavior is undefined
-    /// unless `toBegin` refers to space sufficient to hold
-    /// `fromEnd - fromBegin` elements.
-    template <class TARGET_TYPE, class ALLOCATOR>
-    static void moveConstruct(
-             TARGET_TYPE                                            *toBegin,
-             TARGET_TYPE                                            *fromBegin,
-             TARGET_TYPE                                            *fromEnd,
-             ALLOCATOR                                               allocator,
-             bsl::integral_constant<int, e_BITWISE_COPYABLE_TRAITS>);
-    template <class TARGET_TYPE, class ALLOCATOR>
-    static void moveConstruct(
-             TARGET_TYPE                                            *toBegin,
-             TARGET_TYPE                                            *fromBegin,
-             TARGET_TYPE                                            *fromEnd,
-             ALLOCATOR                                               allocator,
-             bsl::integral_constant<int, e_NIL_TRAITS>);
-
-    /// TBD: improve comment
-    /// Either move- or copy-insert into an uninitialized array beginning at
-    /// the specified `toBegin` pointer, elements of type given by the
-    /// `allocator_traits` class template for (template parameter)
-    /// `ALLOCATOR` from elements starting at the specified `fromBegin`
-    /// pointer and ending immediately before the specified `fromEnd`
-    /// pointer.  The elements in the range `[fromBegin...fromEnd)` are left
-    /// in a valid but unspecified state.  Use the move constructor if it is
-    /// guaranteed to not throw or if the target type does not define a copy
-    /// constructor; otherwise use the copy constructor.  If a constructor
-    /// throws an exception during the operation, then the destructor is
-    /// called on any newly-constructed elements, leaving the output array
-    /// in an uninitialized state.  The behavior is undefined unless
-    /// `toBegin` refers to space sufficient to hold `fromEnd - fromBegin`
-    /// elements.
-    template <class TARGET_TYPE, class ALLOCATOR>
-    static void moveIfNoexcept(
-                          TARGET_TYPE                               *toBegin,
-                          TARGET_TYPE                               *fromBegin,
-                          TARGET_TYPE                               *fromEnd,
-                          ALLOCATOR                                  allocator,
-                          bsl::integral_constant<int, e_NIL_TRAITS>);
-
-    /// Use the default constructor of the (template parameter)
-    /// `TARGET_TYPE` (or `memset` to 0 if `TARGET_TYPE` has a trivial
-    /// default constructor) on each element of the array starting at the
-    /// specified `begin` address and ending immediately before the `end`
-    /// address.  Pass the specified `allocator` to the default constructor
-    /// if appropriate.  The last argument is for traits overloading
-    /// resolution only and its value is ignored.
-    template <class TARGET_TYPE, class ALLOCATOR>
-    static void defaultConstruct(
-           TARGET_TYPE                                            *begin,
-           size_type                                               numElements,
-           ALLOCATOR                                               allocator,
-           bsl::integral_constant<int, e_HAS_TRIVIAL_DEFAULT_CTOR_TRAITS>);
-    template <class TARGET_TYPE, class ALLOCATOR>
-    static void defaultConstruct(
-           TARGET_TYPE                                            *begin,
-           size_type                                               numElements,
-           ALLOCATOR                                               allocator,
-           bsl::integral_constant<int, e_BITWISE_COPYABLE_TRAITS>);
-    template <class TARGET_TYPE, class ALLOCATOR>
-    static void defaultConstruct(
-           TARGET_TYPE                                            *begin,
-           size_type                                               numElements,
-           ALLOCATOR                                               allocator,
-           bsl::integral_constant<int, e_NIL_TRAITS>);
-
-    /// These functions follow the `destructiveMove` contract.  Note that
-    /// both arrays cannot overlap (one contains only initialized elements
-    /// and the other only uninitialized elements), and that if
-    /// `TARGET_TYPE` is bit-wise moveable, then this operation is simply
-    /// `memcpy`.  The last argument is for removing overload ambiguities
-    /// and is not used.
-    template <class TARGET_TYPE, class ALLOCATOR>
-    static void destructiveMove(
-             TARGET_TYPE                                            *toBegin,
-             TARGET_TYPE                                            *fromBegin,
-             TARGET_TYPE                                            *fromEnd,
-             ALLOCATOR                                               allocator,
-             bsl::integral_constant<int, e_BITWISE_MOVEABLE_TRAITS>);
-    template <class TARGET_TYPE, class ALLOCATOR>
-    static void destructiveMove(
-             TARGET_TYPE                                            *toBegin,
-             TARGET_TYPE                                            *fromBegin,
-             TARGET_TYPE                                            *fromEnd,
-             ALLOCATOR                                               allocator,
-             bsl::integral_constant<int, e_NIL_TRAITS>);
-
-#if !BSLS_COMPILERFEATURES_SIMULATE_CPP11_FEATURES
-    /// TBD: document this
-    template <class TARGET_TYPE, class ALLOCATOR, class... ARGS>
-    static void emplace(
-             TARGET_TYPE                                            *toBegin,
-             TARGET_TYPE                                            *toEnd,
-             ALLOCATOR                                               allocator,
-             bsl::integral_constant<int, e_BITWISE_COPYABLE_TRAITS>,
-             ARGS&&...                                               args);
-    template <class TARGET_TYPE, class ALLOCATOR, class... ARGS>
-    static void emplace(
-             TARGET_TYPE                                            *toBegin,
-             TARGET_TYPE                                            *toEnd,
-             ALLOCATOR                                               allocator,
-             bsl::integral_constant<int, e_BITWISE_MOVEABLE_TRAITS>,
-             ARGS&&...                                               args);
-    template <class TARGET_TYPE, class ALLOCATOR, class... ARGS>
-    static void emplace(
-             TARGET_TYPE                                            *toBegin,
-             TARGET_TYPE                                            *toEnd,
-             ALLOCATOR                                               allocator,
-             bsl::integral_constant<int, e_NIL_TRAITS>,
-             ARGS&&...                                               args);
-#endif
-
-    /// These functions follow the `erase` contract.  Note that if (template
-    /// parameter) `TARGET_TYPE` is bit-wise moveable, then this operation
-    /// can be implemented by first bit-wise moving the elements in
-    /// `[middle, last)` towards first, and destroying
-    /// `[ last - (middle - first), last)`; note that this cannot throw
-    /// exceptions.
-    template <class TARGET_TYPE, class ALLOCATOR>
-    static void erase(
-             TARGET_TYPE                                            *first,
-             TARGET_TYPE                                            *middle,
-             TARGET_TYPE                                            *last,
-             ALLOCATOR                                               allocator,
-             bsl::integral_constant<int, e_BITWISE_MOVEABLE_TRAITS>);
-    template <class TARGET_TYPE, class ALLOCATOR>
-    static void erase(
-             TARGET_TYPE                                            *first,
-             TARGET_TYPE                                            *middle,
-             TARGET_TYPE                                            *last,
-             ALLOCATOR                                               allocator,
-             bsl::integral_constant<int, e_NIL_TRAITS>);
-
-    /// These functions follow the `insert` contract.  Note that if
-    /// `TARGET_TYPE` is bit-wise copyable, then this operation is simply
-    /// `memmove` followed by `bitwiseFillN`.  If `TARGET_TYPE` is bit-wise
-    /// moveable, then this operation can still be optimized using `memmove`
-    /// followed by repeated assignments, but a guard needs to be set up.
-    /// The last argument is for removing overload ambiguities and is not
-    /// used.
-    template <class TARGET_TYPE, class ALLOCATOR>
-    static void insert(
-           TARGET_TYPE                                            *toBegin,
-           TARGET_TYPE                                            *toEnd,
-           const TARGET_TYPE&                                      value,
-           size_type                                               numElements,
-           ALLOCATOR                                               allocator,
-           bsl::integral_constant<int, e_BITWISE_COPYABLE_TRAITS>);
-    template <class TARGET_TYPE, class ALLOCATOR>
-    static void insert(
-           TARGET_TYPE                                            *toBegin,
-           TARGET_TYPE                                            *toEnd,
-           const TARGET_TYPE&                                      value,
-           size_type                                               numElements,
-           ALLOCATOR                                               allocator,
-           bsl::integral_constant<int, e_BITWISE_MOVEABLE_TRAITS>);
-    template <class TARGET_TYPE, class ALLOCATOR>
-    static void insert(
-           TARGET_TYPE                                            *toBegin,
-           TARGET_TYPE                                            *toEnd,
-           const TARGET_TYPE&                                      value,
-           size_type                                               numElements,
-           ALLOCATOR                                               allocator,
-           bsl::integral_constant<int, e_NIL_TRAITS>);
-
-    /// These functions follow the `insert` contract.  Note that if
-    /// `TARGET_TYPE` is bit-wise copyable and `FWD_ITER` is convertible to
-    /// `const TARGET_TYPE *`, then this operation is simply `memmove`
-    /// followed by `memcpy`.  If `TARGET_TYPE` is bit-wise moveable and
-    /// `FWD_ITER` is convertible to `const TARGET_TYPE *`, then this
-    /// operation can still be optimized using `memmove` followed by
-    /// repeated copies.  The last argument is for removing overload
-    /// ambiguities and is not used.
-    template <class TARGET_TYPE, class FWD_ITER, class ALLOCATOR>
-    static void insert(
-           TARGET_TYPE                                            *toBegin,
-           TARGET_TYPE                                            *toEnd,
-           FWD_ITER                                                fromBegin,
-           FWD_ITER                                                fromEnd,
-           size_type                                               numElements,
-           ALLOCATOR                                               allocator,
-           bsl::integral_constant<int, e_IS_POINTER_TO_POINTER>);
-    template <class TARGET_TYPE, class ALLOCATOR>
-    static void insert(
-           TARGET_TYPE                                            *toBegin,
-           TARGET_TYPE                                            *toEnd,
-           const TARGET_TYPE                                      *fromBegin,
-           const TARGET_TYPE                                      *fromEnd,
-           size_type                                               numElements,
-           ALLOCATOR                                               allocator,
-           bsl::integral_constant<int, e_BITWISE_COPYABLE_TRAITS>);
-    template <class TARGET_TYPE, class FWD_ITER, class ALLOCATOR>
-    static void insert(
-           TARGET_TYPE                                            *toBegin,
-           TARGET_TYPE                                            *toEnd,
-           FWD_ITER                                                fromBegin,
-           FWD_ITER                                                fromEnd,
-           size_type                                               numElements,
-           ALLOCATOR                                               allocator,
-           bsl::integral_constant<int, e_BITWISE_MOVEABLE_TRAITS>);
-    template <class FWD_ITER, class ALLOCATOR>
-    static void insert(
-           void                                                  **toBegin,
-           void                                                  **toEnd,
-           FWD_ITER                                                fromBegin,
-           FWD_ITER                                                fromEnd,
-           size_type                                               numElements,
-           ALLOCATOR                                               allocator,
-           bsl::integral_constant<int, e_IS_ITERATOR_TO_FUNCTION_POINTER>);
-    template <class TARGET_TYPE, class FWD_ITER, class ALLOCATOR>
-    static void insert(
-           TARGET_TYPE                                            *toBegin,
-           TARGET_TYPE                                            *toEnd,
-           FWD_ITER                                                fromBegin,
-           FWD_ITER                                                fromEnd,
-           size_type                                               numElements,
-           ALLOCATOR                                               allocator,
-           bsl::integral_constant<int, e_NIL_TRAITS>);
-
-    /// These functions follow the `moveInsert` contract.  Note that if
-    /// `TARGET_TYPE` is at least bit-wise moveable, then this operation is
-    /// simply `memmove` followed by `memcpy`.
-    template <class TARGET_TYPE, class ALLOCATOR>
-    static void moveInsert(
-          TARGET_TYPE                                             *toBegin,
-          TARGET_TYPE                                             *toEnd,
-          TARGET_TYPE                                            **lastPtr,
-          TARGET_TYPE                                             *first,
-          TARGET_TYPE                                             *last,
-          size_type                                                numElements,
-          ALLOCATOR                                                allocator,
-          bsl::integral_constant<int, e_BITWISE_MOVEABLE_TRAITS>);
-    template <class TARGET_TYPE, class ALLOCATOR>
-    static void moveInsert(
-          TARGET_TYPE                                             *toBegin,
-          TARGET_TYPE                                             *toEnd,
-          TARGET_TYPE                                            **lastPtr,
-          TARGET_TYPE                                             *first,
-          TARGET_TYPE                                             *last,
-          size_type                                                numElements,
-          ALLOCATOR                                                allocator,
-          bsl::integral_constant<int, e_NIL_TRAITS>);
-
-    /// These functions follow the `rotate` contract, but the first overload
-    /// is optimized when the parameterized `TARGET_TYPE` is bit-wise
-    /// moveable.  The last argument is for removing overload ambiguities
-    /// and is not used.  Note that if `TARGET_TYPE` is bit-wise moveable,
-    /// the `rotate(char*, char*, char*)` can be used, enabling to take the
-    /// whole implementation out-of-line.
-    template <class TARGET_TYPE>
-    static void rotate(
-                TARGET_TYPE                                            *begin,
-                TARGET_TYPE                                            *middle,
-                TARGET_TYPE                                            *end,
-                bsl::integral_constant<int, e_BITWISE_MOVEABLE_TRAITS>);
-    template <class TARGET_TYPE>
-    static void rotate(
-                TARGET_TYPE                                            *begin,
-                TARGET_TYPE                                            *middle,
-                TARGET_TYPE                                            *end,
-                bsl::integral_constant<int, e_NIL_TRAITS>);
-
-    /// Shift the specified `[begin, end)` sequence one position right, then
-    /// insert the specified `value` at the position pointed by `begin`.
-    /// The specified `allocator` is used for the element construction.  The
-    /// behavior is undefined unless the specified `[begin, end)` sequence
-    /// contains at least one element.
-    template <class ALLOCATOR>
-    static void shiftAndInsert(
-          typename bsl::allocator_traits<ALLOCATOR>::pointer         begin,
-          typename bsl::allocator_traits<ALLOCATOR>::pointer         end,
-          bslmf::MovableRef<
-              typename bsl::allocator_traits<ALLOCATOR>::value_type> value,
-          ALLOCATOR                                                  allocator,
-          bsl::integral_constant<int, e_BITWISE_COPYABLE_TRAITS>);
-    template <class ALLOCATOR>
-    static void shiftAndInsert(
-          typename bsl::allocator_traits<ALLOCATOR>::pointer         begin,
-          typename bsl::allocator_traits<ALLOCATOR>::pointer         end,
-          bslmf::MovableRef<
-              typename bsl::allocator_traits<ALLOCATOR>::value_type> value,
-          ALLOCATOR                                                  allocator,
-          bsl::integral_constant<int, e_BITWISE_MOVEABLE_TRAITS>);
-    template <class ALLOCATOR>
-    static void shiftAndInsert(
-          typename bsl::allocator_traits<ALLOCATOR>::pointer         begin,
-          typename bsl::allocator_traits<ALLOCATOR>::pointer         end,
-          bslmf::MovableRef<
-              typename bsl::allocator_traits<ALLOCATOR>::value_type> value,
-          ALLOCATOR                                                  allocator,
-          bsl::integral_constant<int, e_NIL_TRAITS>);
-
-    // 'bitwise' METHODS
-
-    /// This function follows the `rotate` contract, but by using bit-wise
-    /// moves on the underlying `char` array.
-    static void bitwiseRotate(char *begin, char *middle, char *end);
-
-    /// Move the characters in the array starting at the specified `first`
-    /// address and ending immediately before the specified `middle` address
-    /// to the array of the same length ending at the specified `last`
-    /// address (and thus starting at the `last - (middle - first)`
-    /// address), and move the elements previously in the array starting at
-    /// `middle` and ending at `last` down to the `first` address.  The
-    /// behavior is undefined unless
-    /// `middle - begin <= k_INPLACE_BUFFER_SIZE`.
-    static void bitwiseRotateBackward(char *begin, char *middle, char *end);
-
-    /// Move the characters in the array starting at the specified `first`
-    /// address and ending immediately before the specified `middle` address
-    /// to the array of the same length ending at the specified `last`
-    /// address (and thus starting at the `last - (middle - first)`
-    /// address), and move the elements previously in the array starting at
-    /// `middle` and ending at `last` down to the `first` address.  The
-    /// behavior is undefined unless
-    /// `end - middle <= k_INPLACE_BUFFER_SIZE`.
-    static void bitwiseRotateForward(char *begin, char *middle, char *end);
-
-    /// Swap the characters in the array starting at the specified `first`
-    /// address and ending immediately before the specified `middle` address
-    /// with the array of the same length starting at the `middle` address
-    /// and ending at the specified `last` address.  The behavior is
-    /// undefined unless `middle - begin == end - middle`.
-    static void bitwiseSwapRanges(char *begin, char *middle, char *end);
-
-    /// Return `true` if the specified `begin` and the specified `end`
-    /// provably do not form a valid semi-open range, `[begin, end)`, and
-    /// `false` otherwise.  Note that `begin == null == end` produces a
-    /// valid range, and any other use of the null pointer value will return
-    /// `true`.  Also note that this function is intended to support
-    /// testing, primarily through assertions, so will return `false` unless
-    /// it can *prove* that the passed range is invalid.  Currently, this
-    /// function can prove invalid ranges only for pointers, although should
-    /// also encompass generic random access iterators in a future update,
-    /// where iterator tag types are levelized below `bslalg`.
-    template <class FORWARD_ITERATOR>
-    static bool isInvalidRange(FORWARD_ITERATOR begin, FORWARD_ITERATOR end);
-    template <class TARGET_TYPE>
-    static bool isInvalidRange(TARGET_TYPE *begin, TARGET_TYPE *end);
 };
 
 // ============================================================================
@@ -1870,7 +1992,7 @@ void ArrayPrimitives::uninitializedFillN(
       const typename bsl::allocator_traits<ALLOCATOR>::value_type& value,
       ALLOCATOR                                                    allocator)
 {
-    BSLS_ASSERT_SAFE(begin || 0 == numElements);
+    BSLS_PRE_BODY_SAFE(begin || 0 == numElements);
     BSLMF_ASSERT((bsl::is_same<size_type, std::size_t>::value));
 
     typedef typename bsl::allocator_traits<ALLOCATOR>::value_type TargetType;
@@ -1924,7 +2046,7 @@ void ArrayPrimitives::copyConstruct(
                   FWD_ITER                                           fromEnd,
                   ALLOCATOR                                          allocator)
 {
-    BSLS_ASSERT_SAFE(toBegin || fromBegin == fromEnd);
+    BSLS_PRE_BODY_SAFE(toBegin || fromBegin == fromEnd);
 
     BSLMF_ASSERT(!bsl::is_pointer<FWD_ITER>::value);
     typedef typename bsl::allocator_traits<ALLOCATOR>::value_type TargetType;
@@ -1987,7 +2109,7 @@ void ArrayPrimitives::copyConstruct(
                  SOURCE_TYPE                                        *fromEnd,
                  ALLOCATOR                                           allocator)
 {
-    BSLS_ASSERT_SAFE(toBegin || fromBegin == fromEnd);
+    BSLS_PRE_BODY_SAFE(toBegin || fromBegin == fromEnd);
 
     typedef typename bsl::allocator_traits<ALLOCATOR>::value_type TargetType;
 
@@ -2029,7 +2151,7 @@ void ArrayPrimitives::defaultConstruct(
                 ALLOCATOR                                          allocator)
 {
     BSLMF_ASSERT((bsl::is_same<size_type, std::size_t>::value));
-    BSLS_ASSERT_SAFE(begin || 0 == numElements);
+    BSLS_PRE_BODY_SAFE(begin || 0 == numElements);
 
     typedef typename bsl::allocator_traits<ALLOCATOR>::value_type TargetType;
 
@@ -2072,8 +2194,8 @@ void ArrayPrimitives::destructiveMove(
                   typename bsl::allocator_traits<ALLOCATOR>::pointer fromEnd,
                   ALLOCATOR                                          allocator)
 {
-    BSLS_ASSERT_SAFE(toBegin || fromBegin == fromEnd);
-    BSLS_ASSERT_SAFE(!ArrayPrimitives_Imp::isInvalidRange(fromBegin, fromEnd));
+    BSLS_PRE_BODY_SAFE(toBegin || fromBegin == fromEnd);
+    BSLS_PRE_BODY_SAFE(!ArrayPrimitives_Imp::isInvalidRange(fromBegin, fromEnd));
 
     typedef typename bsl::allocator_traits<ALLOCATOR>::value_type TargetType;
 
@@ -2556,7 +2678,7 @@ void ArrayPrimitives::emplace(
                  ALLOCATOR                                           allocator,
                  ARGS&&...                                           args)
 {
-    BSLS_ASSERT_SAFE(!ArrayPrimitives_Imp::isInvalidRange(toBegin,
+    BSLS_PRE_BODY_SAFE(!ArrayPrimitives_Imp::isInvalidRange(toBegin,
                                                           toEnd));
     BSLMF_ASSERT((bsl::is_same<size_type, std::size_t>::value));
 
@@ -2602,8 +2724,8 @@ void ArrayPrimitives::erase(
                   typename bsl::allocator_traits<ALLOCATOR>::pointer last,
                   ALLOCATOR                                          allocator)
 {
-    BSLS_ASSERT_SAFE(!ArrayPrimitives_Imp::isInvalidRange(first, middle));
-    BSLS_ASSERT_SAFE(!ArrayPrimitives_Imp::isInvalidRange(middle, last));
+    BSLS_PRE_BODY_SAFE(!ArrayPrimitives_Imp::isInvalidRange(first, middle));
+    BSLS_PRE_BODY_SAFE(!ArrayPrimitives_Imp::isInvalidRange(middle, last));
 
     typedef typename bsl::allocator_traits<ALLOCATOR>::value_type TargetType;
 
@@ -2647,7 +2769,7 @@ void ArrayPrimitives::insert(
               ALLOCATOR                                              allocator)
 {
     BSLMF_ASSERT((bsl::is_same<size_type, std::size_t>::value));
-    BSLS_ASSERT_SAFE(!ArrayPrimitives_Imp::isInvalidRange(toBegin, toEnd));
+    BSLS_PRE_BODY_SAFE(!ArrayPrimitives_Imp::isInvalidRange(toBegin, toEnd));
 
     typedef typename bsl::allocator_traits<ALLOCATOR>::value_type TargetType;
 
@@ -2699,7 +2821,7 @@ void ArrayPrimitives::insert(
       ALLOCATOR                                                    allocator)
 {
     BSLMF_ASSERT((bsl::is_same<size_type, std::size_t>::value));
-    BSLS_ASSERT_SAFE(!ArrayPrimitives_Imp::isInvalidRange(toBegin, toEnd));
+    BSLS_PRE_BODY_SAFE(!ArrayPrimitives_Imp::isInvalidRange(toBegin, toEnd));
 
     typedef typename bsl::allocator_traits<ALLOCATOR>::value_type TargetType;
 
@@ -2869,7 +2991,7 @@ void ArrayPrimitives::moveConstruct(
                   typename bsl::allocator_traits<ALLOCATOR>::pointer fromEnd,
                   ALLOCATOR                                          allocator)
 {
-    BSLS_ASSERT_SAFE(toBegin || fromBegin == fromEnd);
+    BSLS_PRE_BODY_SAFE(toBegin || fromBegin == fromEnd);
 
     typedef typename bsl::allocator_traits<ALLOCATOR>::value_type TargetType;
 
@@ -2952,9 +3074,9 @@ void ArrayPrimitives::rotate(TARGET_TYPE *first,
                              TARGET_TYPE *middle,
                              TARGET_TYPE *last)
 {
-    BSLS_ASSERT_SAFE(!ArrayPrimitives_Imp::isInvalidRange(first,
+    BSLS_PRE_BODY_SAFE(!ArrayPrimitives_Imp::isInvalidRange(first,
                                                           middle));
-    BSLS_ASSERT_SAFE(!ArrayPrimitives_Imp::isInvalidRange(middle,
+    BSLS_PRE_BODY_SAFE(!ArrayPrimitives_Imp::isInvalidRange(middle,
                                                           last));
 
     enum {
@@ -3030,7 +3152,7 @@ void ArrayPrimitives_Imp::uninitializedFillN(
          void                                                     *,
          bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>)
 {
-    BSLS_ASSERT_SAFE(begin || 0 == numElements);
+    BSLS_PRE_BODY_SAFE(begin || 0 == numElements);
     BSLMF_ASSERT((bsl::is_same<size_type, std::size_t>::value));
     BSLMF_ASSERT(sizeof(bool) == 1);
 
@@ -3049,7 +3171,7 @@ void ArrayPrimitives_Imp::uninitializedFillN(
          void                                                     *,
          bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>)
 {
-    BSLS_ASSERT_SAFE(begin || 0 == numElements);
+    BSLS_PRE_BODY_SAFE(begin || 0 == numElements);
     BSLMF_ASSERT((bsl::is_same<size_type, std::size_t>::value));
 
     if (BSLS_PERFORMANCEHINT_PREDICT_LIKELY(numElements != 0)) {
@@ -3065,7 +3187,7 @@ void ArrayPrimitives_Imp::uninitializedFillN(
          void                                                     *,
          bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>)
 {
-    BSLS_ASSERT_SAFE(begin || 0 == numElements);
+    BSLS_PRE_BODY_SAFE(begin || 0 == numElements);
     BSLMF_ASSERT((bsl::is_same<size_type, std::size_t>::value));
 
     if (BSLS_PERFORMANCEHINT_PREDICT_LIKELY(numElements != 0)) {
@@ -3081,7 +3203,7 @@ void ArrayPrimitives_Imp::uninitializedFillN(
          void                                                     *,
          bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>)
 {
-    BSLS_ASSERT_SAFE(begin || 0 == numElements);
+    BSLS_PRE_BODY_SAFE(begin || 0 == numElements);
     BSLMF_ASSERT((bsl::is_same<size_type, std::size_t>::value));
 
     if (BSLS_PERFORMANCEHINT_PREDICT_LIKELY(numElements != 0)) {
@@ -3097,7 +3219,7 @@ void ArrayPrimitives_Imp::uninitializedFillN(
          void                                                     *,
          bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>)
 {
-    BSLS_ASSERT_SAFE(begin || 0 == numElements);
+    BSLS_PRE_BODY_SAFE(begin || 0 == numElements);
     BSLMF_ASSERT((bsl::is_same<size_type, std::size_t>::value));
 
     if (BSLS_PERFORMANCEHINT_PREDICT_LIKELY(numElements != 0)) {
@@ -3113,7 +3235,7 @@ void ArrayPrimitives_Imp::uninitializedFillN(
          void                                                     *,
          bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>)
 {
-    BSLS_ASSERT_SAFE(begin || 0 == numElements);
+    BSLS_PRE_BODY_SAFE(begin || 0 == numElements);
     BSLMF_ASSERT((bsl::is_same<size_type, std::size_t>::value));
 
     uninitializedFillN(
@@ -3132,7 +3254,7 @@ void ArrayPrimitives_Imp::uninitializedFillN(
          void                                                     *,
          bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>)
 {
-    BSLS_ASSERT_SAFE(begin || 0 == numElements);
+    BSLS_PRE_BODY_SAFE(begin || 0 == numElements);
     BSLMF_ASSERT((bsl::is_same<size_type, std::size_t>::value));
 
     uninitializedFillN(
@@ -3151,7 +3273,7 @@ void ArrayPrimitives_Imp::uninitializedFillN(
          void                                                     *,
          bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>)
 {
-    BSLS_ASSERT_SAFE(begin || 0 == numElements);
+    BSLS_PRE_BODY_SAFE(begin || 0 == numElements);
     BSLMF_ASSERT((bsl::is_same<size_type, std::size_t>::value));
 
 #if defined(BSLS_PLATFORM_CPU_64_BIT) && !defined(BSLS_PLATFORM_OS_WINDOWS)
@@ -3176,7 +3298,7 @@ void ArrayPrimitives_Imp::uninitializedFillN(
          void                                                     *,
          bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>)
 {
-    BSLS_ASSERT_SAFE(begin || 0 == numElements);
+    BSLS_PRE_BODY_SAFE(begin || 0 == numElements);
     BSLMF_ASSERT((bsl::is_same<size_type, std::size_t>::value));
 
 #if defined(BSLS_PLATFORM_CPU_64_BIT) && !defined(BSLS_PLATFORM_OS_WINDOWS)
@@ -3204,7 +3326,7 @@ void ArrayPrimitives_Imp::uninitializedFillN(
          void                                                     *,
          bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>)
 {
-    BSLS_ASSERT_SAFE(begin || 0 == numElements);
+    BSLS_PRE_BODY_SAFE(begin || 0 == numElements);
     BSLMF_ASSERT((bsl::is_same<size_type, std::size_t>::value));
 
     uninitializedFillN(
@@ -3224,7 +3346,7 @@ void ArrayPrimitives_Imp::uninitializedFillN(
         void                                                      *,
         bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>)
 {
-    BSLS_ASSERT_SAFE(begin || 0 == numElements);
+    BSLS_PRE_BODY_SAFE(begin || 0 == numElements);
     BSLMF_ASSERT((bsl::is_same<size_type, std::size_t>::value));
 
     // Note: 'const'-correctness is respected because the next overload picks
@@ -3251,7 +3373,7 @@ void ArrayPrimitives_Imp::uninitializedFillN(
         void                                                      *,
         bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>)
 {
-    BSLS_ASSERT_SAFE(begin || 0 == numElements);
+    BSLS_PRE_BODY_SAFE(begin || 0 == numElements);
     BSLMF_ASSERT((bsl::is_same<size_type, std::size_t>::value));
 
     // While it seems that this overload is subsumed by the previous template,
@@ -3274,7 +3396,7 @@ void ArrayPrimitives_Imp::uninitializedFillN(
         void                                                      *,
         bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>)
 {
-    BSLS_ASSERT_SAFE(begin || 0 == numElements);
+    BSLS_PRE_BODY_SAFE(begin || 0 == numElements);
     BSLMF_ASSERT((bsl::is_same<size_type, std::size_t>::value));
 
     // While it seems that this overload is subsumed by the previous template,
@@ -3297,7 +3419,7 @@ void ArrayPrimitives_Imp::uninitializedFillN(
         void                                                      *,
         bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>)
 {
-    BSLS_ASSERT_SAFE(begin || 0 == numElements);
+    BSLS_PRE_BODY_SAFE(begin || 0 == numElements);
     BSLMF_ASSERT((bsl::is_same<size_type, std::size_t>::value));
 
     // While it seems that this overload is subsumed by the previous template,
@@ -3319,7 +3441,7 @@ void ArrayPrimitives_Imp::uninitializedFillN(
            ALLOCATOR                                              *,
            bsl::integral_constant<int, e_BITWISE_COPYABLE_TRAITS>)
 {
-    BSLS_ASSERT_SAFE(begin || 0 == numElements);
+    BSLS_PRE_BODY_SAFE(begin || 0 == numElements);
     BSLMF_ASSERT((bsl::is_same<size_type, std::size_t>::value));
 
     if (0 == numElements) {
@@ -3343,9 +3465,9 @@ void ArrayPrimitives_Imp::uninitializedFillN(
                         ALLOCATOR                                 *allocator,
                         bsl::integral_constant<int, e_NIL_TRAITS>)
 {
-    BSLS_ASSERT_SAFE(begin || 0 == numElements);
+    BSLS_PRE_BODY_SAFE(begin || 0 == numElements);
     BSLMF_ASSERT((bsl::is_same<size_type, std::size_t>::value));
-    BSLS_ASSERT_SAFE(allocator);
+    BSLS_PRE_BODY_SAFE(allocator);
 
     if (0 == numElements) {
         return;                                                       // RETURN
@@ -3415,8 +3537,8 @@ void ArrayPrimitives_Imp::copyConstruct(
         // work if we port to an architecture where the two are of different
         // sizes.
 
-    BSLS_ASSERT_SAFE(toBegin || fromBegin == fromEnd);
-    BSLS_ASSERT_SAFE(!ArrayPrimitives_Imp::isInvalidRange(fromBegin, fromEnd));
+    BSLS_PRE_BODY_SAFE(toBegin || fromBegin == fromEnd);
+    BSLS_PRE_BODY_SAFE(!ArrayPrimitives_Imp::isInvalidRange(fromBegin, fromEnd));
 
     while (fromBegin != fromEnd) {
         // 'fromBegin' iterates over pointers to functions, which must be
@@ -3437,8 +3559,8 @@ void ArrayPrimitives_Imp::copyConstruct(
              ALLOCATOR,
              bsl::integral_constant<int, e_BITWISE_COPYABLE_TRAITS>)
 {
-    BSLS_ASSERT_SAFE(toBegin);
-    BSLS_ASSERT_SAFE(!ArrayPrimitives_Imp::isInvalidRange(fromBegin,
+    BSLS_PRE_BODY_SAFE(toBegin);
+    BSLS_PRE_BODY_SAFE(!ArrayPrimitives_Imp::isInvalidRange(fromBegin,
                                                           fromEnd));
 
     const size_type numBytes = reinterpret_cast<const char*>(fromEnd)
@@ -3456,8 +3578,8 @@ void ArrayPrimitives_Imp::copyConstruct(
                           ALLOCATOR                                  allocator,
                           bsl::integral_constant<int, e_NIL_TRAITS>)
 {
-    BSLS_ASSERT_SAFE(toBegin || fromBegin == fromEnd);
-    BSLS_ASSERT_SAFE(!ArrayPrimitives_Imp::isInvalidRange(fromBegin,
+    BSLS_PRE_BODY_SAFE(toBegin || fromBegin == fromEnd);
+    BSLS_PRE_BODY_SAFE(!ArrayPrimitives_Imp::isInvalidRange(fromBegin,
                                                           fromEnd));
 
     AutoArrayDestructor<TARGET_TYPE, ALLOCATOR> guard(toBegin, toBegin,
@@ -3486,8 +3608,8 @@ void ArrayPrimitives_Imp::moveConstruct(
              ALLOCATOR,
              bsl::integral_constant<int, e_BITWISE_COPYABLE_TRAITS>)
 {
-    BSLS_ASSERT_SAFE(toBegin);
-    BSLS_ASSERT_SAFE(!ArrayPrimitives_Imp::isInvalidRange(fromBegin,
+    BSLS_PRE_BODY_SAFE(toBegin);
+    BSLS_PRE_BODY_SAFE(!ArrayPrimitives_Imp::isInvalidRange(fromBegin,
                                                           fromEnd));
 
     const size_type numBytes = reinterpret_cast<const char*>(fromEnd)
@@ -3505,8 +3627,8 @@ void ArrayPrimitives_Imp::moveConstruct(
                           ALLOCATOR                                  allocator,
                           bsl::integral_constant<int, e_NIL_TRAITS>)
 {
-    BSLS_ASSERT_SAFE(toBegin || fromBegin == fromEnd);
-    BSLS_ASSERT_SAFE(!ArrayPrimitives_Imp::isInvalidRange(fromBegin,
+    BSLS_PRE_BODY_SAFE(toBegin || fromBegin == fromEnd);
+    BSLS_PRE_BODY_SAFE(!ArrayPrimitives_Imp::isInvalidRange(fromBegin,
                                                           fromEnd));
 
     AutoArrayDestructor<TARGET_TYPE, ALLOCATOR> guard(toBegin, toBegin,
@@ -3531,8 +3653,8 @@ void ArrayPrimitives_Imp::moveIfNoexcept(
                           ALLOCATOR                                  allocator,
                           bsl::integral_constant<int, e_NIL_TRAITS>)
 {
-    BSLS_ASSERT_SAFE(toBegin || fromBegin == fromEnd);
-    BSLS_ASSERT_SAFE(!ArrayPrimitives_Imp::isInvalidRange(fromBegin,
+    BSLS_PRE_BODY_SAFE(toBegin || fromBegin == fromEnd);
+    BSLS_PRE_BODY_SAFE(!ArrayPrimitives_Imp::isInvalidRange(fromBegin,
                                                           fromEnd));
 
     AutoArrayDestructor<TARGET_TYPE, ALLOCATOR> guard(toBegin, toBegin,
@@ -3560,7 +3682,7 @@ void ArrayPrimitives_Imp::defaultConstruct(
    ALLOCATOR,
    bsl::integral_constant<int, e_HAS_TRIVIAL_DEFAULT_CTOR_TRAITS>)
 {
-    BSLS_ASSERT_SAFE(begin || 0 == numElements);
+    BSLS_PRE_BODY_SAFE(begin || 0 == numElements);
     BSLMF_ASSERT((bsl::is_same<size_type, std::size_t>::value));
 
     if (BSLS_PERFORMANCEHINT_PREDICT_LIKELY(numElements != 0)) {
@@ -3578,7 +3700,7 @@ void ArrayPrimitives_Imp::defaultConstruct(
            ALLOCATOR                                               allocator,
            bsl::integral_constant<int, e_BITWISE_COPYABLE_TRAITS>)
 {
-    BSLS_ASSERT_SAFE(begin || 0 == numElements);
+    BSLS_PRE_BODY_SAFE(begin || 0 == numElements);
     BSLMF_ASSERT((bsl::is_same<size_type, std::size_t>::value));
 
     if (0 < numElements) {
@@ -3596,7 +3718,7 @@ void ArrayPrimitives_Imp::defaultConstruct(
                         ALLOCATOR                                  allocator,
                         bsl::integral_constant<int, e_NIL_TRAITS>)
 {
-    BSLS_ASSERT_SAFE(begin || 0 == numElements);
+    BSLS_PRE_BODY_SAFE(begin || 0 == numElements);
     BSLMF_ASSERT((bsl::is_same<size_type, std::size_t>::value));
 
     AutoArrayDestructor<TARGET_TYPE, ALLOCATOR> guard(begin, begin, allocator);
@@ -3620,8 +3742,8 @@ void ArrayPrimitives_Imp::destructiveMove(
              ALLOCATOR,
              bsl::integral_constant<int, e_BITWISE_MOVEABLE_TRAITS>)
 {
-    BSLS_ASSERT_SAFE(toBegin || fromBegin == fromEnd);
-    BSLS_ASSERT_SAFE(!ArrayPrimitives_Imp::isInvalidRange(fromBegin,
+    BSLS_PRE_BODY_SAFE(toBegin || fromBegin == fromEnd);
+    BSLS_PRE_BODY_SAFE(!ArrayPrimitives_Imp::isInvalidRange(fromBegin,
                                                           fromEnd));
 
     const size_type numBytes = reinterpret_cast<const char*>(fromEnd)
@@ -3640,8 +3762,8 @@ void ArrayPrimitives_Imp::destructiveMove(
                           ALLOCATOR                                  allocator,
                           bsl::integral_constant<int, e_NIL_TRAITS>)
 {
-    BSLS_ASSERT_SAFE(toBegin || fromBegin == fromEnd);
-    BSLS_ASSERT_SAFE(!ArrayPrimitives_Imp::isInvalidRange(fromBegin,
+    BSLS_PRE_BODY_SAFE(toBegin || fromBegin == fromEnd);
+    BSLS_PRE_BODY_SAFE(!ArrayPrimitives_Imp::isInvalidRange(fromBegin,
                                                           fromEnd));
 
     // 'TARGET_TYPE' certainly cannot be bit-wise copyable, so we can save the
@@ -3685,7 +3807,7 @@ void ArrayPrimitives_Imp::emplace(
              bsl::integral_constant<int, e_BITWISE_MOVEABLE_TRAITS>,
              ARGS&&...                                               args)
 {
-    BSLS_ASSERT_SAFE(!ArrayPrimitives_Imp::isInvalidRange(toBegin,
+    BSLS_PRE_BODY_SAFE(!ArrayPrimitives_Imp::isInvalidRange(toBegin,
                                                           toEnd));
     BSLMF_ASSERT((bsl::is_same<size_type, std::size_t>::value));
 
@@ -3771,7 +3893,7 @@ void ArrayPrimitives_Imp::emplace(
                           bsl::integral_constant<int, e_NIL_TRAITS>,
                           ARGS&&...                                  args)
 {
-    BSLS_ASSERT_SAFE(!ArrayPrimitives_Imp::isInvalidRange(toBegin,
+    BSLS_PRE_BODY_SAFE(!ArrayPrimitives_Imp::isInvalidRange(toBegin,
                                                           toEnd));
     BSLMF_ASSERT((bsl::is_same<size_type, std::size_t>::value));
 
@@ -3849,8 +3971,8 @@ void ArrayPrimitives_Imp::erase(
              ALLOCATOR                                               allocator,
              bsl::integral_constant<int, e_BITWISE_MOVEABLE_TRAITS>)
 {
-    BSLS_ASSERT_SAFE(!ArrayPrimitives_Imp::isInvalidRange(first, middle));
-    BSLS_ASSERT_SAFE(!ArrayPrimitives_Imp::isInvalidRange(middle, last));
+    BSLS_PRE_BODY_SAFE(!ArrayPrimitives_Imp::isInvalidRange(first, middle));
+    BSLS_PRE_BODY_SAFE(!ArrayPrimitives_Imp::isInvalidRange(middle, last));
 
     // Key to the transformation diagrams:
     //..
@@ -3882,8 +4004,8 @@ void ArrayPrimitives_Imp::erase(
                           ALLOCATOR                                  allocator,
                           bsl::integral_constant<int, e_NIL_TRAITS>)
 {
-    BSLS_ASSERT_SAFE(!ArrayPrimitives_Imp::isInvalidRange(first, middle));
-    BSLS_ASSERT_SAFE(!ArrayPrimitives_Imp::isInvalidRange(middle, last));
+    BSLS_PRE_BODY_SAFE(!ArrayPrimitives_Imp::isInvalidRange(first, middle));
+    BSLS_PRE_BODY_SAFE(!ArrayPrimitives_Imp::isInvalidRange(middle, last));
 
     // Key to the transformation diagrams:
     //..
@@ -3919,7 +4041,7 @@ void ArrayPrimitives_Imp::insert(
            ALLOCATOR                                               allocator,
            bsl::integral_constant<int, e_BITWISE_COPYABLE_TRAITS>)
 {
-    BSLS_ASSERT_SAFE(!ArrayPrimitives_Imp::isInvalidRange(toBegin, toEnd));
+    BSLS_PRE_BODY_SAFE(!ArrayPrimitives_Imp::isInvalidRange(toBegin, toEnd));
     BSLMF_ASSERT((bsl::is_same<size_type, std::size_t>::value));
 
     // Key to the transformation diagrams:
@@ -3981,7 +4103,7 @@ void ArrayPrimitives_Imp::insert(
            ALLOCATOR                                               allocator,
            bsl::integral_constant<int, e_BITWISE_MOVEABLE_TRAITS>)
 {
-    BSLS_ASSERT_SAFE(!ArrayPrimitives_Imp::isInvalidRange(toBegin, toEnd));
+    BSLS_PRE_BODY_SAFE(!ArrayPrimitives_Imp::isInvalidRange(toBegin, toEnd));
     BSLMF_ASSERT((bsl::is_same<size_type, std::size_t>::value));
 
     // Key to the transformation diagrams:
@@ -4071,7 +4193,7 @@ void ArrayPrimitives_Imp::insert(
                         ALLOCATOR                                  allocator,
                         bsl::integral_constant<int, e_NIL_TRAITS>)
 {
-    BSLS_ASSERT_SAFE(!ArrayPrimitives_Imp::isInvalidRange(toBegin, toEnd));
+    BSLS_PRE_BODY_SAFE(!ArrayPrimitives_Imp::isInvalidRange(toBegin, toEnd));
     BSLMF_ASSERT((bsl::is_same<size_type, std::size_t>::value));
 
     // Aliasing: Make a temp copy of 'value' (always).  The reason is that
@@ -4253,12 +4375,12 @@ void ArrayPrimitives_Imp::insert(
 
     // 'FWD_ITER' has been converted to a 'const TARGET_TYPE *' and
     // 'TARGET_TYPE' is bit-wise copyable.
-    BSLS_ASSERT_SAFE(!ArrayPrimitives_Imp::isInvalidRange(toBegin, toEnd));
-    BSLS_ASSERT_SAFE(!ArrayPrimitives_Imp::isInvalidRange(fromBegin, fromEnd));
-    BSLS_ASSERT_SAFE(fromBegin || 0 == numElements);
+    BSLS_PRE_BODY_SAFE(!ArrayPrimitives_Imp::isInvalidRange(toBegin, toEnd));
+    BSLS_PRE_BODY_SAFE(!ArrayPrimitives_Imp::isInvalidRange(fromBegin, fromEnd));
+    BSLS_PRE_BODY_SAFE(fromBegin || 0 == numElements);
 
-    BSLS_ASSERT_SAFE(fromBegin + numElements == fromEnd);
-    BSLS_ASSERT_SAFE(fromEnd <= toBegin || toEnd + numElements <= fromBegin);
+    BSLS_PRE_BODY_SAFE(fromBegin + numElements == fromEnd);
+    BSLS_PRE_BODY_SAFE(fromEnd <= toBegin || toEnd + numElements <= fromBegin);
 
     (void) fromEnd;  // quell warning when 'BSLS_ASSERT_SAFE' is compiled out
 
@@ -4301,7 +4423,7 @@ void ArrayPrimitives_Imp::insert(
            bsl::integral_constant<int, e_BITWISE_MOVEABLE_TRAITS>)
 {
     // 'TARGET_TYPE' is bit-wise moveable.
-    BSLS_ASSERT_SAFE(!ArrayPrimitives_Imp::isInvalidRange(toBegin, toEnd));
+    BSLS_PRE_BODY_SAFE(!ArrayPrimitives_Imp::isInvalidRange(toBegin, toEnd));
     BSLMF_ASSERT((bsl::is_same<size_type, std::size_t>::value));
 
     if (0 == numElements) {
@@ -4400,7 +4522,7 @@ void ArrayPrimitives_Imp::insert(
                         ALLOCATOR                                  allocator,
                         bsl::integral_constant<int, e_NIL_TRAITS>)
 {
-    BSLS_ASSERT_SAFE(!ArrayPrimitives_Imp::isInvalidRange(toBegin, toEnd));
+    BSLS_PRE_BODY_SAFE(!ArrayPrimitives_Imp::isInvalidRange(toBegin, toEnd));
     BSLMF_ASSERT((bsl::is_same<size_type, std::size_t>::value));
 
     if (0 == numElements) {
@@ -4510,7 +4632,7 @@ void ArrayPrimitives_Imp::insert(
     // 'void *'.
 
     // 'TARGET_TYPE' is bit-wise moveable.
-    BSLS_ASSERT_SAFE(!ArrayPrimitives_Imp::isInvalidRange(toBegin, toEnd));
+    BSLS_PRE_BODY_SAFE(!ArrayPrimitives_Imp::isInvalidRange(toBegin, toEnd));
     BSLMF_ASSERT((bsl::is_same<size_type, std::size_t>::value));
 
     if (0 == numElements) {
@@ -4569,11 +4691,11 @@ void ArrayPrimitives_Imp::moveInsert(
           ALLOCATOR                                                allocator,
           bsl::integral_constant<int, e_BITWISE_MOVEABLE_TRAITS>)
 {
-    BSLS_ASSERT_SAFE(!ArrayPrimitives_Imp::isInvalidRange(toBegin, toEnd));
-    BSLS_ASSERT_SAFE(!ArrayPrimitives_Imp::isInvalidRange(first, last));
-    BSLS_ASSERT_SAFE(first || 0 == numElements);
+    BSLS_PRE_BODY_SAFE(!ArrayPrimitives_Imp::isInvalidRange(toBegin, toEnd));
+    BSLS_PRE_BODY_SAFE(!ArrayPrimitives_Imp::isInvalidRange(first, last));
+    BSLS_PRE_BODY_SAFE(first || 0 == numElements);
     BSLMF_ASSERT((bsl::is_same<size_type, std::size_t>::value));
-    BSLS_ASSERT_SAFE(lastPtr);
+    BSLS_PRE_BODY_SAFE(lastPtr);
 
     // Functionally indistinguishable from this:
 
@@ -4595,11 +4717,11 @@ void ArrayPrimitives_Imp::moveInsert(
                        ALLOCATOR                                   allocator,
                        bsl::integral_constant<int, e_NIL_TRAITS>)
 {
-    BSLS_ASSERT_SAFE(!ArrayPrimitives_Imp::isInvalidRange(toBegin, toEnd));
-    BSLS_ASSERT_SAFE(!ArrayPrimitives_Imp::isInvalidRange(first, last));
-    BSLS_ASSERT_SAFE(first || 0 == numElements);
+    BSLS_PRE_BODY_SAFE(!ArrayPrimitives_Imp::isInvalidRange(toBegin, toEnd));
+    BSLS_PRE_BODY_SAFE(!ArrayPrimitives_Imp::isInvalidRange(first, last));
+    BSLS_PRE_BODY_SAFE(first || 0 == numElements);
     BSLMF_ASSERT((bsl::is_same<size_type, std::size_t>::value));
-    BSLS_ASSERT_SAFE(lastPtr);
+    BSLS_PRE_BODY_SAFE(lastPtr);
 
     // There isn't any advantage at destroying [first,last) one by one as we're
     // moving it, except perhaps for slightly better memory usage.
@@ -4621,8 +4743,8 @@ void ArrayPrimitives_Imp::rotate(
                 TARGET_TYPE                                            *end,
                 bsl::integral_constant<int, e_BITWISE_MOVEABLE_TRAITS>)
 {
-    BSLS_ASSERT_SAFE(!ArrayPrimitives_Imp::isInvalidRange(begin, middle));
-    BSLS_ASSERT_SAFE(!ArrayPrimitives_Imp::isInvalidRange(middle, end));
+    BSLS_PRE_BODY_SAFE(!ArrayPrimitives_Imp::isInvalidRange(begin, middle));
+    BSLS_PRE_BODY_SAFE(!ArrayPrimitives_Imp::isInvalidRange(middle, end));
 
     bitwiseRotate(reinterpret_cast<char *>(begin),
                   reinterpret_cast<char *>(middle),
@@ -4636,8 +4758,8 @@ void ArrayPrimitives_Imp::rotate(
                              TARGET_TYPE                               *end,
                              bsl::integral_constant<int, e_NIL_TRAITS>)
 {
-    BSLS_ASSERT_SAFE(!ArrayPrimitives_Imp::isInvalidRange(begin, middle));
-    BSLS_ASSERT_SAFE(!ArrayPrimitives_Imp::isInvalidRange(middle, end));
+    BSLS_PRE_BODY_SAFE(!ArrayPrimitives_Imp::isInvalidRange(begin, middle));
+    BSLS_PRE_BODY_SAFE(!ArrayPrimitives_Imp::isInvalidRange(middle, end));
 
     if (begin == middle || middle == end) {
         // This test changes into O(1) what would otherwise be O(N): Do not
@@ -4778,7 +4900,7 @@ void ArrayPrimitives_Imp::shiftAndInsert(
            ALLOCATOR                                                 allocator,
            bsl::integral_constant<int, e_BITWISE_COPYABLE_TRAITS>)
 {
-    BSLS_ASSERT_SAFE(begin != end); // the range is non-empty
+    BSLS_PRE_BODY_SAFE(begin != end); // the range is non-empty
 
     typedef typename bsl::allocator_traits<ALLOCATOR>::value_type ValueType;
 
@@ -4822,7 +4944,7 @@ void ArrayPrimitives_Imp::shiftAndInsert(
            ALLOCATOR                                                 allocator,
            bsl::integral_constant<int, e_BITWISE_MOVEABLE_TRAITS>)
 {
-    BSLS_ASSERT_SAFE(begin != end); // the range is non-empty
+    BSLS_PRE_BODY_SAFE(begin != end); // the range is non-empty
 
     typedef typename bsl::allocator_traits<ALLOCATOR>::value_type ValueType;
 
@@ -4888,7 +5010,7 @@ void ArrayPrimitives_Imp::shiftAndInsert(
            ALLOCATOR                                                 allocator,
            bsl::integral_constant<int, e_NIL_TRAITS>)
 {
-    BSLS_ASSERT_SAFE(begin != end); // the range is non-empty
+    BSLS_PRE_BODY_SAFE(begin != end); // the range is non-empty
 
     typedef typename bsl::allocator_traits<ALLOCATOR>::value_type ValueType;
 

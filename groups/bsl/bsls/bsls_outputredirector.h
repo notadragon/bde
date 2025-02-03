@@ -24,6 +24,7 @@ BSLS_IDENT("$Id: $")
 // usage example is not provided.
 
 #include <bsls_platform.h>
+#include <bsls_pre.h>
 
 #include <limits.h>
 #include <stddef.h>
@@ -141,7 +142,8 @@ class OutputRedirector {
     /// `OutputRedirector::e_STDERR_STREAM`.
     explicit OutputRedirector(Stream which,
                               bool   verbose     = false,
-                              bool   veryVerbose = false);
+                              bool   veryVerbose = false)
+        BSLS_PRE(which == e_STDOUT_STREAM || which == e_STDERR_STREAM);
 
     /// Destroy this `OutputRedirector` object.  If the object is in a
     /// redirected state, the original stream will be restored to its
@@ -179,12 +181,14 @@ class OutputRedirector {
     /// behavior is undefined unless `enable` has been previously called
     /// successfully (after the latest call to `disable`, if `disable` has
     /// been called successfully).
-    bool load();
+    bool load()
+        BSLS_PRE(d_isRedirectingFlag);
 
     /// Reset the scratch buffer to empty.  The behavior is undefined unless
     /// `enable` has been previously called successfully (after the latest
     /// call to `disable` if `disable` has been called successfully).
-    void clear();
+    void clear()
+        BSLS_PRE(d_isRedirectingFlag);
 
     // ACCESSORS
 
@@ -196,7 +200,8 @@ class OutputRedirector {
     /// otherwise.  Note that the `expected` buffer is allowed to contain
     /// embedded nulls.  The behavior is undefined unless `enable` has
     /// previously been called successfully.
-    int compare(const char *expected, size_t expectedLength) const;
+    int compare(const char *expected, size_t expectedLength) const
+        BSLS_PRE(expected || ! expectedLength);
 
     /// Compare the character buffer pointed to by the specified pointer
     /// `expected` with any output that has been loaded into the scratch
@@ -205,7 +210,8 @@ class OutputRedirector {
     /// the `expected` buffer has the same length and contents as the
     /// scratch buffer, and non-zero otherwise.  The behavior is undefined
     /// unless `enable` has previously been called successfully.
-    int compare(const char *expected) const;
+    int compare(const char *expected) const
+        BSLS_PRE(expected);
 
     /// Return the address of the scratch buffer.
     const char *getOutput() const;

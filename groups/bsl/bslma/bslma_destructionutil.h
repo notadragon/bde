@@ -94,6 +94,7 @@ BSLS_IDENT("$Id: $")
 
 #include <bsls_assert.h>
 #include <bsls_platform.h>
+#include <bsls_pre.h>
 
 #include <stddef.h>  // 'size_t'
 #include <string.h>  // 'memset'
@@ -143,7 +144,8 @@ struct DestructionUtil {
     /// memory owned by `object`.  Also note that this function is a no-op
     /// if the `TYPE` has the trivial destructor trait.
     template <class TYPE>
-    static void destroy(TYPE *object);
+    static void destroy(TYPE *object)
+        BSLS_PRE_SAFE(object);
 
 };
 
@@ -204,7 +206,7 @@ template <class TYPE>
 inline
 void DestructionUtil::destroy(TYPE *object)
 {
-    BSLS_ASSERT_SAFE(object);
+    BSLS_PRE_BODY_SAFE(object);
 
     destroy(object, typename bslmf::IsBitwiseCopyable<TYPE>::type());
 }

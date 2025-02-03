@@ -283,6 +283,7 @@ BSLS_IDENT("$Id$ $CSID$")
 #include <bslmf_assert.h>
 
 #include <bsls_assert.h>
+#include <bsls_pre.h>
 
 namespace BloombergLP {
 namespace bslalg {
@@ -334,7 +335,10 @@ class RbTreeAnchor {
                  int         numNodes);
 
     /// Destroy this object.
-    ~RbTreeAnchor();
+    ~RbTreeAnchor()
+        BSLS_PRE_SAFE(sentinel()->leftChild() == rootNode())
+        BSLS_PRE_SAFE(sentinel()->rightChild() == firstNode());
+
 
     // MANIPULATORS
 
@@ -355,7 +359,8 @@ class RbTreeAnchor {
 
     /// Set the `numNodes` attribute of this object to the specified
     /// `value`.  The behavior is undefined unless `0 <= value`.
-    void setNumNodes(int value);
+    void setNumNodes(int value)
+        BSLS_PRE_SAFE(0 <= value);
 
     /// Increment, by 1, the `numNodes` attribute of this object.  The
     /// behavior is undefined unless `numNodes <= INT_MAX - 1`.
@@ -424,8 +429,8 @@ RbTreeAnchor::RbTreeAnchor(RbTreeNode *rootNode,
 inline
 RbTreeAnchor::~RbTreeAnchor()
 {
-    BSLS_ASSERT_SAFE(sentinel()->leftChild() == rootNode());
-    BSLS_ASSERT_SAFE(sentinel()->rightChild() == firstNode());
+    BSLS_PRE_BODY_SAFE(sentinel()->leftChild() == rootNode());
+    BSLS_PRE_BODY_SAFE(sentinel()->rightChild() == firstNode());
 }
 
 // MANIPULATORS
@@ -454,7 +459,7 @@ void RbTreeAnchor::setRootNode(RbTreeNode *value)
 inline
 void RbTreeAnchor::setNumNodes(int value)
 {
-    BSLS_ASSERT_SAFE(0 <= value);
+    BSLS_PRE_BODY_SAFE(0 <= value);
 
     d_numNodes = value;
 }

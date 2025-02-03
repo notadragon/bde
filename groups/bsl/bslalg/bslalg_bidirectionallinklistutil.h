@@ -181,6 +181,8 @@ BSLS_IDENT("$Id: $")
 
 #include <bslscm_version.h>
 
+#include <bsls_pre.h>
+
 namespace BloombergLP {
 
 namespace bslalg {
@@ -208,7 +210,8 @@ struct BidirectionalLinkListUtil {
     /// `isWellFormed(target->previousLink(), target)` is true.
     static
     void insertLinkBeforeTarget(BidirectionalLink *newNode,
-                                BidirectionalLink *target);
+                                BidirectionalLink *target)
+        BSLS_PRE_BODY(newNode);
 
     /// Insert the specified `newNode` after the specified `target` node in
     /// the linked list that contains `target`.  If the node following
@@ -221,7 +224,10 @@ struct BidirectionalLinkListUtil {
     /// `isWellFormed(target, target->nextLink())` are true.
     static
     void insertLinkAfterTarget(BidirectionalLink *newNode,
-                               BidirectionalLink *target);
+                               BidirectionalLink *target)
+        BSLS_PRE_SAFE(newNode)
+        BSLS_PRE_SAFE(target);
+
 
     /// Return true if the bidirectional list starting from the specified
     /// `head`, and ending with the specified `tail` is well formed.  A
@@ -262,7 +268,9 @@ struct BidirectionalLinkListUtil {
     static
     void spliceListBeforeTarget(BidirectionalLink *first,
                                 BidirectionalLink *last,
-                                BidirectionalLink *target);
+                                BidirectionalLink *target)
+        BSLS_PRE_SAFE(first)
+        BSLS_PRE_SAFE(last);
 
     /// Unlink the specified `node` from the linked list of which it is a
     /// member.  After successful execution of this function the values of
@@ -273,7 +281,8 @@ struct BidirectionalLinkListUtil {
     /// undefined unless `!node->previousLink()`, `!node->nextLink()`, or
     /// `isWellFormed(node->previousLink(), node->nextLink())` are true.
     static
-    void unlink(BidirectionalLink *node);
+    void unlink(BidirectionalLink *node)
+        BSLS_PRE_SAFE(node);
 };
 
 }  // close package namespace

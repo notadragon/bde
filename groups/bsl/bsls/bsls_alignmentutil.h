@@ -170,6 +170,8 @@ BSLS_IDENT("$Id: $")
 #include <bsls_alignmenttotype.h>
 #include <bsls_assert.h>
 #include <bsls_platform.h>
+#include <bsls_pre.h>
+#include <bsls_post.h>
 #include <bsls_types.h>
 
 #include <limits>           // 'std::numeric_limits'
@@ -258,13 +260,18 @@ struct AlignmentUtil {
     ///    unexpectedly lenient alignment requirements.
     /// Also note that aligning on a more restrictive boundary may improve
     /// performance.
-    static int calculateAlignmentFromSize(std::size_t size);
+    static int calculateAlignmentFromSize(std::size_t size)
+        BSLS_PRE_SAFE(1 <= size)
+        BSLS_POST_SAFE(alignment: 0 == (alignment & (alignment - 1)));
 
     /// Return the minimum non-negative integer that, when added to the
     /// numerical value of the specified `address`, yields the specified
     /// `alignment`.  The behavior is undefined unless `alignment` is a
     /// positive, integral power of 2.
-    static int calculateAlignmentOffset(const void *address, int alignment);
+    static int calculateAlignmentOffset(const void *address, int alignment)
+        BSLS_PRE_SAFE(1 <= alignment)
+        BSLS_PRE_SAFE(0 == (alignment & (alignment - 1)));
+
 
     /// Return `true` if the specified `address` is aligned on a 2-byte
     /// boundary (i.e., the numerical value of `address` is evenly divisible
@@ -288,7 +295,10 @@ struct AlignmentUtil {
     /// size <= std::numeric_limits<std::size_t>::max()
     ///         - BSLS_MAX_ALIGNMENT + 1
     /// ```
-    static std::size_t roundUpToMaximalAlignment(std::size_t size);
+    static std::size_t roundUpToMaximalAlignment(std::size_t size)
+        BSLS_PRE_SAFE(size <= std::numeric_limits<std::size_t>::max()
+                      - BSLS_MAX_ALIGNMENT + 1);
+
 };
 
 // ============================================================================
@@ -348,8 +358,8 @@ int AlignmentUtil::calculateAlignmentFromSize(std::size_t size)
     //   :         :          :          :         :           :
     //..
 
-    BSLS_ASSERT_SAFE(1 <= size);
-
+    BSLS_PRE_BODY_SAFE(1 <= size);
+    
     // It is safe to cast our value from a 'size_t' to an int, because all
     // bits that are higher order that 'BSLS_MAX_ALIGNMENT' are ignored by
     // the arithmetic that is done.
@@ -359,7 +369,7 @@ int AlignmentUtil::calculateAlignmentFromSize(std::size_t size)
 
     // Verify at most one bit is set (should be impossible to fail)
 
-    BSLS_ASSERT_SAFE(0 == (alignment & (alignment - 1)));
+    BSLS_POST_BODY_SAFE(0 == (alignment & (alignment - 1)));
 
     return alignment;
 }
@@ -368,8 +378,8 @@ inline
 int AlignmentUtil::calculateAlignmentOffset(const void *address,
                                             int         alignment)
 {
-    BSLS_ASSERT_SAFE(1 <= alignment);
-    BSLS_ASSERT_SAFE(0 == (alignment & (alignment - 1)));
+    BSLS_PRE_BODY_SAFE(1 <= alignment);
+    BSLS_PRE_BODY_SAFE(0 == (alignment & (alignment - 1)));
 
     // Note that if 'address' is null, this function will correctly return zero
     // only if 'alignment' is a positive, integral power of 2.  Also note that
@@ -411,8 +421,8 @@ bool AlignmentUtil::is8ByteAligned(const void *address)
 inline
 std::size_t AlignmentUtil::roundUpToMaximalAlignment(std::size_t size)
 {
-    BSLS_ASSERT_SAFE(size <= std::numeric_limits<std::size_t>::max()
-                           - BSLS_MAX_ALIGNMENT + 1);
+    BSLS_PRE_BODY_SAFE(size <= std::numeric_limits<std::size_t>::max()
+                       - BSLS_MAX_ALIGNMENT + 1);
 
     return ((size + BSLS_MAX_ALIGNMENT - 1) / BSLS_MAX_ALIGNMENT)
                                                           * BSLS_MAX_ALIGNMENT;

@@ -153,6 +153,7 @@ BSLS_IDENT("$Id: $")
 #include <bslma_deleterhelper.h>
 
 #include <bsls_assert.h>
+#include <bsls_pre.h>
 
 namespace BloombergLP {
 
@@ -189,13 +190,18 @@ class RawDeleterGuard {
     /// undefined unless `object` and `allocator` are non-zero, and
     /// `allocator` supplied the memory for `object`.  Note that `allocator`
     /// must remain valid throughout the lifetime of this guard.
-    RawDeleterGuard(TYPE *object, ALLOCATOR *allocator);
+    RawDeleterGuard(TYPE *object, ALLOCATOR *allocator)
+        BSLS_PRE_SAFE(object)
+        BSLS_PRE_BODY_SAFE(allocator);
+
 
     /// Destroy this raw deleter guard and delete the object it manages by
     /// first invoking the destructor of the (managed) object, and then
     /// invoking the `deallocate` method of the allocator (or pool) that was
     /// supplied with the object at construction.
-    ~RawDeleterGuard();
+    ~RawDeleterGuard()
+        BSLS_PRE_SAFE(d_object_p)
+        BSLS_PRE_SAFE(d_allocator_p);
 };
 
 // ============================================================================
@@ -214,16 +220,16 @@ RawDeleterGuard(TYPE *object, ALLOCATOR *allocator)
 : d_object_p(object)
 , d_allocator_p(allocator)
 {
-    BSLS_ASSERT_SAFE(object);
-    BSLS_ASSERT_SAFE(allocator);
+    BSLS_PRE_BODY_SAFE(object);
+    BSLS_PRE_BODY_SAFE(allocator);
 }
 
 template <class TYPE, class ALLOCATOR>
 inline
 RawDeleterGuard<TYPE, ALLOCATOR>::~RawDeleterGuard()
 {
-    BSLS_ASSERT_SAFE(d_object_p);
-    BSLS_ASSERT_SAFE(d_allocator_p);
+    BSLS_PRE_BODY_SAFE(d_object_p);
+    BSLS_PRE_BODY_SAFE(d_allocator_p);
 
     DeleterHelper::deleteObjectRaw(d_object_p, d_allocator_p);
 }

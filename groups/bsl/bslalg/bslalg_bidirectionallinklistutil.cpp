@@ -22,7 +22,7 @@ void BidirectionalLinkListUtil::insertLinkBeforeTarget(
                                                    BidirectionalLink  *newNode,
                                                    BidirectionalLink  *target)
 {
-    BSLS_ASSERT(newNode);
+    BSLS_PRE_BODY(newNode);
 #ifdef BDE_BUILD_TARGET_SAFE_2
     BSLS_ASSERT_SAFE(isWellFormed(target, target));
 #endif
@@ -49,8 +49,8 @@ void BidirectionalLinkListUtil::insertLinkAfterTarget(
                                                     BidirectionalLink *newNode,
                                                     BidirectionalLink *target)
 {
-    BSLS_ASSERT_SAFE(newNode);
-    BSLS_ASSERT_SAFE(target);
+    BSLS_PRE_BODY_SAFE(newNode);
+    BSLS_PRE_BODY_SAFE(target);
 
     BidirectionalLink *next = target->nextLink();
 
@@ -111,8 +111,8 @@ void BidirectionalLinkListUtil::spliceListBeforeTarget
                                                     BidirectionalLink *last,
                                                     BidirectionalLink *target)
 {
-    BSLS_ASSERT_SAFE(first);
-    BSLS_ASSERT_SAFE(last);
+    BSLS_PRE_BODY_SAFE(first);
+    BSLS_PRE_BODY_SAFE(last);
 #ifdef BDE_BUILD_TARGET_SAFE_2
     // Test to avoid creating loops is O(N) expensive, so check only in SAFE_2
 
@@ -158,7 +158,7 @@ void BidirectionalLinkListUtil::spliceListBeforeTarget
 
 void BidirectionalLinkListUtil::unlink(BidirectionalLink *node)
 {
-    BSLS_ASSERT_SAFE(node);
+    BSLS_PRE_BODY_SAFE(node);
 
     BidirectionalLink *prev = node->previousLink(), *next = node->nextLink();
 

@@ -250,6 +250,7 @@ BSLS_IDENT("$Id: $")
 #include <bslma_deallocatebytesproctor.h>
 
 #include <bsls_assert.h>
+#include <bsls_pre.h>
 
 namespace BloombergLP {
 
@@ -286,7 +287,8 @@ class DeallocatorProctor {
     /// behavior is undefined unless `allocator` is non-zero and supplied
     /// `memory`.  Note that `allocator` must remain valid throughout the
     /// lifetime of this proctor.
-    DeallocatorProctor(void *memory, ALLOCATOR *allocator);
+    DeallocatorProctor(void *memory, ALLOCATOR *allocator)
+        BSLS_PRE_SAFE(allocator);
 
     /// Destroy this deallocator proctor, and deallocate the block of memory
     /// it manages (if any) by invoking the `deallocate` method of the
@@ -309,7 +311,8 @@ class DeallocatorProctor {
     /// memory from management (without deallocating it), and so may be
     /// invoked with or without having called `release` when reusing this
     /// object.
-    void reset(void *memory);
+    void reset(void *memory)
+        BSLS_PRE_SAFE(memory);
 };
 
 // ============================================================================
@@ -327,7 +330,7 @@ DeallocatorProctor<ALLOCATOR>::DeallocatorProctor(void      *memory,
                                                   ALLOCATOR *allocator)
     : d_imp(allocator, memory, 1)
 {
-    BSLS_ASSERT_SAFE(allocator);
+    BSLS_PRE_BODY_SAFE(allocator);
 }
 
 template <class ALLOCATOR>
@@ -348,7 +351,7 @@ template <class ALLOCATOR>
 inline
 void DeallocatorProctor<ALLOCATOR>::reset(void *memory)
 {
-    BSLS_ASSERT_SAFE(memory);
+    BSLS_PRE_BODY_SAFE(memory);
 
     d_imp.reset(memory, 1);
 }

@@ -159,7 +159,7 @@ static void recolorTreeAfterRemoval(RbTreeAnchor *tree,
 // CLASS METHODS
 const RbTreeNode *RbTreeUtil::leftmost(const RbTreeNode *subtree)
 {
-    BSLS_ASSERT(subtree);
+    BSLS_PRE_BODY(subtree);
 
     while (subtree->leftChild()) {
         subtree = subtree->leftChild();
@@ -170,7 +170,7 @@ const RbTreeNode *RbTreeUtil::leftmost(const RbTreeNode *subtree)
 
 const RbTreeNode *RbTreeUtil::rightmost(const RbTreeNode *subtree)
 {
-    BSLS_ASSERT(subtree);
+    BSLS_PRE_BODY(subtree);
 
     while (subtree->rightChild()) {
         subtree = subtree->rightChild();
@@ -180,7 +180,7 @@ const RbTreeNode *RbTreeUtil::rightmost(const RbTreeNode *subtree)
 
 const RbTreeNode *RbTreeUtil::next(const RbTreeNode *node)
 {
-    BSLS_ASSERT(node);
+    BSLS_PRE_BODY(node);
 
     if (node->rightChild()) {
         return leftmost(node->rightChild());                          // RETURN
@@ -196,7 +196,7 @@ const RbTreeNode *RbTreeUtil::next(const RbTreeNode *node)
 
 const RbTreeNode *RbTreeUtil::previous(const RbTreeNode *node)
 {
-    BSLS_ASSERT(node);
+    BSLS_PRE_BODY(node);
 
     if (node->leftChild()) {
         return rightmost(node->leftChild());                          // RETURN
@@ -215,9 +215,9 @@ void RbTreeUtil::insertAt(RbTreeAnchor *tree,
                           bool          leftChildFlag,
                           RbTreeNode   *newNode)
 {
-    BSLS_ASSERT(parentNode);
-    BSLS_ASSERT(newNode);
-    BSLS_ASSERT(tree);
+    BSLS_PRE_BODY(parentNode);
+    BSLS_PRE_BODY(newNode);
+    BSLS_PRE_BODY(tree);
 
     newNode->setLeftChild(0);
     newNode->setRightChild(0);
@@ -324,9 +324,9 @@ void RbTreeUtil::insertAt(RbTreeAnchor *tree,
 
 void RbTreeUtil::remove(RbTreeAnchor *tree, RbTreeNode *node)
 {
-    BSLS_ASSERT(0 != node);
-    BSLS_ASSERT(0 != tree);
-    BSLS_ASSERT(0 != tree->rootNode());
+    BSLS_PRE_BODY(0 != node);
+    BSLS_PRE_BODY(0 != tree);
+    BSLS_PRE_BODY(0 != tree->rootNode());
 
     RbTreeNode *x, *y;
     RbTreeNode *parentOfX;
@@ -447,7 +447,7 @@ void RbTreeUtil::printTreeStructure(
                     int               level,
                     int               spacesPerLevel)
 {
-    BSLS_ASSERT(file);
+    BSLS_PRE_BODY(file);
     indent(file, level, spacesPerLevel);
     fprintf(file, "[");
     char SEP = (spacesPerLevel < 0) ? ' ' : '\n';
@@ -483,8 +483,8 @@ void RbTreeUtil::printTreeStructure(
 
 void RbTreeUtil::rotateLeft(RbTreeNode *node)
 {
-    BSLS_ASSERT(node);
-    BSLS_ASSERT(node->rightChild());
+    BSLS_PRE_BODY(node);
+    BSLS_PRE_BODY(node->rightChild());
 
     RbTreeNode *pivot = node->rightChild();
 
@@ -506,8 +506,8 @@ void RbTreeUtil::rotateLeft(RbTreeNode *node)
 
 void RbTreeUtil::rotateRight(RbTreeNode *node)
 {
-    BSLS_ASSERT(node);
-    BSLS_ASSERT(node->leftChild());
+    BSLS_PRE_BODY(node);
+    BSLS_PRE_BODY(node->leftChild());
 
     RbTreeNode *pivot = node->leftChild();
 
@@ -529,8 +529,8 @@ void RbTreeUtil::rotateRight(RbTreeNode *node)
 
 void RbTreeUtil::swap(RbTreeAnchor *a, RbTreeAnchor *b)
 {
-    BSLS_ASSERT(a);
-    BSLS_ASSERT(b);
+    BSLS_PRE_BODY(a);
+    BSLS_PRE_BODY(b);
 
     RbTreeAnchor tmp(a->rootNode(),
                      a->firstNode(),

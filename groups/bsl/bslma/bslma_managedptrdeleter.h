@@ -45,6 +45,7 @@ BSLS_IDENT("$Id$ $CSID$")
 #include <bslmf_isbitwisemoveable.h>
 
 #include <bsls_assert.h>
+#include <bsls_pre.h>
 
 namespace BloombergLP {
 namespace bslma {
@@ -134,7 +135,8 @@ class ManagedPtrDeleter {
     /// Invoke the deleter object.  The behavior is undefined unless `deleter`
     /// is not 0 and has not already been called on the managed object
     /// associated with this deleter.
-    void deleteManagedObject() const;
+    void deleteManagedObject() const
+        BSLS_PRE_SAFE(0 != d_deleter);
 
     /// Return the deleter function associated with this deleter.
     Deleter deleter() const;
@@ -208,7 +210,7 @@ void ManagedPtrDeleter::set(void *object, void *factory, Deleter deleter)
 inline
 void ManagedPtrDeleter::deleteManagedObject() const
 {
-    BSLS_ASSERT_SAFE(0 != d_deleter);
+    BSLS_PRE_BODY_SAFE(0 != d_deleter);
 
     d_deleter(d_object_p, d_factory_p);
 }

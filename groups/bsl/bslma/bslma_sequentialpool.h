@@ -368,6 +368,7 @@ BSLS_IDENT("$Id: $")
 #include <bslma_infrequentdeleteblocklist.h>
 
 #include <bsls_platform.h>
+#include <bsls_pre.h>
 
 #include <cstddef>         // for 'std::size_t'
 
@@ -558,20 +559,24 @@ class SequentialPool {
     /// Return memory of the specified `size`.  If `size` is 0, no memory is
     /// allocated and 0 is returned.  The behavior is undefined unless
     /// `0 <= size`.
-    void *allocate(int size);
+    void *allocate(int size)
+        BSLS_PRE(0 <= size);
 
     /// Return memory of at least the specified `*size` and return the
     /// actual amount of memory allocated in `*size`.  If `*size` is 0, no
     /// memory is allocated and 0 is returned.  The behavior is undefined
     /// unless `0 <= *size`.
-    void *allocateAndExpand(int *size);
+    void *allocateAndExpand(int *size)
+        BSLS_PRE(0 <= *size);
 
     /// Return memory of at least the specified `*size` and at most the
     /// specified `maxNumBytes`.  Also return the actual amount of memory
     /// allocated in `*size`.  If `*size` is 0, no memory is allocated and 0
     /// is returned.  The behavior is undefined unless
     /// `0 <= *size <= maxNumBytes`.
-    void *allocateAndExpand(int *size, int maxNumBytes);
+    void *allocateAndExpand(int *size, int maxNumBytes)
+        BSLS_PRE(0 <= *size)
+        BSLS_PRE(*size <= maxNumBytes);
 
     /// Destroy the specified `object`.  Note that this method is exactly
     /// the same as the `deleteObjectRaw` method since no deallocation is
@@ -593,8 +598,9 @@ class SequentialPool {
     /// `originalNumBytes`.  Note that this function will not expand the
     /// memory unless there have been no allocations since the allocation
     /// for `originalNumBytes`.
-    int expand(void *address, int originalNumBytes);
-
+    int expand(void *address, int originalNumBytes)
+        BSLS_PRE(0 <= originalNumBytes);
+    
     /// Increase the amount of memory allocated at the specified `address`
     /// from the specified `originalNumBytes` to the maximum amount easily
     /// obtainable up to the specified `maxNumBytes`.  Return the amount of
@@ -604,7 +610,10 @@ class SequentialPool {
     /// `originalNumBytes < maxNumBytes`.  Note that this function will not
     /// expand the memory unless there have been no allocations since the
     /// allocation for `originalNumBytes`.
-    int expand(void *address, int originalNumBytes, int maxNumBytes);
+    int expand(void *address, int originalNumBytes, int maxNumBytes)
+        BSLS_PRE(               0 <= originalNumBytes)
+        BSLS_PRE(originalNumBytes <= maxNumBytes);
+
 
     /// Release all memory currently allocated through this pool.
     void release();
@@ -613,7 +622,8 @@ class SequentialPool {
     /// least the specified `numBytes` without replenishment (i.e., without
     /// internal allocation).  The behavior is undefined unless
     /// `0 <= numBytes`.
-    void reserveCapacity(int numBytes);
+    void reserveCapacity(int numBytes)
+        BSLS_PRE(0 <= numBytes);
 
     /// Reduce the amount of memory allocated at the specified `address`
     /// from the specified `originalNumBytes` to the specified
@@ -623,7 +633,8 @@ class SequentialPool {
     /// `originalNumBytes` and `newNumBytes <= originalNumBytes`.  Note that
     /// this function will not truncate the memory unless there have been no
     /// allocations since the allocation for `originalNumBytes`.
-    int truncate(void *address, int originalNumBytes, int newNumBytes);
+    int truncate(void *address, int originalNumBytes, int newNumBytes)
+        BSLS_PRE_SAFE(newNumBytes <= originalNumBytes);
 };
 
 }  // close package namespace

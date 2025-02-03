@@ -206,6 +206,7 @@ BSLS_IDENT("$Id: $")
 #include <bslma_allocator.h>
 
 #include <bsls_keyword.h>
+#include <bsls_pre.h>
 
 namespace BloombergLP {
 
@@ -271,12 +272,20 @@ class BufferAllocator : public Allocator {
                                     char              *buffer,
                                     size_type          bufSize,
                                     size_type          size,
-                                    AlignmentStrategy  strategy);
+                                    AlignmentStrategy  strategy)
+        BSLS_PRE(cursor)
+        BSLS_PRE(buffer);
+        
     static void *allocateFromBuffer(int       *cursor,
                                     char      *buffer,
                                     size_type  bufSize,
                                     size_type  size,
-                                    int        alignment);
+                                    int        alignment)
+        BSLS_PRE(cursor)
+        BSLS_PRE(buffer)
+        BSLS_PRE(0 < alignment)
+        BSLS_PRE(alignment <= bsls::AlignmentUtil::BSLS_MAX_ALIGNMENT)
+        BSLS_PRE(0 == (alignment & (alignment - 1))); // alignment is power of 2
 
     // CREATORS
 

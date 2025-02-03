@@ -295,6 +295,7 @@ BSLS_IDENT("$Id: $")
 #include <bsls_bsllock.h>
 #include <bsls_buildtarget.h>
 #include <bsls_keyword.h>
+#include <bsls_pre.h>
 #include <bsls_types.h>
 
 #include <cstdio>     // 'std::FILE' and (in macros) 'std::puts'
@@ -525,7 +526,8 @@ class TestAllocator : public Allocator {
     /// this object has no effect on outstanding memory blocks allocated
     /// from this test allocator (and may result in memory leaks -- e.g., if
     /// the (default) `MallocFreeAllocator` singleton was used).
-    ~TestAllocator() BSLS_KEYWORD_OVERRIDE;
+    ~TestAllocator() BSLS_KEYWORD_OVERRIDE
+        BSLS_PRE(d_allocator_p);
 
     // MANIPULATORS
 

@@ -21,7 +21,7 @@
 // regions of C++11 code, then this header contains no code and is not
 // '#include'd in the original header.
 //
-// Generated on Sun Sep  1 09:58:46 2024
+// Generated on Fri Jan 31 21:56:47 2025
 // Command line: sim_cpp11_features.pl bslma_polymorphicallocator.h
 
 #ifdef COMPILING_BSLMA_POLYMORPHICALLOCATOR_H
@@ -185,7 +185,8 @@ class polymorphic_allocator {
     ///  this->resource() == r
     /// ```
     /// The behavior is undefined if `r` is null.
-    polymorphic_allocator(memory_resource *r);                      // IMPLICIT
+    polymorphic_allocator(memory_resource *r)                       // IMPLICIT
+        BSLS_PRE(r != 0);
 
     /// Create an allocator sharing the same resource object as the
     /// specified `original`.  The newly constructed allocator will compare
@@ -2124,7 +2125,7 @@ inline
 polymorphic_allocator<TYPE>::polymorphic_allocator(memory_resource *r)
 : d_resource(r)
 {
-    BSLS_ASSERT(r != 0);
+    BSLS_PRE_BODY(r != 0);
 }
 
 #ifndef BSLS_COMPILERFEATURES_SUPPORT_DEFAULTED_FUNCTIONS

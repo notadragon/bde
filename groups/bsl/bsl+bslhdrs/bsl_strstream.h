@@ -25,10 +25,12 @@ BSLS_IDENT("$Id: $")
 
 namespace bsl {
     // Import selected symbols into bsl namespace
+#if 0  
     using std::istrstream;
     using std::ostrstream;
     using std::strstream;
     using std::strstreambuf;
+#endif
 
 #ifndef BDE_OMIT_INTERNAL_DEPRECATED
     // Export additional names, leaked to support transitive dependencies in

@@ -21,7 +21,7 @@
 // regions of C++11 code, then this header contains no code and is not
 // '#include'd in the original header.
 //
-// Generated on Fri Oct  4 16:23:48 2024
+// Generated on Fri Jan 31 21:56:47 2025
 // Command line: sim_cpp11_features.pl bslma_allocatorutil.h
 
 #ifdef COMPILING_BSLMA_ALLOCATORUTIL_H
@@ -152,7 +152,8 @@ struct AllocatorUtil {
     static typename AllocatorUtil_Traits<t_ALLOCATOR>::void_pointer
     allocateBytes(const t_ALLOCATOR& allocator,
                   std::size_t        nbytes,
-                  std::size_t        alignment = k_MAX_ALIGNMENT);
+                  std::size_t        alignment = k_MAX_ALIGNMENT)
+        BSLS_PRE(isPowerOf2(alignment));
 
     /// Return a pointer to a block of raw memory allocated from the specified
     /// `allocator` having a size and alignment appropriate for an object of
@@ -182,7 +183,8 @@ struct AllocatorUtil {
     template <class t_TYPE>
     static t_TYPE& assign(t_TYPE          *lhs,
                           const t_TYPE&    rhs,
-                          bsl::false_type  allowed);
+                          bsl::false_type  allowed)
+        BSLS_PRE(*lhs == rhs);
 
     /// Return to the specified allocator the block raw memory at the specified
     /// `p` address having the specified `nbytes` size and optionally specified
@@ -195,7 +197,8 @@ struct AllocatorUtil {
         typename AllocatorUtil_Traits<t_ALLOCATOR>::void_pointer p,
         std::size_t                                              nbytes,
         std::size_t                                              alignment
-                                                            = k_MAX_ALIGNMENT);
+                                                            = k_MAX_ALIGNMENT)
+        BSLS_PRE(isPowerOf2(alignment));
 
     /// Return to the specified `allocator` a block of raw memory at the
     /// specified `p` address that is suitably sized and aligned to hold an
@@ -207,14 +210,16 @@ struct AllocatorUtil {
     template <class t_ALLOCATOR, class t_POINTER>
     static void deallocateObject(const t_ALLOCATOR& allocator,
                                  t_POINTER          p,
-                                 std::size_t        n = 1);
+                                 std::size_t        n = 1)
+        BSLS_PRE(t_POINTER() != p);
 
     /// Destroy the object at the specified `p` address and return the block of
     /// memory at `p` to the specified `allocator`.  The behavior is undefined
     /// unless `p` refers to a fully constructed object allocated from a copy
     /// of `allocator` and not yet destroyed or deallocated.
     template <class t_ALLOCATOR, class t_POINTER>
-    static void deleteObject(const t_ALLOCATOR& allocator, t_POINTER p);
+    static void deleteObject(const t_ALLOCATOR& allocator, t_POINTER p)
+        BSLS_PRE(t_POINTER() != p);
 
     /// Return an object of (template parameter) `t_TYPE` allocated from the
     /// specified `allocator` and constructed with no arguments except that,
@@ -801,7 +806,8 @@ struct AllocatorUtil {
     /// undefined unless `allowed` is `true_type` or '*pa == *pb' before the
     /// call.
     template <class t_TYPE>
-    static void swap(t_TYPE *pa, t_TYPE *pb, bsl::false_type allowed);
+    static void swap(t_TYPE *pa, t_TYPE *pb, bsl::false_type allowed)
+        BSLS_PRE(*pa == *pb);
     template <class t_TYPE>
     static void swap(t_TYPE *pa, t_TYPE *pb, bsl::true_type  allowed);
 };
@@ -1044,7 +1050,7 @@ AllocatorUtil::allocateBytes(const t_ALLOCATOR& allocator,
                              std::size_t        nbytes,
                              std::size_t        alignment)
 {
-    BSLS_ASSERT(isPowerOf2(alignment));
+    BSLS_PRE_BODY(isPowerOf2(alignment));
 
     typedef
         typename AllocatorUtil_Traits<t_ALLOCATOR>::allocator_type StdAlloc;
@@ -1065,7 +1071,7 @@ template <class t_TYPE>
 inline
 t_TYPE& AllocatorUtil::assign(t_TYPE *lhs, const t_TYPE& rhs, bsl::false_type)
 {
-    BSLS_ASSERT(*lhs == rhs);
+    BSLS_PRE_BODY(*lhs == rhs);
     (void)rhs;
     return *lhs;
 }
@@ -1086,7 +1092,7 @@ void AllocatorUtil::deallocateBytes(
     std::size_t                                              nbytes,
     std::size_t                                              alignment)
 {
-    BSLS_ASSERT(isPowerOf2(alignment));
+    BSLS_PRE_BODY(isPowerOf2(alignment));
 
     typedef
         typename AllocatorUtil_Traits<t_ALLOCATOR>::allocator_type StdAlloc;
@@ -1099,7 +1105,7 @@ void AllocatorUtil::deallocateObject(const t_ALLOCATOR& allocator,
                                      t_POINTER          p,
                                      std::size_t        n)
 {
-    BSLS_ASSERT(t_POINTER() != p);
+    BSLS_PRE_BODY(t_POINTER() != p);
     deallocateObjectImp(allocator, p, n, *p);
 }
 
@@ -1107,7 +1113,7 @@ template <class t_ALLOCATOR, class t_POINTER>
 inline void
 AllocatorUtil::deleteObject(const t_ALLOCATOR& allocator, t_POINTER p)
 {
-    BSLS_ASSERT(t_POINTER() != p);
+    BSLS_PRE_BODY(t_POINTER() != p);
     deleteObjectImp(allocator, p, *p);
 }
 
@@ -2396,7 +2402,7 @@ template <class t_TYPE>
 inline
 void AllocatorUtil::swap(t_TYPE *pa, t_TYPE *pb, bsl::false_type)
 {
-    BSLS_ASSERT(*pa == *pb);
+    BSLS_PRE_BODY(*pa == *pb);
     (void)pa; (void)pb;
 }
 

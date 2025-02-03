@@ -94,6 +94,7 @@ BSLS_IDENT("$Id: $")
 #include <bslscm_version.h>
 
 #include <bsls_assert.h>
+#include <bsls_pre.h>
 #include <bsls_types.h>
 
 #include <bslma_allocatortraits.h>
@@ -164,7 +165,10 @@ struct ArrayDestructionPrimitives {
     /// deallocated by the element destructor calls).
     template <class TARGET_TYPE, class ALLOCATOR>
     static void
-    destroy(TARGET_TYPE *begin, TARGET_TYPE *end, ALLOCATOR allocator);
+    destroy(TARGET_TYPE *begin, TARGET_TYPE *end, ALLOCATOR allocator)
+        BSLS_PRE_SAFE(begin || !end)
+        BSLS_PRE_SAFE(end   || !begin)
+        BSLS_PRE_SAFE(begin <= end);
 
     /// Destroy of the elements in the segment of an array of parameterized
     /// `TARGET_TYPE` beginning at the specified `begin` address and ending
@@ -175,7 +179,10 @@ struct ArrayDestructionPrimitives {
     /// deallocate any memory (except memory deallocated by the element
     /// destructor calls).
     template <class TARGET_TYPE>
-    static void destroy(TARGET_TYPE *begin, TARGET_TYPE *end);
+    static void destroy(TARGET_TYPE *begin, TARGET_TYPE *end)
+        BSLS_PRE_SAFE(begin || !end)
+        BSLS_PRE_SAFE(end   || !begin)
+        BSLS_PRE_SAFE(begin <= end);
 };
 
 // ============================================================================
@@ -252,9 +259,9 @@ void ArrayDestructionPrimitives::destroy(TARGET_TYPE *begin,
                                          TARGET_TYPE *end,
                                          ALLOCATOR    allocator)
 {
-    BSLS_ASSERT_SAFE(begin || !end);
-    BSLS_ASSERT_SAFE(end   || !begin);
-    BSLS_ASSERT_SAFE(begin <= end);
+    BSLS_PRE_BODY_SAFE(begin || !end);
+    BSLS_PRE_BODY_SAFE(end   || !begin);
+    BSLS_PRE_BODY_SAFE(begin <= end);
 
     destroy(begin,
             end,
@@ -267,9 +274,9 @@ inline
 void ArrayDestructionPrimitives::destroy(TARGET_TYPE *begin,
                                          TARGET_TYPE *end)
 {
-    BSLS_ASSERT_SAFE(begin || !end);
-    BSLS_ASSERT_SAFE(end   || !begin);
-    BSLS_ASSERT_SAFE(begin <= end);
+    BSLS_PRE_BODY_SAFE(begin || !end);
+    BSLS_PRE_BODY_SAFE(end   || !begin);
+    BSLS_PRE_BODY_SAFE(begin <= end);
 
     destroy(begin,
             end,

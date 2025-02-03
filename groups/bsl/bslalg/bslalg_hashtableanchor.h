@@ -521,7 +521,11 @@ class HashTableAnchor {
     /// `bucketArrayAddress` and `bucketArraySize` are 0.
     HashTableAnchor(HashTableBucket   *bucketArrayAddress,
                     std::size_t        bucketArraySize,
-                    BidirectionalLink *listRootAddress);
+                    BidirectionalLink *listRootAddress)
+        BSLS_PRE_SAFE(   (!bucketArrayAddress && !bucketArraySize)
+                         || (bucketArrayAddress && 0 < bucketArraySize))
+        BSLS_PRE_SAFE(!listRootAddress || !(listRootAddress->previousLink()));
+
 
     /// Create a `bslalg::HashTableAnchor` object having the same value
     /// as the specified `original` object.
@@ -543,11 +547,15 @@ class HashTableAnchor {
     /// `bslalg::HashTableBucket` objects of at least `bucketArraySize`, or
     /// unless both `bucketArrayAddress` and `bucketArraySize` are 0.
     void setBucketArrayAddressAndSize(HashTableBucket *bucketArrayAddress,
-                                      std::size_t      bucketArraySize);
+                                      std::size_t      bucketArraySize)
+        BSLS_PRE_SAFE(( bucketArrayAddress && 0 < bucketArraySize)
+                      || (!bucketArrayAddress &&    !bucketArraySize));
+
 
     /// Set the `listRootAddress` attribute of this object to the
     /// specified `value`.
-    void setListRootAddress(BidirectionalLink *value);
+    void setListRootAddress(BidirectionalLink *value)
+        BSLS_PRE_SAFE(!value || !value->previousLink());
 
                                   // Aspects
 
@@ -608,9 +616,9 @@ HashTableAnchor::HashTableAnchor(bslalg::HashTableBucket   *bucketArrayAddress,
 , d_bucketArraySize(bucketArraySize)
 , d_listRootAddress_p(listRootAddress)
 {
-    BSLS_ASSERT_SAFE(   (!bucketArrayAddress && !bucketArraySize)
+    BSLS_PRE_BODY_SAFE(   (!bucketArrayAddress && !bucketArraySize)
                      || (bucketArrayAddress && 0 < bucketArraySize));
-    BSLS_ASSERT_SAFE(!listRootAddress || !(listRootAddress->previousLink()));
+    BSLS_PRE_BODY_SAFE(!listRootAddress || !(listRootAddress->previousLink()));
 }
 
 inline
@@ -636,8 +644,8 @@ void HashTableAnchor::setBucketArrayAddressAndSize(
                                            HashTableBucket *bucketArrayAddress,
                                            std::size_t      bucketArraySize)
 {
-    BSLS_ASSERT_SAFE(( bucketArrayAddress && 0 < bucketArraySize)
-                  || (!bucketArrayAddress &&    !bucketArraySize));
+    BSLS_PRE_BODY_SAFE(( bucketArrayAddress && 0 < bucketArraySize)
+                       || (!bucketArrayAddress &&    !bucketArraySize));
 
     d_bucketArrayAddress_p = bucketArrayAddress;
     d_bucketArraySize      = bucketArraySize;
@@ -646,7 +654,7 @@ void HashTableAnchor::setBucketArrayAddressAndSize(
 inline
 void HashTableAnchor::setListRootAddress(BidirectionalLink *value)
 {
-    BSLS_ASSERT_SAFE(!value || !value->previousLink());
+    BSLS_PRE_BODY_SAFE(!value || !value->previousLink());
 
     d_listRootAddress_p = value;
 }

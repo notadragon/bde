@@ -162,6 +162,7 @@ BSLS_IDENT("$Id$ $CSID$")
 #include <bsls_assert.h>
 #include <bsls_compilerfeatures.h>
 #include <bsls_keyword.h>
+#include <bsls_pre.h>
 #include <bsls_util.h>
 
 #include <stddef.h>
@@ -217,7 +218,8 @@ class SharedPtrInplaceRep : public SharedPtrRep {
     /// Instead, `disposeObject` destroys the in-place object and
     /// `disposeRep` deallocates this representation object (including the
     /// shared object's footprint).
-    ~SharedPtrInplaceRep() BSLS_KEYWORD_OVERRIDE;
+    ~SharedPtrInplaceRep() BSLS_KEYWORD_OVERRIDE
+        BSLS_PRE(0);
 
   public:
     // CREATORS
@@ -372,7 +374,7 @@ SharedPtrInplaceRep<TYPE>::SharedPtrInplaceRep(Allocator *basicAllocator,
 template <class TYPE>
 SharedPtrInplaceRep<TYPE>::~SharedPtrInplaceRep()
 {
-    BSLS_ASSERT(0);
+    BSLS_PRE_BODY(0);
 }
 
 // MANIPULATORS

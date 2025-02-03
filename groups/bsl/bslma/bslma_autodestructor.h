@@ -222,6 +222,7 @@ BSLS_IDENT("$Id: $")
 
 #include <bsls_assert.h>
 #include <bsls_performancehint.h>
+#include <bsls_pre.h>
 
 namespace BloombergLP {
 
@@ -292,13 +293,15 @@ class AutoDestructor {
     ///    `===^===^===^===^==='          `===^===^===^===^==='
     ///            ^------------ origin           ^------------ origin
     /// ```
-    explicit AutoDestructor(TYPE *origin, int length = 0);
+    explicit AutoDestructor(TYPE *origin, int length = 0)
+        BSLS_PRE_SAFE(origin || !length);
 
     /// Destroy this range proctor along with the contiguous sequence of
     /// objects it manages (if any) by invoking the destructor of each
     /// (managed) object.  Note that the order in which the managed objects
     /// are destroyed is undefined.
-    ~AutoDestructor();
+    ~AutoDestructor()
+        BSLS_PRE_SAFE(d_origin_p || !d_length);
 
     // MANIPULATORS
 
@@ -310,7 +313,8 @@ class AutoDestructor {
     /// currently negative, the number of managed objects will decrease by
     /// one, whereas if the length is non-negative, the number of managed
     /// objects will increase by one.
-    void operator++();
+    void operator++()
+        BSLS_PRE_SAFE(d_origin_p);
 
     /// Decrease by one the (signed) length of the sequence of objects
     /// managed by this range proctor.  The behavior is undefined unless the
@@ -320,7 +324,8 @@ class AutoDestructor {
     /// currently positive, the number of managed objects will decrease by
     /// one, whereas if the length is non-positive, the number of managed
     /// objects will increase by one.
-    void operator--();
+    void operator--()
+        BSLS_PRE_SAFE(d_origin_p);
 
     /// Release from management the sequence of objects currently managed by
     /// this range proctor by setting the length of the managed sequence to
@@ -339,12 +344,14 @@ class AutoDestructor {
     /// Note that `reset` can be called without having previously called
     /// `release` provided that `length` is set appropriately before this
     /// proctor could be destroyed (e.g., via a thrown exception).
-    void reset(TYPE *origin);
+    void reset(TYPE *origin)
+        BSLS_PRE_SAFE(origin);
 
     /// Set the (signed) length of the sequence of objects managed by this
     /// range proctor to the specified `length`.  The behavior is undefined
     /// unless the origin of this range proctor is non-zero.
-    void setLength(int length);
+    void setLength(int length)
+        BSLS_PRE_SAFE(d_origin_p);
 
     // ACCESSORS
 
@@ -385,14 +392,14 @@ AutoDestructor<TYPE>::AutoDestructor(TYPE *origin, int length)
 : d_origin_p(origin)
 , d_length(length)
 {
-    BSLS_ASSERT_SAFE(origin || !length);
+    BSLS_PRE_BODY_SAFE(origin || !length);
 }
 
 template <class TYPE>
 inline
 AutoDestructor<TYPE>::~AutoDestructor()
 {
-    BSLS_ASSERT_SAFE(d_origin_p || !d_length);
+    BSLS_PRE_BODY_SAFE(d_origin_p || !d_length);
 
     if (BSLS_PERFORMANCEHINT_PREDICT_UNLIKELY(d_length)) {
         destroy();
@@ -404,7 +411,7 @@ template <class TYPE>
 inline
 void AutoDestructor<TYPE>::operator++()
 {
-    BSLS_ASSERT_SAFE(d_origin_p);
+    BSLS_PRE_BODY_SAFE(d_origin_p);
 
     ++d_length;
 }
@@ -413,7 +420,7 @@ template <class TYPE>
 inline
 void AutoDestructor<TYPE>::operator--()
 {
-    BSLS_ASSERT_SAFE(d_origin_p);
+    BSLS_PRE_BODY_SAFE(d_origin_p);
 
     --d_length;
 }
@@ -429,7 +436,7 @@ template <class TYPE>
 inline
 void AutoDestructor<TYPE>::reset(TYPE *origin)
 {
-    BSLS_ASSERT_SAFE(origin);
+    BSLS_PRE_BODY_SAFE(origin);
 
     d_origin_p = origin;
 }
@@ -438,7 +445,7 @@ template <class TYPE>
 inline
 void AutoDestructor<TYPE>::setLength(int length)
 {
-    BSLS_ASSERT_SAFE(d_origin_p);
+    BSLS_PRE_BODY_SAFE(d_origin_p);
 
     d_length = length;
 }

@@ -85,6 +85,7 @@ BSLS_IDENT("$Id: $")
 
 #include <bsls_assert.h>
 #include <bsls_platform.h>
+#include <bsls_pre.h>
 
 namespace BloombergLP {
 
@@ -109,7 +110,8 @@ struct DeleterHelper {
     /// `dynamic_cast<void *>(object)` is applied if `TYPE` is polymorphic,
     /// and `static_cast<void *>(object)` is applied otherwise.
     template <class TYPE, class ALLOCATOR>
-    static void deleteObject(const TYPE *object, ALLOCATOR *allocator);
+    static void deleteObject(const TYPE *object, ALLOCATOR *allocator)
+        BSLS_PRE_SAFE(allocator);
 
     /// Destroy the specified `object` and then use the specified
     /// `allocator` to deallocate its memory footprint.  Do nothing if
@@ -119,7 +121,8 @@ struct DeleterHelper {
     /// originally dispensed by `allocator`), and `object` was allocated
     /// using `allocator` and has not already been deallocated.
     template <class TYPE, class ALLOCATOR>
-    static void deleteObjectRaw(const TYPE *object, ALLOCATOR *allocator);
+    static void deleteObjectRaw(const TYPE *object, ALLOCATOR *allocator)
+        BSLS_PRE_SAFE(allocator);
 };
 
 // ============================================================================
@@ -157,7 +160,7 @@ template <class TYPE, class ALLOCATOR>
 inline
 void DeleterHelper::deleteObject(const TYPE *object, ALLOCATOR  *allocator)
 {
-    BSLS_ASSERT_SAFE(allocator);
+    BSLS_PRE_BODY_SAFE(allocator);
 
     if (0 != object) {
         void *address = DeleterHelper_Helper<
@@ -178,7 +181,7 @@ template <class TYPE, class ALLOCATOR>
 inline
 void DeleterHelper::deleteObjectRaw(const TYPE *object, ALLOCATOR  *allocator)
 {
-    BSLS_ASSERT_SAFE(allocator);
+    BSLS_PRE_BODY_SAFE(allocator);
 
     if (0 != object) {
         void *address = const_cast<TYPE *>(object);

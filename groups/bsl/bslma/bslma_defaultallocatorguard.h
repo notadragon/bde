@@ -127,6 +127,8 @@ BSLS_IDENT("$Id: $")
 
 #include <bslscm_version.h>
 
+#include <bsls_pre.h>
+
 namespace BloombergLP {
 
 
@@ -158,11 +160,13 @@ class DefaultAllocatorGuard {
     /// allocator as the default allocator.  Note that the default allocator
     /// is automatically restored to the original allocator on destruction.
     explicit
-    DefaultAllocatorGuard(Allocator *temporary);
+    DefaultAllocatorGuard(Allocator *temporary)
+        BSLS_PRE(temporary);
 
     /// Restore the default allocator that was in place when this scoped
     /// guard was created and destroy this guard.
-    ~DefaultAllocatorGuard();
+    ~DefaultAllocatorGuard()
+        BSLS_PRE(d_original_p);
 };
 
 }  // close package namespace

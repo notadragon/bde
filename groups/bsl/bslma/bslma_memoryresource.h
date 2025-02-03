@@ -368,6 +368,8 @@ BSLS_IDENT("$Id: $")
 #include <bsls_alignmentutil.h>
 #include <bsls_annotation.h>
 #include <bsls_keyword.h>
+#include <bsls_pre.h>
+#include <bsls_post.h>
 #include <bsls_libraryfeatures.h>
 
 #ifdef BSLS_LIBRARYFEATURES_HAS_CPP17_PMR
@@ -424,7 +426,9 @@ class memory_resource {
     /// undefined unless `alignment` is a power of two.  Note that this
     /// function calls the derived-class implementation of `do_allocate`.
     BSLS_ANNOTATION_NODISCARD
-    void *allocate(size_t bytes, size_t alignment = k_MAX_ALIGN);
+    void *allocate(size_t bytes, size_t alignment = k_MAX_ALIGN)
+        BSLS_PRE(0 == (alignment & (alignment - 1)))
+        BSLS_POST(r : r != nullptr);
 
     /// Deallocate the block of memory at the specified address `p` and
     /// having the specified `bytes` and `alignment` by returning it to the
@@ -432,8 +436,9 @@ class memory_resource {
     /// was allocated from this resource using the same size and alignment
     /// and has not yet been deallocated.  Note that this function calls the
     /// derived-class implementation of `do_deallocate`.
-    void deallocate(void *p, size_t bytes, size_t alignment = k_MAX_ALIGN);
-
+    void deallocate(void *p, size_t bytes, size_t alignment = k_MAX_ALIGN)
+        BSLS_PRE(0 == (alignment & (alignment - 1)));
+        
     // ACCESSORS
 
     /// Return `true` if memory allocated from this resource can be

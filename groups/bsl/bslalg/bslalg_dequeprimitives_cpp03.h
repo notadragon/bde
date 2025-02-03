@@ -21,7 +21,7 @@
 // regions of C++11 code, then this header contains no code and is not
 // '#include'd in the original header.
 //
-// Generated on Sun Sep  1 05:39:00 2024
+// Generated on Fri Jan 31 19:26:52 2025
 // Command line: sim_cpp11_features.pl bslalg_dequeprimitives.h
 
 #ifdef COMPILING_BSLALG_DEQUEPRIMITIVES_H
@@ -286,7 +286,8 @@ struct DequePrimitives {
                Iterator                                              position,
                bslmf::MovableRef<VALUE_TYPE>                         value,
                ALLOCATOR                                             allocator,
-               bsl::integral_constant<int, NIL_TRAITS>);
+               bsl::integral_constant<int, NIL_TRAITS>)
+        BSLS_PRE_BODY_SAFE((fromEnd-position) >= 1);
 
     /// Insert the specified `numElements` copies of the specified `value`
     /// at the specified `position`, by moving the elements in the range
@@ -411,7 +412,8 @@ struct DequePrimitives {
                Iterator                                              position,
                bslmf::MovableRef<VALUE_TYPE>                         value,
                ALLOCATOR                                             allocator,
-               bsl::integral_constant<int, NIL_TRAITS>);
+               bsl::integral_constant<int, NIL_TRAITS>)
+        BSLS_PRE_SAFE((position - fromBegin) >= 1);
 
 #if BSLS_COMPILERFEATURES_SIMULATE_VARIADIC_TEMPLATES
 // {{{ BEGIN GENERATED CODE
@@ -1038,7 +1040,8 @@ struct DequePrimitives {
              Iterator                                               fromEnd,
              Iterator                                               position,
              ALLOCATOR                                              allocator,
-             bsl::integral_constant<int, NIL_TRAITS>);
+             bsl::integral_constant<int, NIL_TRAITS>)
+        BSLS_PRE_BODY_SAFE((fromEnd - position) >= 1);
 #endif  // BSLALG_DEQUEPRIMITIVES_VARIADIC_LIMIT_A >= 0
 
 #if BSLALG_DEQUEPRIMITIVES_VARIADIC_LIMIT_A >= 1
@@ -1049,7 +1052,8 @@ struct DequePrimitives {
              Iterator                                               position,
              ALLOCATOR                                              allocator,
              bsl::integral_constant<int, NIL_TRAITS>,
-             BSLS_COMPILERFEATURES_FORWARD_REF(Args_01) arguments_01);
+             BSLS_COMPILERFEATURES_FORWARD_REF(Args_01) arguments_01)
+        BSLS_PRE_BODY_SAFE((fromEnd - position) >= 1);
 #endif  // BSLALG_DEQUEPRIMITIVES_VARIADIC_LIMIT_A >= 1
 
 #if BSLALG_DEQUEPRIMITIVES_VARIADIC_LIMIT_A >= 2
@@ -1062,7 +1066,8 @@ struct DequePrimitives {
              ALLOCATOR                                              allocator,
              bsl::integral_constant<int, NIL_TRAITS>,
              BSLS_COMPILERFEATURES_FORWARD_REF(Args_01) arguments_01,
-             BSLS_COMPILERFEATURES_FORWARD_REF(Args_02) arguments_02);
+             BSLS_COMPILERFEATURES_FORWARD_REF(Args_02) arguments_02)
+        BSLS_PRE_BODY_SAFE((fromEnd - position) >= 1);
 #endif  // BSLALG_DEQUEPRIMITIVES_VARIADIC_LIMIT_A >= 2
 
 #if BSLALG_DEQUEPRIMITIVES_VARIADIC_LIMIT_A >= 3
@@ -1077,7 +1082,8 @@ struct DequePrimitives {
              bsl::integral_constant<int, NIL_TRAITS>,
              BSLS_COMPILERFEATURES_FORWARD_REF(Args_01) arguments_01,
              BSLS_COMPILERFEATURES_FORWARD_REF(Args_02) arguments_02,
-             BSLS_COMPILERFEATURES_FORWARD_REF(Args_03) arguments_03);
+             BSLS_COMPILERFEATURES_FORWARD_REF(Args_03) arguments_03)
+        BSLS_PRE_BODY_SAFE((fromEnd - position) >= 1);
 #endif  // BSLALG_DEQUEPRIMITIVES_VARIADIC_LIMIT_A >= 3
 
 #if BSLALG_DEQUEPRIMITIVES_VARIADIC_LIMIT_A >= 4
@@ -1094,7 +1100,8 @@ struct DequePrimitives {
              BSLS_COMPILERFEATURES_FORWARD_REF(Args_01) arguments_01,
              BSLS_COMPILERFEATURES_FORWARD_REF(Args_02) arguments_02,
              BSLS_COMPILERFEATURES_FORWARD_REF(Args_03) arguments_03,
-             BSLS_COMPILERFEATURES_FORWARD_REF(Args_04) arguments_04);
+             BSLS_COMPILERFEATURES_FORWARD_REF(Args_04) arguments_04)
+        BSLS_PRE_BODY_SAFE((fromEnd - position) >= 1);
 #endif  // BSLALG_DEQUEPRIMITIVES_VARIADIC_LIMIT_A >= 4
 
 #if BSLALG_DEQUEPRIMITIVES_VARIADIC_LIMIT_A >= 5
@@ -1113,7 +1120,8 @@ struct DequePrimitives {
              BSLS_COMPILERFEATURES_FORWARD_REF(Args_02) arguments_02,
              BSLS_COMPILERFEATURES_FORWARD_REF(Args_03) arguments_03,
              BSLS_COMPILERFEATURES_FORWARD_REF(Args_04) arguments_04,
-             BSLS_COMPILERFEATURES_FORWARD_REF(Args_05) arguments_05);
+             BSLS_COMPILERFEATURES_FORWARD_REF(Args_05) arguments_05)
+        BSLS_PRE_BODY_SAFE((fromEnd - position) >= 1);
 #endif  // BSLALG_DEQUEPRIMITIVES_VARIADIC_LIMIT_A >= 5
 
 #if BSLALG_DEQUEPRIMITIVES_VARIADIC_LIMIT_A >= 6
@@ -1134,7 +1142,8 @@ struct DequePrimitives {
              BSLS_COMPILERFEATURES_FORWARD_REF(Args_03) arguments_03,
              BSLS_COMPILERFEATURES_FORWARD_REF(Args_04) arguments_04,
              BSLS_COMPILERFEATURES_FORWARD_REF(Args_05) arguments_05,
-             BSLS_COMPILERFEATURES_FORWARD_REF(Args_06) arguments_06);
+             BSLS_COMPILERFEATURES_FORWARD_REF(Args_06) arguments_06)
+        BSLS_PRE_BODY_SAFE((fromEnd - position) >= 1);
 #endif  // BSLALG_DEQUEPRIMITIVES_VARIADIC_LIMIT_A >= 6
 
 #if BSLALG_DEQUEPRIMITIVES_VARIADIC_LIMIT_A >= 7
@@ -1157,7 +1166,8 @@ struct DequePrimitives {
              BSLS_COMPILERFEATURES_FORWARD_REF(Args_04) arguments_04,
              BSLS_COMPILERFEATURES_FORWARD_REF(Args_05) arguments_05,
              BSLS_COMPILERFEATURES_FORWARD_REF(Args_06) arguments_06,
-             BSLS_COMPILERFEATURES_FORWARD_REF(Args_07) arguments_07);
+             BSLS_COMPILERFEATURES_FORWARD_REF(Args_07) arguments_07)
+        BSLS_PRE_BODY_SAFE((fromEnd - position) >= 1);
 #endif  // BSLALG_DEQUEPRIMITIVES_VARIADIC_LIMIT_A >= 7
 
 #if BSLALG_DEQUEPRIMITIVES_VARIADIC_LIMIT_A >= 8
@@ -1182,7 +1192,8 @@ struct DequePrimitives {
              BSLS_COMPILERFEATURES_FORWARD_REF(Args_05) arguments_05,
              BSLS_COMPILERFEATURES_FORWARD_REF(Args_06) arguments_06,
              BSLS_COMPILERFEATURES_FORWARD_REF(Args_07) arguments_07,
-             BSLS_COMPILERFEATURES_FORWARD_REF(Args_08) arguments_08);
+             BSLS_COMPILERFEATURES_FORWARD_REF(Args_08) arguments_08)
+        BSLS_PRE_BODY_SAFE((fromEnd - position) >= 1);
 #endif  // BSLALG_DEQUEPRIMITIVES_VARIADIC_LIMIT_A >= 8
 
 #if BSLALG_DEQUEPRIMITIVES_VARIADIC_LIMIT_A >= 9
@@ -1209,7 +1220,8 @@ struct DequePrimitives {
              BSLS_COMPILERFEATURES_FORWARD_REF(Args_06) arguments_06,
              BSLS_COMPILERFEATURES_FORWARD_REF(Args_07) arguments_07,
              BSLS_COMPILERFEATURES_FORWARD_REF(Args_08) arguments_08,
-             BSLS_COMPILERFEATURES_FORWARD_REF(Args_09) arguments_09);
+             BSLS_COMPILERFEATURES_FORWARD_REF(Args_09) arguments_09)
+        BSLS_PRE_BODY_SAFE((fromEnd - position) >= 1);
 #endif  // BSLALG_DEQUEPRIMITIVES_VARIADIC_LIMIT_A >= 9
 
 #if BSLALG_DEQUEPRIMITIVES_VARIADIC_LIMIT_A >= 10
@@ -1238,7 +1250,8 @@ struct DequePrimitives {
              BSLS_COMPILERFEATURES_FORWARD_REF(Args_07) arguments_07,
              BSLS_COMPILERFEATURES_FORWARD_REF(Args_08) arguments_08,
              BSLS_COMPILERFEATURES_FORWARD_REF(Args_09) arguments_09,
-             BSLS_COMPILERFEATURES_FORWARD_REF(Args_10) arguments_10);
+             BSLS_COMPILERFEATURES_FORWARD_REF(Args_10) arguments_10)
+        BSLS_PRE_BODY_SAFE((fromEnd - position) >= 1);
 #endif  // BSLALG_DEQUEPRIMITIVES_VARIADIC_LIMIT_A >= 10
 
 
@@ -1858,7 +1871,8 @@ struct DequePrimitives {
               Iterator                                              fromBegin,
               Iterator                                              position,
               ALLOCATOR                                             allocator,
-              bsl::integral_constant<int, NIL_TRAITS>);
+              bsl::integral_constant<int, NIL_TRAITS>)
+        BSLS_PRE_BODY_SAFE((position - fromBegin) >= 1);
 #endif  // BSLALG_DEQUEPRIMITIVES_VARIADIC_LIMIT_A >= 0
 
 #if BSLALG_DEQUEPRIMITIVES_VARIADIC_LIMIT_A >= 1
@@ -1869,7 +1883,8 @@ struct DequePrimitives {
               Iterator                                              position,
               ALLOCATOR                                             allocator,
               bsl::integral_constant<int, NIL_TRAITS>,
-              BSLS_COMPILERFEATURES_FORWARD_REF(Args_01) arguments_01);
+              BSLS_COMPILERFEATURES_FORWARD_REF(Args_01) arguments_01)
+        BSLS_PRE_BODY_SAFE((position - fromBegin) >= 1);
 #endif  // BSLALG_DEQUEPRIMITIVES_VARIADIC_LIMIT_A >= 1
 
 #if BSLALG_DEQUEPRIMITIVES_VARIADIC_LIMIT_A >= 2
@@ -1882,7 +1897,8 @@ struct DequePrimitives {
               ALLOCATOR                                             allocator,
               bsl::integral_constant<int, NIL_TRAITS>,
               BSLS_COMPILERFEATURES_FORWARD_REF(Args_01) arguments_01,
-              BSLS_COMPILERFEATURES_FORWARD_REF(Args_02) arguments_02);
+              BSLS_COMPILERFEATURES_FORWARD_REF(Args_02) arguments_02)
+        BSLS_PRE_BODY_SAFE((position - fromBegin) >= 1);
 #endif  // BSLALG_DEQUEPRIMITIVES_VARIADIC_LIMIT_A >= 2
 
 #if BSLALG_DEQUEPRIMITIVES_VARIADIC_LIMIT_A >= 3
@@ -1897,7 +1913,8 @@ struct DequePrimitives {
               bsl::integral_constant<int, NIL_TRAITS>,
               BSLS_COMPILERFEATURES_FORWARD_REF(Args_01) arguments_01,
               BSLS_COMPILERFEATURES_FORWARD_REF(Args_02) arguments_02,
-              BSLS_COMPILERFEATURES_FORWARD_REF(Args_03) arguments_03);
+              BSLS_COMPILERFEATURES_FORWARD_REF(Args_03) arguments_03)
+        BSLS_PRE_BODY_SAFE((position - fromBegin) >= 1);
 #endif  // BSLALG_DEQUEPRIMITIVES_VARIADIC_LIMIT_A >= 3
 
 #if BSLALG_DEQUEPRIMITIVES_VARIADIC_LIMIT_A >= 4
@@ -1914,7 +1931,8 @@ struct DequePrimitives {
               BSLS_COMPILERFEATURES_FORWARD_REF(Args_01) arguments_01,
               BSLS_COMPILERFEATURES_FORWARD_REF(Args_02) arguments_02,
               BSLS_COMPILERFEATURES_FORWARD_REF(Args_03) arguments_03,
-              BSLS_COMPILERFEATURES_FORWARD_REF(Args_04) arguments_04);
+              BSLS_COMPILERFEATURES_FORWARD_REF(Args_04) arguments_04)
+        BSLS_PRE_BODY_SAFE((position - fromBegin) >= 1);
 #endif  // BSLALG_DEQUEPRIMITIVES_VARIADIC_LIMIT_A >= 4
 
 #if BSLALG_DEQUEPRIMITIVES_VARIADIC_LIMIT_A >= 5
@@ -1933,7 +1951,8 @@ struct DequePrimitives {
               BSLS_COMPILERFEATURES_FORWARD_REF(Args_02) arguments_02,
               BSLS_COMPILERFEATURES_FORWARD_REF(Args_03) arguments_03,
               BSLS_COMPILERFEATURES_FORWARD_REF(Args_04) arguments_04,
-              BSLS_COMPILERFEATURES_FORWARD_REF(Args_05) arguments_05);
+              BSLS_COMPILERFEATURES_FORWARD_REF(Args_05) arguments_05)
+        BSLS_PRE_BODY_SAFE((position - fromBegin) >= 1);
 #endif  // BSLALG_DEQUEPRIMITIVES_VARIADIC_LIMIT_A >= 5
 
 #if BSLALG_DEQUEPRIMITIVES_VARIADIC_LIMIT_A >= 6
@@ -1954,7 +1973,8 @@ struct DequePrimitives {
               BSLS_COMPILERFEATURES_FORWARD_REF(Args_03) arguments_03,
               BSLS_COMPILERFEATURES_FORWARD_REF(Args_04) arguments_04,
               BSLS_COMPILERFEATURES_FORWARD_REF(Args_05) arguments_05,
-              BSLS_COMPILERFEATURES_FORWARD_REF(Args_06) arguments_06);
+              BSLS_COMPILERFEATURES_FORWARD_REF(Args_06) arguments_06)
+        BSLS_PRE_BODY_SAFE((position - fromBegin) >= 1);
 #endif  // BSLALG_DEQUEPRIMITIVES_VARIADIC_LIMIT_A >= 6
 
 #if BSLALG_DEQUEPRIMITIVES_VARIADIC_LIMIT_A >= 7
@@ -1977,7 +1997,8 @@ struct DequePrimitives {
               BSLS_COMPILERFEATURES_FORWARD_REF(Args_04) arguments_04,
               BSLS_COMPILERFEATURES_FORWARD_REF(Args_05) arguments_05,
               BSLS_COMPILERFEATURES_FORWARD_REF(Args_06) arguments_06,
-              BSLS_COMPILERFEATURES_FORWARD_REF(Args_07) arguments_07);
+              BSLS_COMPILERFEATURES_FORWARD_REF(Args_07) arguments_07)
+        BSLS_PRE_BODY_SAFE((position - fromBegin) >= 1);
 #endif  // BSLALG_DEQUEPRIMITIVES_VARIADIC_LIMIT_A >= 7
 
 #if BSLALG_DEQUEPRIMITIVES_VARIADIC_LIMIT_A >= 8
@@ -2002,7 +2023,8 @@ struct DequePrimitives {
               BSLS_COMPILERFEATURES_FORWARD_REF(Args_05) arguments_05,
               BSLS_COMPILERFEATURES_FORWARD_REF(Args_06) arguments_06,
               BSLS_COMPILERFEATURES_FORWARD_REF(Args_07) arguments_07,
-              BSLS_COMPILERFEATURES_FORWARD_REF(Args_08) arguments_08);
+              BSLS_COMPILERFEATURES_FORWARD_REF(Args_08) arguments_08)
+        BSLS_PRE_BODY_SAFE((position - fromBegin) >= 1);
 #endif  // BSLALG_DEQUEPRIMITIVES_VARIADIC_LIMIT_A >= 8
 
 #if BSLALG_DEQUEPRIMITIVES_VARIADIC_LIMIT_A >= 9
@@ -2029,7 +2051,8 @@ struct DequePrimitives {
               BSLS_COMPILERFEATURES_FORWARD_REF(Args_06) arguments_06,
               BSLS_COMPILERFEATURES_FORWARD_REF(Args_07) arguments_07,
               BSLS_COMPILERFEATURES_FORWARD_REF(Args_08) arguments_08,
-              BSLS_COMPILERFEATURES_FORWARD_REF(Args_09) arguments_09);
+              BSLS_COMPILERFEATURES_FORWARD_REF(Args_09) arguments_09)
+        BSLS_PRE_BODY_SAFE((position - fromBegin) >= 1);
 #endif  // BSLALG_DEQUEPRIMITIVES_VARIADIC_LIMIT_A >= 9
 
 #if BSLALG_DEQUEPRIMITIVES_VARIADIC_LIMIT_A >= 10
@@ -2058,7 +2081,8 @@ struct DequePrimitives {
               BSLS_COMPILERFEATURES_FORWARD_REF(Args_07) arguments_07,
               BSLS_COMPILERFEATURES_FORWARD_REF(Args_08) arguments_08,
               BSLS_COMPILERFEATURES_FORWARD_REF(Args_09) arguments_09,
-              BSLS_COMPILERFEATURES_FORWARD_REF(Args_10) arguments_10);
+              BSLS_COMPILERFEATURES_FORWARD_REF(Args_10) arguments_10)
+        BSLS_PRE_BODY_SAFE((position - fromBegin) >= 1);
 #endif  // BSLALG_DEQUEPRIMITIVES_VARIADIC_LIMIT_A >= 10
 
 #else
@@ -2094,7 +2118,8 @@ struct DequePrimitives {
              Iterator                                               position,
              ALLOCATOR                                              allocator,
              bsl::integral_constant<int, NIL_TRAITS>,
-             BSLS_COMPILERFEATURES_FORWARD_REF(Args)... arguments);
+             BSLS_COMPILERFEATURES_FORWARD_REF(Args)... arguments)
+        BSLS_PRE_BODY_SAFE((fromEnd - position) >= 1);
 
     template <class ALLOCATOR, class... Args>
     static void emplaceAndMoveToFront(Iterator  *toBegin,
@@ -2126,7 +2151,8 @@ struct DequePrimitives {
               Iterator                                              position,
               ALLOCATOR                                             allocator,
               bsl::integral_constant<int, NIL_TRAITS>,
-              BSLS_COMPILERFEATURES_FORWARD_REF(Args)... arguments);
+              BSLS_COMPILERFEATURES_FORWARD_REF(Args)... arguments)
+        BSLS_PRE_BODY_SAFE((position - fromBegin) >= 1);
 // }}} END GENERATED CODE
 #endif
 
@@ -3089,7 +3115,7 @@ DequePrimitives<VALUE_TYPE, BLOCK_LENGTH>::moveInsertAndMoveToBack(
     Iterator  end      = fromEnd;
     Iterator  dest     = end + 1;
 
-    BSLS_ASSERT_SAFE(backSize >= 1);
+    BSLS_PRE_BODY_SAFE(backSize >= 1);
 
     ElementGuard guard(dest, dest, allocator);
 
@@ -3481,7 +3507,7 @@ DequePrimitives<VALUE_TYPE, BLOCK_LENGTH>::moveInsertAndMoveToFront(
     Iterator  begin     = fromBegin;
     Iterator  dest      = begin - 1;
 
-    BSLS_ASSERT_SAFE(frontSize >= 1);
+    BSLS_PRE_BODY_SAFE(frontSize >= 1);
 
     ElementGuard guard(dest, dest, allocator);
 
@@ -4967,7 +4993,7 @@ DequePrimitives<VALUE_TYPE, BLOCK_LENGTH>::emplaceAndMoveToBackDispatch(
     Iterator  end      = fromEnd;
     Iterator  dest     = end + 1;
 
-    BSLS_ASSERT_SAFE(backSize >= 1);
+    BSLS_PRE_BODY_SAFE(backSize >= 1);
 
     ElementGuard guard(dest, dest, allocator);
 
@@ -5031,7 +5057,7 @@ DequePrimitives<VALUE_TYPE, BLOCK_LENGTH>::emplaceAndMoveToBackDispatch(
     Iterator  end      = fromEnd;
     Iterator  dest     = end + 1;
 
-    BSLS_ASSERT_SAFE(backSize >= 1);
+    BSLS_PRE_BODY_SAFE(backSize >= 1);
 
     ElementGuard guard(dest, dest, allocator);
 
@@ -5098,7 +5124,7 @@ DequePrimitives<VALUE_TYPE, BLOCK_LENGTH>::emplaceAndMoveToBackDispatch(
     Iterator  end      = fromEnd;
     Iterator  dest     = end + 1;
 
-    BSLS_ASSERT_SAFE(backSize >= 1);
+    BSLS_PRE_BODY_SAFE(backSize >= 1);
 
     ElementGuard guard(dest, dest, allocator);
 
@@ -5168,7 +5194,7 @@ DequePrimitives<VALUE_TYPE, BLOCK_LENGTH>::emplaceAndMoveToBackDispatch(
     Iterator  end      = fromEnd;
     Iterator  dest     = end + 1;
 
-    BSLS_ASSERT_SAFE(backSize >= 1);
+    BSLS_PRE_BODY_SAFE(backSize >= 1);
 
     ElementGuard guard(dest, dest, allocator);
 
@@ -5241,7 +5267,7 @@ DequePrimitives<VALUE_TYPE, BLOCK_LENGTH>::emplaceAndMoveToBackDispatch(
     Iterator  end      = fromEnd;
     Iterator  dest     = end + 1;
 
-    BSLS_ASSERT_SAFE(backSize >= 1);
+    BSLS_PRE_BODY_SAFE(backSize >= 1);
 
     ElementGuard guard(dest, dest, allocator);
 
@@ -5317,7 +5343,7 @@ DequePrimitives<VALUE_TYPE, BLOCK_LENGTH>::emplaceAndMoveToBackDispatch(
     Iterator  end      = fromEnd;
     Iterator  dest     = end + 1;
 
-    BSLS_ASSERT_SAFE(backSize >= 1);
+    BSLS_PRE_BODY_SAFE(backSize >= 1);
 
     ElementGuard guard(dest, dest, allocator);
 
@@ -5396,7 +5422,7 @@ DequePrimitives<VALUE_TYPE, BLOCK_LENGTH>::emplaceAndMoveToBackDispatch(
     Iterator  end      = fromEnd;
     Iterator  dest     = end + 1;
 
-    BSLS_ASSERT_SAFE(backSize >= 1);
+    BSLS_PRE_BODY_SAFE(backSize >= 1);
 
     ElementGuard guard(dest, dest, allocator);
 
@@ -5478,7 +5504,7 @@ DequePrimitives<VALUE_TYPE, BLOCK_LENGTH>::emplaceAndMoveToBackDispatch(
     Iterator  end      = fromEnd;
     Iterator  dest     = end + 1;
 
-    BSLS_ASSERT_SAFE(backSize >= 1);
+    BSLS_PRE_BODY_SAFE(backSize >= 1);
 
     ElementGuard guard(dest, dest, allocator);
 
@@ -5563,7 +5589,7 @@ DequePrimitives<VALUE_TYPE, BLOCK_LENGTH>::emplaceAndMoveToBackDispatch(
     Iterator  end      = fromEnd;
     Iterator  dest     = end + 1;
 
-    BSLS_ASSERT_SAFE(backSize >= 1);
+    BSLS_PRE_BODY_SAFE(backSize >= 1);
 
     ElementGuard guard(dest, dest, allocator);
 
@@ -5651,7 +5677,7 @@ DequePrimitives<VALUE_TYPE, BLOCK_LENGTH>::emplaceAndMoveToBackDispatch(
     Iterator  end      = fromEnd;
     Iterator  dest     = end + 1;
 
-    BSLS_ASSERT_SAFE(backSize >= 1);
+    BSLS_PRE_BODY_SAFE(backSize >= 1);
 
     ElementGuard guard(dest, dest, allocator);
 
@@ -5742,7 +5768,7 @@ DequePrimitives<VALUE_TYPE, BLOCK_LENGTH>::emplaceAndMoveToBackDispatch(
     Iterator  end      = fromEnd;
     Iterator  dest     = end + 1;
 
-    BSLS_ASSERT_SAFE(backSize >= 1);
+    BSLS_PRE_BODY_SAFE(backSize >= 1);
 
     ElementGuard guard(dest, dest, allocator);
 
@@ -7219,7 +7245,7 @@ DequePrimitives<VALUE_TYPE, BLOCK_LENGTH>::emplaceAndMoveToFrontDispatch(
     Iterator  begin     = fromBegin;
     Iterator  dest      = begin - 1;
 
-    BSLS_ASSERT_SAFE(frontSize >= 1);
+    BSLS_PRE_BODY_SAFE(frontSize >= 1);
 
     ElementGuard guard(dest, dest, allocator);
 
@@ -7281,7 +7307,7 @@ DequePrimitives<VALUE_TYPE, BLOCK_LENGTH>::emplaceAndMoveToFrontDispatch(
     Iterator  begin     = fromBegin;
     Iterator  dest      = begin - 1;
 
-    BSLS_ASSERT_SAFE(frontSize >= 1);
+    BSLS_PRE_BODY_SAFE(frontSize >= 1);
 
     ElementGuard guard(dest, dest, allocator);
 
@@ -7346,7 +7372,7 @@ DequePrimitives<VALUE_TYPE, BLOCK_LENGTH>::emplaceAndMoveToFrontDispatch(
     Iterator  begin     = fromBegin;
     Iterator  dest      = begin - 1;
 
-    BSLS_ASSERT_SAFE(frontSize >= 1);
+    BSLS_PRE_BODY_SAFE(frontSize >= 1);
 
     ElementGuard guard(dest, dest, allocator);
 
@@ -7414,7 +7440,7 @@ DequePrimitives<VALUE_TYPE, BLOCK_LENGTH>::emplaceAndMoveToFrontDispatch(
     Iterator  begin     = fromBegin;
     Iterator  dest      = begin - 1;
 
-    BSLS_ASSERT_SAFE(frontSize >= 1);
+    BSLS_PRE_BODY_SAFE(frontSize >= 1);
 
     ElementGuard guard(dest, dest, allocator);
 
@@ -7485,7 +7511,7 @@ DequePrimitives<VALUE_TYPE, BLOCK_LENGTH>::emplaceAndMoveToFrontDispatch(
     Iterator  begin     = fromBegin;
     Iterator  dest      = begin - 1;
 
-    BSLS_ASSERT_SAFE(frontSize >= 1);
+    BSLS_PRE_BODY_SAFE(frontSize >= 1);
 
     ElementGuard guard(dest, dest, allocator);
 
@@ -7559,7 +7585,7 @@ DequePrimitives<VALUE_TYPE, BLOCK_LENGTH>::emplaceAndMoveToFrontDispatch(
     Iterator  begin     = fromBegin;
     Iterator  dest      = begin - 1;
 
-    BSLS_ASSERT_SAFE(frontSize >= 1);
+    BSLS_PRE_BODY_SAFE(frontSize >= 1);
 
     ElementGuard guard(dest, dest, allocator);
 
@@ -7636,7 +7662,7 @@ DequePrimitives<VALUE_TYPE, BLOCK_LENGTH>::emplaceAndMoveToFrontDispatch(
     Iterator  begin     = fromBegin;
     Iterator  dest      = begin - 1;
 
-    BSLS_ASSERT_SAFE(frontSize >= 1);
+    BSLS_PRE_BODY_SAFE(frontSize >= 1);
 
     ElementGuard guard(dest, dest, allocator);
 
@@ -7716,7 +7742,7 @@ DequePrimitives<VALUE_TYPE, BLOCK_LENGTH>::emplaceAndMoveToFrontDispatch(
     Iterator  begin     = fromBegin;
     Iterator  dest      = begin - 1;
 
-    BSLS_ASSERT_SAFE(frontSize >= 1);
+    BSLS_PRE_BODY_SAFE(frontSize >= 1);
 
     ElementGuard guard(dest, dest, allocator);
 
@@ -7799,7 +7825,7 @@ DequePrimitives<VALUE_TYPE, BLOCK_LENGTH>::emplaceAndMoveToFrontDispatch(
     Iterator  begin     = fromBegin;
     Iterator  dest      = begin - 1;
 
-    BSLS_ASSERT_SAFE(frontSize >= 1);
+    BSLS_PRE_BODY_SAFE(frontSize >= 1);
 
     ElementGuard guard(dest, dest, allocator);
 
@@ -7885,7 +7911,7 @@ DequePrimitives<VALUE_TYPE, BLOCK_LENGTH>::emplaceAndMoveToFrontDispatch(
     Iterator  begin     = fromBegin;
     Iterator  dest      = begin - 1;
 
-    BSLS_ASSERT_SAFE(frontSize >= 1);
+    BSLS_PRE_BODY_SAFE(frontSize >= 1);
 
     ElementGuard guard(dest, dest, allocator);
 
@@ -7974,7 +8000,7 @@ DequePrimitives<VALUE_TYPE, BLOCK_LENGTH>::emplaceAndMoveToFrontDispatch(
     Iterator  begin     = fromBegin;
     Iterator  dest      = begin - 1;
 
-    BSLS_ASSERT_SAFE(frontSize >= 1);
+    BSLS_PRE_BODY_SAFE(frontSize >= 1);
 
     ElementGuard guard(dest, dest, allocator);
 
@@ -8135,7 +8161,7 @@ DequePrimitives<VALUE_TYPE, BLOCK_LENGTH>::emplaceAndMoveToBackDispatch(
     Iterator  end      = fromEnd;
     Iterator  dest     = end + 1;
 
-    BSLS_ASSERT_SAFE(backSize >= 1);
+    BSLS_PRE_BODY_SAFE(backSize >= 1);
 
     ElementGuard guard(dest, dest, allocator);
 
@@ -8283,7 +8309,7 @@ DequePrimitives<VALUE_TYPE, BLOCK_LENGTH>::emplaceAndMoveToFrontDispatch(
     Iterator  begin     = fromBegin;
     Iterator  dest      = begin - 1;
 
-    BSLS_ASSERT_SAFE(frontSize >= 1);
+    BSLS_PRE_BODY_SAFE(frontSize >= 1);
 
     ElementGuard guard(dest, dest, allocator);
 

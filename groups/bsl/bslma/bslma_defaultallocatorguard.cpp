@@ -23,14 +23,14 @@ namespace bslma {
 DefaultAllocatorGuard::DefaultAllocatorGuard(Allocator *temporary)
 : d_original_p(Default::defaultAllocator())
 {
-    BSLS_ASSERT(temporary);
+    BSLS_PRE_BODY(temporary);
 
     Default::setDefaultAllocatorRaw(temporary);
 }
 
 DefaultAllocatorGuard::~DefaultAllocatorGuard()
 {
-    BSLS_ASSERT(d_original_p);
+    BSLS_PRE_BODY(d_original_p);
 
     Default::setDefaultAllocatorRaw(d_original_p);
 }

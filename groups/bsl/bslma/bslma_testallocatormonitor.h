@@ -411,6 +411,8 @@ BSLS_IDENT("$Id: $")
 #include <bslma_testallocator.h>
 
 #include <bsls_assert.h>
+#include <bsls_pre.h>
+#include <bsls_post.h>
 
 namespace BloombergLP {
 
@@ -440,7 +442,8 @@ class TestAllocatorMonitor {
     /// construction, prior to that address being dereferenced to initialize
     /// the `const` data members of this type.
     static const TestAllocator *validateArgument(
-                                               const TestAllocator *allocator);
+                                               const TestAllocator *allocator)
+        BSLS_PRE_SAFE(allocator);
 
   private:
     // NOT IMPLEMENTED
@@ -452,10 +455,15 @@ class TestAllocatorMonitor {
 
     /// Create a `TestAllocatorMonitor` object to track changes in
     /// statistics of the specified `testAllocator`.
-    explicit TestAllocatorMonitor(const TestAllocator *testAllocator);
+    explicit TestAllocatorMonitor(const TestAllocator *testAllocator)
+        BSLS_PRE_SAFE(testAllocator);
 
     /// Destroy this object.
-    ~TestAllocatorMonitor();
+    ~TestAllocatorMonitor()
+        BSLS_PRE_SAFE(d_testAllocator_p)
+        BSLS_PRE_SAFE(0 <= d_initialMax)
+        BSLS_PRE_SAFE(0 <= d_initialTotal);
+        
 
     // MANIPULATOR
 
@@ -465,7 +473,10 @@ class TestAllocatorMonitor {
     /// `testAllocator` is passed, do not modify the allocator held by this
     /// object and re-initialize the allocator properties monitored by this
     /// object to the current state of that allocator.
-    void reset(const bslma::TestAllocator *testAllocator = 0);
+    void reset(const bslma::TestAllocator *testAllocator = 0)
+        BSLS_POST_SAFE(0 <= d_initialMax)
+        BSLS_POST_SAFE(0 <= d_initialTotal);
+        
 
     // ACCESSORS
 
@@ -530,7 +541,7 @@ inline
 const TestAllocator *
 TestAllocatorMonitor::validateArgument(const TestAllocator *allocator)
 {
-    BSLS_ASSERT_SAFE(allocator);
+    BSLS_PRE_BODY_SAFE(allocator);
 
     return allocator;
 }
@@ -549,8 +560,8 @@ void TestAllocatorMonitor::reset(const TestAllocator *testAllocator)
     d_initialMax   = d_testAllocator_p->numBlocksMax();
     d_initialTotal = d_testAllocator_p->numBlocksTotal();
 
-    BSLS_ASSERT_SAFE(0 <= d_initialMax);
-    BSLS_ASSERT_SAFE(0 <= d_initialTotal);
+    BSLS_POST_BODY_SAFE(0 <= d_initialMax);
+    BSLS_POST_BODY_SAFE(0 <= d_initialTotal);
 }
 
 // CREATORS
@@ -558,7 +569,7 @@ inline
 TestAllocatorMonitor::TestAllocatorMonitor(const TestAllocator *testAllocator)
 : d_testAllocator_p(testAllocator)
 {
-    BSLS_ASSERT_SAFE(d_testAllocator_p);
+    BSLS_PRE_BODY_SAFE(d_testAllocator_p);
 
     reset();
 }
@@ -570,9 +581,9 @@ namespace bslma {
 inline
 TestAllocatorMonitor::~TestAllocatorMonitor()
 {
-    BSLS_ASSERT_SAFE(d_testAllocator_p);
-    BSLS_ASSERT_SAFE(0 <= d_initialMax);
-    BSLS_ASSERT_SAFE(0 <= d_initialTotal);
+    BSLS_PRE_BODY_SAFE(d_testAllocator_p);
+    BSLS_PRE_BODY_SAFE(0 <= d_initialMax);
+    BSLS_PRE_BODY_SAFE(0 <= d_initialTotal);
 }
 
 }  // close package namespace

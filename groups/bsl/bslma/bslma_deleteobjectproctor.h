@@ -211,6 +211,7 @@ BSLS_IDENT("$Id: $")
 
 #include <bsls_assert.h>
 #include <bsls_keyword.h>
+#include <bsls_pre.h>
 
 #include <cstdlib>  // std::size_t
 
@@ -250,7 +251,8 @@ class DeleteObjectProctor {
 
     // PRIVATE MANIPULATORS
     void doDelete(bsl::false_type);
-    void doDelete(bsl::true_type);
+    void doDelete(bsl::true_type)
+        BSLS_PRE_SAFE(0 != d_allocator);
        // Destroy and deallocate 'd_object_p'.  The first overload is selected
        // for non-pointer-type 'ALLOCATOR' and invokes
        // 'AllocatorUtil::deleteObject'.  The second overload is selected for
@@ -343,7 +345,7 @@ template <class ALLOCATOR, class TYPE>
 inline
 void DeleteObjectProctor<ALLOCATOR, TYPE>::doDelete(bsl::true_type)
 {
-    BSLS_ASSERT_SAFE(0 != d_allocator);
+    BSLS_PRE_BODY_SAFE(0 != d_allocator);
 
     // When 'ALLOCATOR' is a pointer type, assume that 'deallocate' can be
     // called with a single pointer argument.  We cannot use

@@ -105,6 +105,7 @@ BSLS_IDENT("$Id: $")
 #include <bslscm_version.h>
 
 #include <bsls_assert.h>
+#include <bsls_pre.h>
 
 namespace BloombergLP {
 
@@ -140,13 +141,18 @@ class DeallocatorGuard {
     /// undefined unless `memory` and `allocator` are non-zero, and
     /// `allocator` supplied `memory`.  Note that `allocator` must remain
     /// valid throughout the lifetime of this guard.
-    DeallocatorGuard(void *memory, ALLOCATOR *allocator);
+    DeallocatorGuard(void *memory, ALLOCATOR *allocator)
+        BSLS_PRE_BODY_SAFE(memory)
+        BSLS_PRE_BODY_SAFE(allocator);
 
     /// Destroy this deallocator guard and deallocate the block of memory it
     /// manages by invoking the `deallocate` method of the allocator (or
     /// pool) that was supplied with the address of the (managed) memory at
     /// construction.
-    ~DeallocatorGuard();
+    ~DeallocatorGuard()
+        BSLS_PRE_BODY_SAFE(d_memory_p)
+        BSLS_PRE_BODY_SAFE(d_allocator_p);
+
 };
 
 // ============================================================================
@@ -165,16 +171,16 @@ DeallocatorGuard<ALLOCATOR>::DeallocatorGuard(void      *memory,
 : d_memory_p(memory)
 , d_allocator_p(allocator)
 {
-    BSLS_ASSERT_SAFE(memory);
-    BSLS_ASSERT_SAFE(allocator);
+    BSLS_PRE_BODY_SAFE(memory);
+    BSLS_PRE_BODY_SAFE(allocator);
 }
 
 template <class ALLOCATOR>
 inline
 DeallocatorGuard<ALLOCATOR>::~DeallocatorGuard()
 {
-    BSLS_ASSERT_SAFE(d_memory_p);
-    BSLS_ASSERT_SAFE(d_allocator_p);
+    BSLS_PRE_BODY_SAFE(d_memory_p);
+    BSLS_PRE_BODY_SAFE(d_allocator_p);
 
     d_allocator_p->deallocate(d_memory_p);
 }

@@ -735,7 +735,6 @@ void verifyBadArgumentTypeReferenced()
     verifyBadArgumentTypeReferencedWithType<t_CHAR, double     >();
 #if defined(BSLS_LIBRARYFEATURES_HAS_CPP20_FORMAT)
     verifyBadArgumentTypeReferencedWithType<t_CHAR, long double>();
-#endif
     verifyBadArgumentTypeReferencedWithType<t_CHAR, const t_CHAR *>();
 #if defined(BSLSTL_STRING_VIEW_AND_STD_STRING_VIEW_COEXIST) ||                \
     defined(BSLSTL_STRING_VIEW_IS_ALIASED)
@@ -747,6 +746,7 @@ void verifyBadArgumentTypeReferenced()
                                             bsl::basic_string_view<t_CHAR> >();
 #endif
     verifyBadArgumentTypeReferencedWithType<t_CHAR, const void *>();
+#endif
 
     // We cannot create an `std::handle` because it is an unspecified type, so
     // for now we do not test `handle` (even though we could for `bslfmt`).

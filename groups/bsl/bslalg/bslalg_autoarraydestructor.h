@@ -212,22 +212,31 @@ class AutoArrayDestructor {
     /// `begin <= end` and each element in the range `[ begin, end )` has
     /// been initialized.
     AutoArrayDestructor(OBJECT_TYPE *begin, OBJECT_TYPE *end,
-                        ALLOCATOR allocator = ALLOCATOR());
+                        ALLOCATOR allocator = ALLOCATOR())
+        BSLS_PRE_SAFE(!begin == !end)
+        BSLS_PRE_SAFE(begin <= end);
 
     /// Call the destructor on each of the elements of the parameterized
     /// `OBJECT_TYPE` delimited by the range `[ begin(), end() )` and
     /// destroy this array exception guard.
-    ~AutoArrayDestructor();
+    ~AutoArrayDestructor()
+        BSLS_PRE_SAFE(!d_begin_p == !d_end_p)
+        BSLS_PRE_SAFE(d_begin_p <= d_end_p);
 
     // MANIPULATORS
 
     /// Move the begin pointer by the specified `offset`, and return the new
     /// begin pointer.
-    OBJECT_TYPE *moveBegin(difference_type offset = -1);
+    OBJECT_TYPE *moveBegin(difference_type offset = -1)
+        BSLS_PRE_SAFE(d_begin_p || 0 == offset)
+        BSLS_PRE_SAFE(d_end_p - d_begin_p >= offset);
 
     /// Move the end pointer by the specified `offset`, and return the new
     /// end pointer.
-    OBJECT_TYPE *moveEnd(difference_type offset = 1);
+    OBJECT_TYPE *moveEnd(difference_type offset = 1)
+        BSLS_PRE_SAFE(d_end_p || 0 == offset)
+        BSLS_PRE_SAFE(d_end_p - d_begin_p >= -offset);
+        
 
     /// Set the range of elements guarded by this object to be empty.  Note
     /// that `begin() == end()` following this operation, but the specific
@@ -254,16 +263,16 @@ AutoArrayDestructor<OBJECT_TYPE, ALLOCATOR>::AutoArrayDestructor(
 , d_end_p(end)
 , d_allocator(allocator)
 {
-    BSLS_ASSERT_SAFE(!begin == !end);
-    BSLS_ASSERT_SAFE(begin <= end);
+    BSLS_PRE_BODY_SAFE(!begin == !end);
+    BSLS_PRE_BODY_SAFE(begin <= end);
 }
 
 template <class OBJECT_TYPE, class ALLOCATOR>
 inline
 AutoArrayDestructor<OBJECT_TYPE, ALLOCATOR>::~AutoArrayDestructor()
 {
-    BSLS_ASSERT_SAFE(!d_begin_p == !d_end_p);
-    BSLS_ASSERT_SAFE(d_begin_p <= d_end_p);
+    BSLS_PRE_BODY_SAFE(!d_begin_p == !d_end_p);
+    BSLS_PRE_BODY_SAFE(d_begin_p <= d_end_p);
 
     ArrayDestructionPrimitives::destroy(d_begin_p, d_end_p, d_allocator);
 }
@@ -274,8 +283,8 @@ inline
 OBJECT_TYPE *AutoArrayDestructor<OBJECT_TYPE, ALLOCATOR>::moveBegin(
                                                         difference_type offset)
 {
-    BSLS_ASSERT_SAFE(d_begin_p || 0 == offset);
-    BSLS_ASSERT_SAFE(d_end_p - d_begin_p >= offset);
+    BSLS_PRE_BODY_SAFE(d_begin_p || 0 == offset);
+    BSLS_PRE_BODY_SAFE(d_end_p - d_begin_p >= offset);
 
     d_begin_p += offset;
     return d_begin_p;
@@ -286,8 +295,8 @@ inline
 OBJECT_TYPE *
 AutoArrayDestructor<OBJECT_TYPE, ALLOCATOR>::moveEnd(difference_type offset)
 {
-    BSLS_ASSERT_SAFE(d_end_p || 0 == offset);
-    BSLS_ASSERT_SAFE(d_end_p - d_begin_p >= -offset);
+    BSLS_PRE_BODY_SAFE(d_end_p || 0 == offset);
+    BSLS_PRE_BODY_SAFE(d_end_p - d_begin_p >= -offset);
 
     d_end_p += offset;
     return d_end_p;

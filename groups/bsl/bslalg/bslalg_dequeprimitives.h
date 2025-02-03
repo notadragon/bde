@@ -417,7 +417,8 @@ struct DequePrimitives {
                Iterator                                              position,
                bslmf::MovableRef<VALUE_TYPE>                         value,
                ALLOCATOR                                             allocator,
-               bsl::integral_constant<int, NIL_TRAITS>);
+               bsl::integral_constant<int, NIL_TRAITS>)
+        BSLS_PRE_BODY_SAFE((fromEnd-position) >= 1);
 
     /// Insert the specified `numElements` copies of the specified `value`
     /// at the specified `position`, by moving the elements in the range
@@ -542,7 +543,8 @@ struct DequePrimitives {
                Iterator                                              position,
                bslmf::MovableRef<VALUE_TYPE>                         value,
                ALLOCATOR                                             allocator,
-               bsl::integral_constant<int, NIL_TRAITS>);
+               bsl::integral_constant<int, NIL_TRAITS>)
+        BSLS_PRE_SAFE((position - fromBegin) >= 1);
 
 #if !BSLS_COMPILERFEATURES_SIMULATE_CPP11_FEATURES
     /// Insert at the specified `position` a newly created `VALUE_TYPE`
@@ -595,7 +597,8 @@ struct DequePrimitives {
              Iterator                                               position,
              ALLOCATOR                                              allocator,
              bsl::integral_constant<int, NIL_TRAITS>,
-             Args&&...                                              arguments);
+             Args&&...                                              arguments)
+        BSLS_PRE_BODY_SAFE((fromEnd - position) >= 1);
 
     /// Insert at the specified `position` a newly created `VALUE_TYPE`
     /// object, constructed by forwarding the specified `allocator` (if
@@ -648,7 +651,8 @@ struct DequePrimitives {
               Iterator                                              position,
               ALLOCATOR                                             allocator,
               bsl::integral_constant<int, NIL_TRAITS>,
-              Args&&...                                             arguments);
+              Args&&...                                             arguments)
+        BSLS_PRE_BODY_SAFE((position - fromBegin) >= 1);
 #endif
 
     /// Move the specified `numElements` from the specified `source` to the
@@ -1610,7 +1614,7 @@ DequePrimitives<VALUE_TYPE, BLOCK_LENGTH>::moveInsertAndMoveToBack(
     Iterator  end      = fromEnd;
     Iterator  dest     = end + 1;
 
-    BSLS_ASSERT_SAFE(backSize >= 1);
+    BSLS_PRE_BODY_SAFE(backSize >= 1);
 
     ElementGuard guard(dest, dest, allocator);
 
@@ -2002,7 +2006,7 @@ DequePrimitives<VALUE_TYPE, BLOCK_LENGTH>::moveInsertAndMoveToFront(
     Iterator  begin     = fromBegin;
     Iterator  dest      = begin - 1;
 
-    BSLS_ASSERT_SAFE(frontSize >= 1);
+    BSLS_PRE_BODY_SAFE(frontSize >= 1);
 
     ElementGuard guard(dest, dest, allocator);
 
@@ -2146,7 +2150,7 @@ DequePrimitives<VALUE_TYPE, BLOCK_LENGTH>::emplaceAndMoveToBackDispatch(
     Iterator  end      = fromEnd;
     Iterator  dest     = end + 1;
 
-    BSLS_ASSERT_SAFE(backSize >= 1);
+    BSLS_PRE_BODY_SAFE(backSize >= 1);
 
     ElementGuard guard(dest, dest, allocator);
 
@@ -2304,7 +2308,7 @@ DequePrimitives<VALUE_TYPE, BLOCK_LENGTH>::emplaceAndMoveToFrontDispatch(
     Iterator  begin     = fromBegin;
     Iterator  dest      = begin - 1;
 
-    BSLS_ASSERT_SAFE(frontSize >= 1);
+    BSLS_PRE_BODY_SAFE(frontSize >= 1);
 
     ElementGuard guard(dest, dest, allocator);
 

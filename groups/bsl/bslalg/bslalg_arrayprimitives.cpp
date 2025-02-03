@@ -134,7 +134,7 @@ void ArrayPrimitives_Imp::uninitializedFillN(
                       void                                        *,
          bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>)
 {
-    BSLS_ASSERT_SAFE(begin || 0 == numElements);
+    BSLS_PRE_BODY_SAFE(begin || 0 == numElements);
 
     if (0 == numElements) {
         return;                                                       // RETURN
@@ -160,7 +160,7 @@ void ArrayPrimitives_Imp::uninitializedFillN(
                       void                                        *,
          bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>)
 {
-    BSLS_ASSERT_SAFE(begin || 0 == numElements);
+    BSLS_PRE_BODY_SAFE(begin || 0 == numElements);
 
     if (0 == numElements) {
         return;                                                       // RETURN
@@ -189,7 +189,7 @@ void ArrayPrimitives_Imp::uninitializedFillN(
                       void                                        *,
          bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>)
 {
-    BSLS_ASSERT_SAFE(begin || 0 == numElements);
+    BSLS_PRE_BODY_SAFE(begin || 0 == numElements);
 
     if (0 == numElements) {
         return;                                                       // RETURN
@@ -224,7 +224,7 @@ void ArrayPrimitives_Imp::uninitializedFillN(
                       void                                        *,
          bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>)
 {
-    BSLS_ASSERT_SAFE(begin || 0 == numElements);
+    BSLS_PRE_BODY_SAFE(begin || 0 == numElements);
 
     if (0 == numElements) {
         return;                                                       // RETURN
@@ -247,7 +247,7 @@ void ArrayPrimitives_Imp::uninitializedFillN(
                       void                                        *,
          bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>)
 {
-    BSLS_ASSERT_SAFE(begin || 0 == numElements);
+    BSLS_PRE_BODY_SAFE(begin || 0 == numElements);
 
     if (0 == numElements) {
         return;                                                       // RETURN
@@ -270,7 +270,7 @@ void ArrayPrimitives_Imp::uninitializedFillN(
                       void                                        *,
          bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>)
 {
-    BSLS_ASSERT_SAFE(begin || 0 == numElements);
+    BSLS_PRE_BODY_SAFE(begin || 0 == numElements);
 
     if (0 == numElements) {
         return;                                                       // RETURN
@@ -293,7 +293,7 @@ void ArrayPrimitives_Imp::uninitializedFillN(
                      void                                         *,
         bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>)
 {
-    BSLS_ASSERT_SAFE(begin || 0 == numElements);
+    BSLS_PRE_BODY_SAFE(begin || 0 == numElements);
 
     if (0 == numElements) {
         return;                                                       // RETURN
@@ -316,7 +316,7 @@ void ArrayPrimitives_Imp::uninitializedFillN(
                      void                                         *,
         bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>)
 {
-    BSLS_ASSERT_SAFE(begin || 0 == numElements);
+    BSLS_PRE_BODY_SAFE(begin || 0 == numElements);
 
     if (0 == numElements) {
         return;                                                       // RETURN
@@ -339,7 +339,7 @@ void ArrayPrimitives_Imp::uninitializedFillN(
                      void                                         *,
         bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>)
 {
-    BSLS_ASSERT_SAFE(begin || 0 == numElements);
+    BSLS_PRE_BODY_SAFE(begin || 0 == numElements);
 
     if (0 == numElements) {
         return;                                                       // RETURN
@@ -362,7 +362,7 @@ void ArrayPrimitives_Imp::uninitializedFillN(
                      void                                         *,
         bsl::integral_constant<int, e_IS_FUNDAMENTAL_OR_POINTER>)
 {
-    BSLS_ASSERT_SAFE(begin || 0 == numElements);
+    BSLS_PRE_BODY_SAFE(begin || 0 == numElements);
 
     if (0 == numElements) {
         return;                                                       // RETURN
@@ -384,8 +384,8 @@ void ArrayPrimitives_Imp::bitwiseFillN(char      *begin,
                                        size_type  numBytesInitialized,
                                        size_type  numBytes)
 {
-    BSLS_ASSERT_SAFE(begin || 0 == numBytes);
-    BSLS_ASSERT(numBytesInitialized <= numBytes);
+    BSLS_PRE_BODY_SAFE(begin || 0 == numBytes);
+    BSLS_PRE_BODY(numBytesInitialized <= numBytes);
 
     // Copy the destination onto itself, doubling size at every iteration.
 
@@ -409,10 +409,10 @@ void ArrayPrimitives_Imp::bitwiseRotate(char *begin,
                                         char *middle,
                                         char *end)
 {
-    BSLS_ASSERT_SAFE(!begin  == !middle);
-    BSLS_ASSERT_SAFE(!middle == !end);
-    BSLS_ASSERT_SAFE(begin  <= middle);
-    BSLS_ASSERT_SAFE(middle <= end);
+    BSLS_PRE_BODY_SAFE(!begin  == !middle);
+    BSLS_PRE_BODY_SAFE(!middle == !end);
+    BSLS_PRE_BODY_SAFE(begin  <= middle);
+    BSLS_PRE_BODY_SAFE(middle <= end);
 
     // These cases are simple enough, they should be taken care of on their
     // own.
@@ -577,10 +577,10 @@ void ArrayPrimitives_Imp::bitwiseRotateBackward(char *begin,
                                                 char *middle,
                                                 char *end)
 {
-    BSLS_ASSERT_SAFE(!begin  == !middle);
-    BSLS_ASSERT_SAFE(!middle == !end);
-    BSLS_ASSERT_SAFE(begin  <= middle);
-    BSLS_ASSERT_SAFE(middle <= end);
+    BSLS_PRE_BODY_SAFE(!begin  == !middle);
+    BSLS_PRE_BODY_SAFE(!middle == !end);
+    BSLS_PRE_BODY_SAFE(begin  <= middle);
+    BSLS_PRE_BODY_SAFE(middle <= end);
 
     union {
         char                                d_buffer[k_INPLACE_BUFFER_SIZE];
@@ -603,10 +603,10 @@ void ArrayPrimitives_Imp::bitwiseRotateForward(char *begin,
                                                char *middle,
                                                char *end)
 {
-    BSLS_ASSERT_SAFE(!begin  == !middle);
-    BSLS_ASSERT_SAFE(!middle == !end);
-    BSLS_ASSERT_SAFE(begin  <= middle);
-    BSLS_ASSERT_SAFE(middle <= end);
+    BSLS_PRE_BODY_SAFE(!begin  == !middle);
+    BSLS_PRE_BODY_SAFE(!middle == !end);
+    BSLS_PRE_BODY_SAFE(begin  <= middle);
+    BSLS_PRE_BODY_SAFE(middle <= end);
 
     union {
         char                                d_buffer[k_INPLACE_BUFFER_SIZE];
@@ -629,10 +629,10 @@ void ArrayPrimitives_Imp::bitwiseSwapRanges(char *begin,
                                             char *middle,
                                             char *end)
 {
-    BSLS_ASSERT_SAFE(!begin  == !middle);
-    BSLS_ASSERT_SAFE(!middle == !end);
-    BSLS_ASSERT_SAFE(begin  <= middle);
-    BSLS_ASSERT_SAFE(middle <= end);
+    BSLS_PRE_BODY_SAFE(!begin  == !middle);
+    BSLS_PRE_BODY_SAFE(!middle == !end);
+    BSLS_PRE_BODY_SAFE(begin  <= middle);
+    BSLS_PRE_BODY_SAFE(middle <= end);
 
     std::ptrdiff_t numBytes = static_cast<int>(middle - begin);
     BSLS_ASSERT(numBytes == end - middle);

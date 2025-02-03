@@ -1472,7 +1472,7 @@ BSLS_IDENT("$Id: $")
 #include <bsls_review.h>
 
 #ifdef BSLS_ASSERT_USE_CONTRACTS
-#include <experimental/contract>
+#include <contracts>
 #endif
 
                        // =============================
@@ -1581,6 +1581,8 @@ BSLS_IDENT("$Id: $")
 
 #define BSLS_ASSERT_PRE_BODY_IMP(X,LVL) BSLS_ASSERT_DISABLED_IMP(X,LVL)
 #define BSLS_ASSERT_PRE_IMP(X,LVL) pre( X )
+#define BSLS_ASSERT_POST_BODY_IMP(X,LVL) BSLS_ASSERT_DISABLED_IMP(X,LVL)
+#define BSLS_ASSERT_POST_IMP(X,LVL) post( X )
 
 #if !defined(BSLS_ASSERT_ASSUME_IMP)
 #define BSLS_ASSERT_ASSUME_IMP(X,LVL) BSLS_ASSERT_DISABLED_IMP(X,LVL)
@@ -1610,6 +1612,8 @@ BSLS_IDENT("$Id: $")
 
 #define BSLS_ASSERT_PRE_BODY_IMP(X,LVL) BSLS_ASSERT_ASSERT_IMP(X,LVL)
 #define BSLS_ASSERT_PRE_IMP(X,LVL)
+#define BSLS_ASSERT_POST_BODY_IMP(X,LVL) BSLS_ASSERT_ASSERT_IMP(X,LVL)
+#define BSLS_ASSERT_POST_IMP(X,LVL)
 
 #if defined(BSLS_PLATFORM_CMP_CLANG)
 

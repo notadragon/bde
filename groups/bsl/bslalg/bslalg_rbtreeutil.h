@@ -709,7 +709,8 @@ struct RbTreeUtil {
     /// compare greater than that of any other node in `subtree` (as
     /// determined by the comparator used to organize the red-black subtree
     /// data).
-    static const RbTreeNode *leftmost(const RbTreeNode *subtree);
+    static const RbTreeNode *leftmost(const RbTreeNode *subtree)
+        BSLS_PRE(subtree);
     static       RbTreeNode *leftmost(      RbTreeNode *subtree);
 
     /// Return the address of the rightmost node in the specified
@@ -719,7 +720,8 @@ struct RbTreeUtil {
     /// will not compare less than that of any other node in `subtree` (as
     /// determined by the comparator used to organize the red-black subtree
     /// data).
-    static const RbTreeNode *rightmost(const RbTreeNode *subtree);
+    static const RbTreeNode *rightmost(const RbTreeNode *subtree)
+        BSLS_PRE(subtree);
     static       RbTreeNode *rightmost(      RbTreeNode *subtree);
 
     /// Return the address of the node that follows the specified `node` in
@@ -729,7 +731,8 @@ struct RbTreeUtil {
     /// valid binary tree, and is not a sentinel node.  Note that if the
     /// tree does not contain duplicate values, then the returned node will
     /// have the smallest value greater than that of `node`.
-    static const RbTreeNode *next(const RbTreeNode *node);
+    static const RbTreeNode *next(const RbTreeNode *node)
+        BSLS_PRE(node);
     static       RbTreeNode *next(      RbTreeNode *node);
 
     /// Return the address of the node that precedes the specified `node` in
@@ -739,7 +742,8 @@ struct RbTreeUtil {
     /// member of a valid binary tree or is a sentinel `node`.  Note that if
     /// the tree does not contain duplicate values, then the returned node
     /// will have the largest value less than that of `node`.
-    static const RbTreeNode *previous(const RbTreeNode *node);
+    static const RbTreeNode *previous(const RbTreeNode *node)
+        BSLS_PRE(node);
     static       RbTreeNode *previous(      RbTreeNode *node);
 
                                  // Search
@@ -836,7 +840,11 @@ struct RbTreeUtil {
     template <class FACTORY>
     static void copyTree(RbTreeAnchor        *result,
                          const RbTreeAnchor&  original,
-                         FACTORY             *nodeFactory);
+                         FACTORY             *nodeFactory)
+        BSLS_PRE_SAFE(result)
+        BSLS_PRE_SAFE(0 == result->rootNode())
+        BSLS_PRE_SAFE(nodeFactory);
+
 
     /// Load into the specified `result`, using the specified `nodeFactory`
     /// to create and delete nodes, a collection of newly created nodes with
@@ -854,7 +862,12 @@ struct RbTreeUtil {
     static void moveTree(RbTreeAnchor *result,
                          RbTreeAnchor *original,
                          FACTORY      *nodeFactory,
-                         FACTORY      *originalNodeFactory);
+                         FACTORY      *originalNodeFactory)
+        BSLS_PRE_SAFE(result)
+        BSLS_PRE_SAFE(0 == result->rootNode())
+        BSLS_PRE_SAFE(nodeFactory)
+        BSLS_PRE_SAFE(originalNodeFactory);
+
 
     /// Call `nodeFactory->deleteNode` on each node in `tree` and reset
     /// `tree` to an empty state.  `FACTORY` shall be a class providing a
@@ -865,7 +878,10 @@ struct RbTreeUtil {
     /// The behavior is undefined unless `tree` is a valid binary tree, and
     /// `nodeFactory->deleteNode` does not throw.
     template <class FACTORY>
-    static void deleteTree(RbTreeAnchor *tree, FACTORY *nodeFactory);
+    static void deleteTree(RbTreeAnchor *tree, FACTORY *nodeFactory)
+        BSLS_PRE_SAFE(tree)
+        BSLS_PRE_SAFE(nodeFactory);
+
 
     /// Return the address of the node that would be the parent a node
     /// holding the specified `value`, if it were to be inserted into the
@@ -899,14 +915,19 @@ struct RbTreeUtil {
                                  bool                   *insertAsLeftChildFlag,
                                  RbTreeAnchor           *tree,
                                  NODE_VALUE_COMPARATOR&  comparator,
-                                 const VALUE&            value);
+                                 const VALUE&            value)
+        BSLS_PRE_SAFE(insertAsLeftChildFlag)
+        BSLS_PRE_SAFE(tree);
     template <class NODE_VALUE_COMPARATOR, class VALUE>
     static RbTreeNode *findInsertLocation(
                                  bool                   *insertAsLeftChildFlag,
                                  RbTreeAnchor           *tree,
                                  NODE_VALUE_COMPARATOR&  comparator,
                                  const VALUE&            value,
-                                 RbTreeNode             *hint);
+                                 RbTreeNode             *hint)
+        BSLS_PRE_SAFE(insertAsLeftChildFlag)
+        BSLS_PRE_SAFE(tree)
+        BSLS_PRE_SAFE(hint);
 
     /// Return the address of the node holding the specified `value` in the
     /// specified `tree` (organized according to the specified `comparator`)
@@ -940,14 +961,19 @@ struct RbTreeUtil {
                                       int                    *comparisonResult,
                                       RbTreeAnchor           *tree,
                                       NODE_VALUE_COMPARATOR&  comparator,
-                                      const VALUE&            value);
+                                      const VALUE&            value)
+        BSLS_PRE_SAFE(comparisonResult)
+        BSLS_PRE_SAFE(tree);
     template <class NODE_VALUE_COMPARATOR, class VALUE>
     static RbTreeNode *findUniqueInsertLocation(
                                       int                    *comparisonResult,
                                       RbTreeAnchor           *tree,
                                       NODE_VALUE_COMPARATOR&  comparator,
                                       const VALUE&            value,
-                                      RbTreeNode             *hint);
+                                      RbTreeNode             *hint)
+        BSLS_PRE_SAFE(comparisonResult)
+    BSLS_PRE_SAFE(tree)
+        BSLS_PRE_SAFE(hint);
 
     /// Insert the specified `newNode` into the specified `tree`, organized
     /// according to the specified `comparator`.  The resulting tree will
@@ -963,7 +989,9 @@ struct RbTreeUtil {
     template <class NODE_COMPARATOR>
     static void insert(RbTreeAnchor           *tree,
                        const NODE_COMPARATOR&  comparator,
-                       RbTreeNode             *newNode);
+                       RbTreeNode             *newNode)
+        BSLS_PRE_SAFE(tree)
+        BSLS_PRE_SAFE(newNode);
 
     /// Insert the specified `newNode` into the specified `tree` as either
     /// the left or right child of the specified `parentNode`, as indicated
@@ -982,31 +1010,44 @@ struct RbTreeUtil {
     static void insertAt(RbTreeAnchor *tree,
                          RbTreeNode   *parentNode,
                          bool          leftChildFlag,
-                         RbTreeNode   *newNode);
+                         RbTreeNode   *newNode)
+        BSLS_PRE(parentNode)
+        BSLS_PRE(newNode)
+        BSLS_PRE(tree);
 
     /// Remove the specified `node` from the specified `tree`, and then
     /// rebalance `tree` so that it again forms a valid red-black tree (see
     /// `validateRbTree`).  The behavior is undefined unless `tree` is
     /// well-formed (see `isWellFormed`).
-    static void remove(RbTreeAnchor *tree, RbTreeNode *node);
+    static void remove(RbTreeAnchor *tree, RbTreeNode *node)
+        BSLS_PRE(0 != node)
+        BSLS_PRE(0 != tree)
+        BSLS_PRE(0 != tree->rootNode());
 
     /// Efficiently exchange the nodes in the specified `a` tree with the
     /// nodes in the specified `b` tree.  This method provides the no-throw
     /// exception-safety guarantee.  The behavior is undefined unless `a`
     /// and `b` are well-formed (see `isWellFormed`).
-    static void swap(RbTreeAnchor *a, RbTreeAnchor *b);
+    static void swap(RbTreeAnchor *a, RbTreeAnchor *b)
+        BSLS_PRE(a)
+        BSLS_PRE(b);
 
                                  // Utility
 
     /// Return `true` if the specified `node` is the left child of its
     /// parent, and `false` otherwise.  The behavior is undefined unless
     /// `0 != node->parent()`.
-    static bool isLeftChild(const RbTreeNode *node);
+    static bool isLeftChild(const RbTreeNode *node)
+        BSLS_PRE_SAFE(node)
+        BSLS_PRE_SAFE(node->parent());
+
 
     /// Return `true` if the specified `node` is the left child of its
     /// parent, and `false` otherwise.  The behavior is undefined unless
     /// `0 != node->parent()`.
-    static bool isRightChild(const RbTreeNode *node);
+    static bool isRightChild(const RbTreeNode *node)
+        BSLS_PRE_SAFE(node)
+        BSLS_PRE_SAFE(node->parent());
 
     /// Perform counter-clockwise rotation on the specified `node`: Rotate
     /// the node's right child (the pivot) to be the node's parent, and
@@ -1028,7 +1069,10 @@ struct RbTreeUtil {
     /// sentinel node (i.e., not 0), which refers to the root node as its
     /// left child, and an `RbTreeAnchor` object returns the left child of
     /// the sentinel node as the root of the tree.
-    static void rotateLeft(RbTreeNode *node);
+    static void rotateLeft(RbTreeNode *node)
+        BSLS_PRE(node)
+        BSLS_PRE(node->rightChild());
+
 
     /// Perform clockwise rotation on the specified `node`: Rotate the
     /// node's left child (the pivot) to be the node's parent, and attach
@@ -1050,7 +1094,9 @@ struct RbTreeUtil {
     /// sentinel node (i.e., not 0), which refers to the root node as its
     /// left child, and an `RbTreeAnchor` object returns the left child of
     /// the sentinel node as the root of the tree.
-    static void rotateRight(RbTreeNode *node);
+    static void rotateRight(RbTreeNode *node)
+        BSLS_PRE(node)
+        BSLS_PRE(node->leftChild());
 
                                  // Testing
 
@@ -1075,7 +1121,8 @@ struct RbTreeUtil {
                     const RbTreeNode       *subtree,
                     void (*printNodeValueCallback)(FILE *, const RbTreeNode *),
                     int                     level = 0,
-                    int                     spacesPerLevel = 4);
+                    int                     spacesPerLevel = 4)
+        BSLS_PRE(file);
 
     /// Return the (common) number of black nodes on each path from the
     /// specified `rootNode` to a leaf in the tree, 0 if `rootNode` is 0,
@@ -1114,7 +1161,9 @@ struct RbTreeUtil {
     static int validateRbTree(const RbTreeNode       **errorNode,
                               const char             **errorDescription,
                               const RbTreeNode        *rootNode,
-                              const NODE_COMPARATOR&   comparator);
+                              const NODE_COMPARATOR&   comparator)
+        BSLS_PRE_SAFE(errorNode)
+        BSLS_PRE_SAFE(errorDescription);
 
     /// Return `true` if the specified `tree` is well-formed and refers to
     /// a valid red-black tree, and `false` otherwise.  For a
@@ -1175,7 +1224,9 @@ struct RbTreeUtil_Validator {
                               const RbTreeNode        *rootNode,
                               const RbTreeNode        *minNodeValue,
                               const RbTreeNode        *maxNodeValue,
-                              const NODE_COMPARATOR&   comparator);
+                              const NODE_COMPARATOR&   comparator)
+        BSLS_PRE_SAFE(errorNode)
+        BSLS_PRE_SAFE(errorDescription);
 
     /// Return `true` if the specified `tree` is well-formed, without
     /// confirming that it refers to a valid-red-black tree, and
@@ -1221,7 +1272,8 @@ class RbTreeUtilTreeProctor {
     /// Create a proctor object that, unless `release` is called, will,
     /// on destruction, invoke the specified `deleter` on each node in
     /// `tree`.
-    RbTreeUtilTreeProctor(RbTreeAnchor *tree, DELETER *deleter);
+    RbTreeUtilTreeProctor(RbTreeAnchor *tree, DELETER *deleter)
+        BSLS_PRE_SAFE(deleter);
 
     /// Unless `release` has been called, invoke the deleter supplied at
     /// construction on each node in the tree supplied at construction.
@@ -1361,9 +1413,9 @@ void RbTreeUtil::copyTree(RbTreeAnchor        *result,
                           const RbTreeAnchor&  original,
                           FACTORY             *nodeFactory)
 {
-    BSLS_ASSERT_SAFE(result);
-    BSLS_ASSERT_SAFE(0 == result->rootNode());
-    BSLS_ASSERT_SAFE(nodeFactory);
+    BSLS_PRE_BODY_SAFE(result);
+    BSLS_PRE_BODY_SAFE(0 == result->rootNode());
+    BSLS_PRE_BODY_SAFE(nodeFactory);
 
     if (!original.rootNode()) {
         result->reset(0, result->sentinel(), 0);
@@ -1429,10 +1481,10 @@ void RbTreeUtil::moveTree(RbTreeAnchor *result,
                           FACTORY      *nodeFactory,
                           FACTORY      *originalNodeFactory)
 {
-    BSLS_ASSERT_SAFE(result);
-    BSLS_ASSERT_SAFE(0 == result->rootNode());
-    BSLS_ASSERT_SAFE(nodeFactory);
-    BSLS_ASSERT_SAFE(originalNodeFactory);
+    BSLS_PRE_BODY_SAFE(result);
+    BSLS_PRE_BODY_SAFE(0 == result->rootNode());
+    BSLS_PRE_BODY_SAFE(nodeFactory);
+    BSLS_PRE_BODY_SAFE(originalNodeFactory);
 
     if (!original->rootNode()) {
         result->reset(0, result->sentinel(), 0);
@@ -1501,8 +1553,8 @@ void RbTreeUtil::moveTree(RbTreeAnchor *result,
 template <class FACTORY>
 void RbTreeUtil::deleteTree(RbTreeAnchor *tree, FACTORY *nodeFactory)
 {
-    BSLS_ASSERT_SAFE(tree);
-    BSLS_ASSERT_SAFE(nodeFactory);
+    BSLS_PRE_BODY_SAFE(tree);
+    BSLS_PRE_BODY_SAFE(nodeFactory);
 
     if (0 == tree->rootNode()) {
         BSLS_ASSERT_SAFE(tree->sentinel() == tree->firstNode());
@@ -1544,8 +1596,8 @@ RbTreeNode *RbTreeUtil::findInsertLocation(
                                  NODE_VALUE_COMPARATOR&  comparator,
                                  const VALUE&            value)
 {
-    BSLS_ASSERT_SAFE(insertAsLeftChildFlag);
-    BSLS_ASSERT_SAFE(tree);
+    BSLS_PRE_BODY_SAFE(insertAsLeftChildFlag);
+    BSLS_PRE_BODY_SAFE(tree);
 
     RbTreeNode *parent = tree->sentinel();
     RbTreeNode *node   = tree->rootNode();
@@ -1573,9 +1625,9 @@ RbTreeNode *RbTreeUtil::findInsertLocation(
                                  const VALUE&            value,
                                  RbTreeNode             *hint)
 {
-    BSLS_ASSERT_SAFE(insertAsLeftChildFlag);
-    BSLS_ASSERT_SAFE(tree);
-    BSLS_ASSERT_SAFE(hint);
+    BSLS_PRE_BODY_SAFE(insertAsLeftChildFlag);
+    BSLS_PRE_BODY_SAFE(tree);
+    BSLS_PRE_BODY_SAFE(hint);
 
     // 'hint' is valid if it is equal to, or the smallest value greater than,
     // 'value'.
@@ -1616,8 +1668,8 @@ RbTreeNode *RbTreeUtil::findUniqueInsertLocation(
                                       NODE_VALUE_COMPARATOR&  comparator,
                                       const VALUE&            value)
 {
-    BSLS_ASSERT_SAFE(comparisonResult);
-    BSLS_ASSERT_SAFE(tree);
+    BSLS_PRE_BODY_SAFE(comparisonResult);
+    BSLS_PRE_BODY_SAFE(tree);
 
     // Note that 'nextSmallestNode' is used, rather than 'nextLargestNode' (as
     // seen in 'upperBound' and 'lowerBound') to avoid an unnecessary
@@ -1658,9 +1710,9 @@ RbTreeNode *RbTreeUtil::findUniqueInsertLocation(
                                       const VALUE&            value,
                                       RbTreeNode             *hint)
 {
-    BSLS_ASSERT_SAFE(comparisonResult);
-    BSLS_ASSERT_SAFE(tree);
-    BSLS_ASSERT_SAFE(hint);
+    BSLS_PRE_BODY_SAFE(comparisonResult);
+    BSLS_PRE_BODY_SAFE(tree);
+    BSLS_PRE_BODY_SAFE(hint);
 
     enum { LEFT_CHILD = -1, NODE_FOUND = 0, RIGHT_CHILD = 1 };
 
@@ -1719,8 +1771,8 @@ void RbTreeUtil::insert(RbTreeAnchor           *tree,
                         const NODE_COMPARATOR&  comparator,
                         RbTreeNode             *newNode)
 {
-    BSLS_ASSERT_SAFE(tree);
-    BSLS_ASSERT_SAFE(newNode);
+    BSLS_PRE_BODY_SAFE(tree);
+    BSLS_PRE_BODY_SAFE(newNode);
 
     // Note that the following logic is the same as 'findInsertLocation'
     // except that the comparator required for this operation compares two
@@ -1747,8 +1799,8 @@ void RbTreeUtil::insert(RbTreeAnchor           *tree,
 inline
 bool RbTreeUtil::isLeftChild(const RbTreeNode *node)
 {
-    BSLS_ASSERT_SAFE(node);
-    BSLS_ASSERT_SAFE(node->parent());
+    BSLS_PRE_BODY_SAFE(node);
+    BSLS_PRE_BODY_SAFE(node->parent());
 
     return node->parent()->leftChild() == node;
 }
@@ -1756,8 +1808,8 @@ bool RbTreeUtil::isLeftChild(const RbTreeNode *node)
 inline
 bool RbTreeUtil::isRightChild(const RbTreeNode *node)
 {
-    BSLS_ASSERT_SAFE(node);
-    BSLS_ASSERT_SAFE(node->parent());
+    BSLS_PRE_BODY_SAFE(node);
+    BSLS_PRE_BODY_SAFE(node->parent());
 
     return node->parent()->rightChild() == node;
 }
@@ -1778,8 +1830,8 @@ int RbTreeUtil::validateRbTree(const RbTreeNode       **errorNode,
                                const RbTreeNode        *rootNode,
                                const NODE_COMPARATOR&   comparator)
 {
-    BSLS_ASSERT(errorNode);
-    BSLS_ASSERT(errorDescription);
+    BSLS_PRE_BODY(errorNode);
+    BSLS_PRE_BODY(errorDescription);
 
     return RbTreeUtil_Validator::validateRbTree(errorNode,
                                                 errorDescription,
@@ -1814,8 +1866,8 @@ int RbTreeUtil_Validator::validateRbTree(
                                      const RbTreeNode        *maxNodeValue,
                                      const NODE_COMPARATOR&   comparator)
 {
-    BSLS_ASSERT_SAFE(errorNode);
-    BSLS_ASSERT_SAFE(errorDescription);
+    BSLS_PRE_BODY_SAFE(errorNode);
+    BSLS_PRE_BODY_SAFE(errorDescription);
 
     //: 1 All the descendents to the left of each node are ordered that at or
     //:   before that node, and all descendents to the right of each node are
@@ -1917,7 +1969,7 @@ RbTreeUtilTreeProctor<DELETER>::RbTreeUtilTreeProctor(RbTreeAnchor *tree,
 : d_tree_p(tree)
 , d_deleter_p(deleter)
 {
-    BSLS_ASSERT_SAFE(deleter);
+    BSLS_PRE_BODY_SAFE(deleter);
 }
 
 template <class DELETER>

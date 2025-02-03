@@ -6,6 +6,7 @@ BSLS_IDENT_RCSID(bslalg_hashutil_cpp,"$Id$ $CSID$")
 
 #include <bsls_assert.h>
 #include <bsls_platform.h>
+#include <bsls_pre.h>
 
 // IMPLEMENTATION NOTES: See http://burtleburtle.net/bob/hash/evahash.html
 // In particular this hash function has the NoFunnel property, defined in that
@@ -37,9 +38,11 @@ static
 unsigned int hash(const char *data, int length)
     // That the memory starting at the specified 'data' of specified 'length'
     // bytes in length.
+    BSLS_PRE(0 <= length)
+    BSLS_PRE(data || 0 == length)
 {
-    BSLS_ASSERT(0 <= length);
-    BSLS_ASSERT(data || 0 == length);
+    BSLS_PRE_BODY(0 <= length);
+    BSLS_PRE_BODY(data || 0 == length);
 
     typedef unsigned char Ub1;
     typedef unsigned int  Ub4;
@@ -67,9 +70,11 @@ unsigned int hash(const char *data, int length)
 /// machine.
 static
 unsigned int reverse_hash(const char *data, int length)
+    BSLS_PRE(0 <= length)
+    BSLS_PRE(data || 0 == length)
 {
-    BSLS_ASSERT(0 <= length);
-    BSLS_ASSERT(data || 0 == length);
+    BSLS_PRE_BODY(0 <= length);
+    BSLS_PRE_BODY(data || 0 == length);
 
     typedef unsigned char Ub1;
     typedef unsigned int  Ub4;

@@ -150,10 +150,12 @@ struct ScalarPrimitives {
     /// trait and does not use `bslma::Allocator`.
     template <class TARGET_TYPE>
     static void defaultConstruct(TARGET_TYPE      *address,
-                                 bslma::Allocator *allocator);
+                                 bslma::Allocator *allocator)
+        BSLS_PRE_SAFE(address);
     template <class TARGET_TYPE>
     static void defaultConstruct(TARGET_TYPE *address,
-                                 void        *allocator);
+                                 void        *allocator)
+        BSLS_PRE_SAFE(address);
 
     /// Build an object of the parameterized `TARGET_TYPE` from the
     /// specified `original` object of the same `TARGET_TYPE` in the
@@ -167,11 +169,13 @@ struct ScalarPrimitives {
     template <class TARGET_TYPE>
     static void copyConstruct(TARGET_TYPE        *address,
                               const TARGET_TYPE&  original,
-                              bslma::Allocator   *allocator);
+                              bslma::Allocator   *allocator)
+        BSLS_PRE_SAFE(address);
     template <class TARGET_TYPE>
     static void copyConstruct(TARGET_TYPE        *address,
                               const TARGET_TYPE&  original,
-                              void               *allocator);
+                              void               *allocator)
+        BSLS_PRE_SAFE(address);
 
     /// Build an object of the parameterized `TARGET_TYPE` from the
     /// specified `original` object of the same `TARGET_TYPE` in the
@@ -187,11 +191,13 @@ struct ScalarPrimitives {
     template <class TARGET_TYPE>
     static void moveConstruct(TARGET_TYPE        *address,
                               TARGET_TYPE&        original,
-                              bslma::Allocator   *allocator);
+                              bslma::Allocator   *allocator)
+        BSLS_PRE_SAFE(address);
     template <class TARGET_TYPE>
     static void moveConstruct(TARGET_TYPE        *address,
                               TARGET_TYPE&        original,
-                              void               *allocator);
+                              void               *allocator)
+        BSLS_PRE_SAFE(address);
 
     /// Move the state of the object of the parameterized `TARGET_TYPE` from
     /// the object at the specified `original` address to the uninitialized
@@ -212,7 +218,10 @@ struct ScalarPrimitives {
     template <class TARGET_TYPE, class ALLOCATOR>
     static void destructiveMove(TARGET_TYPE *address,
                                 TARGET_TYPE *original,
-                                ALLOCATOR   *allocator);
+                                ALLOCATOR   *allocator)
+        BSLS_PRE_SAFE(address)
+        BSLS_PRE_SAFE(original);
+
 
     /// Build an object of the parameterized `TARGET_TYPE` in the
     /// uninitialized memory at the specified `address`.  Use the
@@ -225,42 +234,50 @@ struct ScalarPrimitives {
     /// `bslmf::UsesAllocatorArgT` and `blsma::UsesBslmaAllocator`.
     template <class TARGET_TYPE>
     static void construct(TARGET_TYPE      *address,
-                          bslma::Allocator *allocator);
+                          bslma::Allocator *allocator)
+        BSLS_PRE_SAFE(address);
     template <class TARGET_TYPE>
     static void construct(TARGET_TYPE *address,
-                          void        *allocator);
+                          void        *allocator)
+        BSLS_PRE_SAFE(address);
     template <class TARGET_TYPE, class ARG1>
     static void construct(TARGET_TYPE      *address,
                           const ARG1&       a1,
-                          bslma::Allocator *allocator);
+                          bslma::Allocator *allocator)
+        BSLS_PRE_SAFE(address);
     template <class TARGET_TYPE, class ARG1>
     static void construct(TARGET_TYPE *address,
                           const ARG1&  a1,
-                          void        *allocator);
+                          void        *allocator)
+        BSLS_PRE_SAFE(address);
     template <class TARGET_TYPE, class ARG1, class ARG2>
     static void construct(TARGET_TYPE      *address,
                           const ARG1&       a1,
                           const ARG2&       a2,
-                          bslma::Allocator *allocator);
+                          bslma::Allocator *allocator)
+        BSLS_PRE_SAFE(address);
     template <class TARGET_TYPE, class ARG1, class ARG2>
     static void construct(TARGET_TYPE *address,
                           const ARG1&  a1,
                           const ARG2&  a2,
-                          void        *allocator);
+                          void        *allocator)
+        BSLS_PRE_SAFE(address);
     template <class TARGET_TYPE,
               class ARG1, class ARG2, class ARG3>
     static void construct(TARGET_TYPE      *address,
                           const ARG1&       a1,
                           const ARG2&       a2,
                           const ARG3&       a3,
-                          bslma::Allocator *allocator);
+                          bslma::Allocator *allocator)
+        BSLS_PRE_SAFE(address);
     template <class TARGET_TYPE,
               class ARG1, class ARG2, class ARG3>
     static void construct(TARGET_TYPE *address,
                           const ARG1&  a1,
                           const ARG2&  a2,
                           const ARG3&  a3,
-                          void        *allocator);
+                          void        *allocator)
+        BSLS_PRE_SAFE(address);
     template <class TARGET_TYPE,
               class ARG1, class ARG2, class ARG3, class ARG4>
     static void construct(TARGET_TYPE      *address,
@@ -268,7 +285,8 @@ struct ScalarPrimitives {
                           const ARG2&       a2,
                           const ARG3&       a3,
                           const ARG4&       a4,
-                          bslma::Allocator *allocator);
+                          bslma::Allocator *allocator)
+        BSLS_PRE_SAFE(address);
     template <class TARGET_TYPE,
               class ARG1, class ARG2, class ARG3, class ARG4>
     static void construct(TARGET_TYPE *address,
@@ -276,7 +294,8 @@ struct ScalarPrimitives {
                           const ARG2&  a2,
                           const ARG3&  a3,
                           const ARG4&  a4,
-                          void        *allocator);
+                          void        *allocator)
+        BSLS_PRE_SAFE(address);
     template <class TARGET_TYPE,
               class ARG1, class ARG2, class ARG3, class ARG4,
               class ARG5>
@@ -286,7 +305,8 @@ struct ScalarPrimitives {
                           const ARG3&       a3,
                           const ARG4&       a4,
                           const ARG5&       a5,
-                          bslma::Allocator *allocator);
+                          bslma::Allocator *allocator)
+        BSLS_PRE_SAFE(address);
     template <class TARGET_TYPE,
               class ARG1, class ARG2, class ARG3, class ARG4,
               class ARG5>
@@ -296,7 +316,8 @@ struct ScalarPrimitives {
                           const ARG3&  a3,
                           const ARG4&  a4,
                           const ARG5&  a5,
-                          void        *allocator);
+                          void        *allocator)
+        BSLS_PRE_SAFE(address);
     template <class TARGET_TYPE,
               class ARG1, class ARG2, class ARG3, class ARG4,
               class ARG5, class ARG6>
@@ -307,7 +328,8 @@ struct ScalarPrimitives {
                           const ARG4&       a4,
                           const ARG5&       a5,
                           const ARG6&       a6,
-                          bslma::Allocator *allocator);
+                          bslma::Allocator *allocator)
+        BSLS_PRE_SAFE(address);
     template <class TARGET_TYPE,
               class ARG1, class ARG2, class ARG3, class ARG4,
               class ARG5, class ARG6>
@@ -318,7 +340,8 @@ struct ScalarPrimitives {
                           const ARG4&  a4,
                           const ARG5&  a5,
                           const ARG6&  a6,
-                          void        *allocator);
+                          void        *allocator)
+        BSLS_PRE_SAFE(address);
     template <class TARGET_TYPE,
               class ARG1, class ARG2, class ARG3, class ARG4,
               class ARG5, class ARG6, class ARG7>
@@ -330,7 +353,8 @@ struct ScalarPrimitives {
                           const ARG5&       a5,
                           const ARG6&       a6,
                           const ARG7&       a7,
-                          bslma::Allocator *allocator);
+                          bslma::Allocator *allocator)
+        BSLS_PRE_SAFE(address);
     template <class TARGET_TYPE,
               class ARG1, class ARG2, class ARG3, class ARG4,
               class ARG5, class ARG6, class ARG7>
@@ -342,7 +366,8 @@ struct ScalarPrimitives {
                           const ARG5&  a5,
                           const ARG6&  a6,
                           const ARG7&  a7,
-                          void        *allocator);
+                          void        *allocator)
+        BSLS_PRE_SAFE(address);
     template <class TARGET_TYPE,
               class ARG1, class ARG2,  class ARG3, class ARG4,
               class ARG5, class ARG6,  class ARG7, class ARG8>
@@ -355,7 +380,8 @@ struct ScalarPrimitives {
                           const ARG6&       a6,
                           const ARG7&       a7,
                           const ARG8&       a8,
-                          bslma::Allocator *allocator);
+                          bslma::Allocator *allocator)
+        BSLS_PRE_SAFE(address);
     template <class TARGET_TYPE,
               class ARG1, class ARG2, class ARG3, class ARG4,
               class ARG5, class ARG6, class ARG7, class ARG8>
@@ -368,7 +394,8 @@ struct ScalarPrimitives {
                           const ARG6&  a6,
                           const ARG7&  a7,
                           const ARG8&  a8,
-                          void        *allocator);
+                          void        *allocator)
+        BSLS_PRE_SAFE(address);
     template <class TARGET_TYPE,
               class ARG1, class ARG2,  class ARG3, class ARG4,
               class ARG5, class ARG6,  class ARG7, class ARG8,
@@ -383,7 +410,8 @@ struct ScalarPrimitives {
                           const ARG7&       a7,
                           const ARG8&       a8,
                           const ARG9&       a9,
-                          bslma::Allocator *allocator);
+                          bslma::Allocator *allocator)
+        BSLS_PRE_SAFE(address);
     template <class TARGET_TYPE,
               class ARG1, class ARG2,  class ARG3, class ARG4,
               class ARG5, class ARG6,  class ARG7, class ARG8,
@@ -398,7 +426,8 @@ struct ScalarPrimitives {
                           const ARG7&  a7,
                           const ARG8&  a8,
                           const ARG9&  a9,
-                          void        *allocator);
+                          void        *allocator)
+        BSLS_PRE_SAFE(address);
     template <class TARGET_TYPE,
               class ARG1, class ARG2, class ARG3, class ARG4,
               class ARG5, class ARG6, class ARG7, class ARG8,
@@ -414,7 +443,8 @@ struct ScalarPrimitives {
                           const ARG8&       a8,
                           const ARG9&       a9,
                           const ARG10&      a10,
-                          bslma::Allocator *allocator);
+                          bslma::Allocator *allocator)
+        BSLS_PRE_SAFE(address);
     template <class TARGET_TYPE,
               class ARG1, class ARG2, class ARG3, class ARG4,
               class ARG5, class ARG6, class ARG7, class ARG8,
@@ -430,7 +460,8 @@ struct ScalarPrimitives {
                           const ARG8&   a8,
                           const ARG9&   a9,
                           const ARG10&  a10,
-                          void         *allocator);
+                          void         *allocator)
+        BSLS_PRE_SAFE(address);
     template <class TARGET_TYPE,
               class ARG1, class ARG2,  class ARG3, class ARG4,
               class ARG5, class ARG6,  class ARG7, class ARG8,
@@ -447,7 +478,8 @@ struct ScalarPrimitives {
                           const ARG9&       a9,
                           const ARG10&      a10,
                           const ARG11&      a11,
-                          bslma::Allocator *allocator);
+                          bslma::Allocator *allocator)
+        BSLS_PRE_SAFE(address);
     template <class TARGET_TYPE,
               class ARG1, class ARG2,  class ARG3, class ARG4,
               class ARG5, class ARG6,  class ARG7, class ARG8,
@@ -464,7 +496,8 @@ struct ScalarPrimitives {
                           const ARG9&   a9,
                           const ARG10&  a10,
                           const ARG11&  a11,
-                          void         *allocator);
+                          void         *allocator)
+        BSLS_PRE_SAFE(address);
     template <class TARGET_TYPE,
               class ARG1, class ARG2,  class ARG3,  class ARG4,
               class ARG5, class ARG6,  class ARG7,  class ARG8,
@@ -482,7 +515,8 @@ struct ScalarPrimitives {
                           const ARG10&      a10,
                           const ARG11&      a11,
                           const ARG12&      a12,
-                          bslma::Allocator *allocator);
+                          bslma::Allocator *allocator)
+        BSLS_PRE_SAFE(address);
     template <class TARGET_TYPE,
               class ARG1, class ARG2,  class ARG3,  class ARG4,
               class ARG5, class ARG6,  class ARG7,  class ARG8,
@@ -500,7 +534,8 @@ struct ScalarPrimitives {
                           const ARG10&  a10,
                           const ARG11&  a11,
                           const ARG12&  a12,
-                          void         *allocator);
+                          void         *allocator)
+        BSLS_PRE_SAFE(address);
     template <class TARGET_TYPE,
               class ARG1, class ARG2,  class ARG3,  class ARG4,
               class ARG5, class ARG6,  class ARG7,  class ARG8,
@@ -520,7 +555,8 @@ struct ScalarPrimitives {
                           const ARG11&      a11,
                           const ARG12&      a12,
                           const ARG13&      a13,
-                          bslma::Allocator *allocator);
+                          bslma::Allocator *allocator)
+        BSLS_PRE_SAFE(address);
     template <class TARGET_TYPE,
               class ARG1, class ARG2,  class ARG3,  class ARG4,
               class ARG5, class ARG6,  class ARG7,  class ARG8,
@@ -540,7 +576,8 @@ struct ScalarPrimitives {
                           const ARG11&  a11,
                           const ARG12&  a12,
                           const ARG13&  a13,
-                          void         *allocator);
+                          void         *allocator)
+        BSLS_PRE_SAFE(address);
     template <class TARGET_TYPE,
               class ARG1,  class ARG2,  class ARG3,  class ARG4,
               class ARG5,  class ARG6,  class ARG7,  class ARG8,
@@ -561,7 +598,8 @@ struct ScalarPrimitives {
                           const ARG12&      a12,
                           const ARG13&      a13,
                           const ARG14&      a14,
-                          bslma::Allocator *allocator);
+                          bslma::Allocator *allocator)
+        BSLS_PRE_SAFE(address);
     template <class TARGET_TYPE,
               class ARG1,  class ARG2,  class ARG3,  class ARG4,
               class ARG5,  class ARG6,  class ARG7,  class ARG8,
@@ -582,7 +620,8 @@ struct ScalarPrimitives {
                           const ARG12&  a12,
                           const ARG13&  a13,
                           const ARG14&  a14,
-                          void         *allocator);
+                          void         *allocator)
+        BSLS_PRE_SAFE(address);
 
 #ifndef BDE_OMIT_INTERNAL_DEPRECATED
     /// **DEPRECATED**: Use `bslma::DestructionUtil::destroy` without an
@@ -1521,7 +1560,7 @@ void
 ScalarPrimitives::defaultConstruct(TARGET_TYPE      *address,
                                    bslma::Allocator *allocator)
 {
-    BSLS_ASSERT_SAFE(address);
+    BSLS_PRE_BODY_SAFE(address);
 
     enum {
         k_VALUE = bslma::UsesBslmaAllocator<TARGET_TYPE>::value
@@ -1543,7 +1582,7 @@ void
 ScalarPrimitives::defaultConstruct(TARGET_TYPE *address,
                                    void        *)
 {
-    BSLS_ASSERT_SAFE(address);
+    BSLS_PRE_BODY_SAFE(address);
 
     enum {
         k_VALUE = bsl::is_trivially_default_constructible<TARGET_TYPE>::value
@@ -1562,7 +1601,7 @@ ScalarPrimitives::copyConstruct(TARGET_TYPE        *address,
                                 const TARGET_TYPE&  original,
                                 bslma::Allocator   *allocator)
 {
-    BSLS_ASSERT_SAFE(address);
+    BSLS_PRE_BODY_SAFE(address);
 
     enum {
         k_VALUE = bslma::UsesBslmaAllocator<TARGET_TYPE>::value
@@ -1584,7 +1623,7 @@ ScalarPrimitives::copyConstruct(TARGET_TYPE        *address,
                                 const TARGET_TYPE&  original,
                                 void               *)
 {
-    BSLS_ASSERT_SAFE(address);
+    BSLS_PRE_BODY_SAFE(address);
 
     enum {
         k_VALUE = bslmf::IsBitwiseCopyable<TARGET_TYPE>::value
@@ -1605,7 +1644,7 @@ ScalarPrimitives::moveConstruct(TARGET_TYPE        *address,
                                 TARGET_TYPE&        original,
                                 bslma::Allocator   *allocator)
 {
-    BSLS_ASSERT_SAFE(address);
+    BSLS_PRE_BODY_SAFE(address);
 
     enum {
         k_VALUE = bslma::UsesBslmaAllocator<TARGET_TYPE>::value
@@ -1627,7 +1666,7 @@ ScalarPrimitives::moveConstruct(TARGET_TYPE        *address,
                                 TARGET_TYPE&        original,
                                 void               *)
 {
-    BSLS_ASSERT_SAFE(address);
+    BSLS_PRE_BODY_SAFE(address);
 
     enum {
         k_VALUE = bslmf::IsBitwiseCopyable<TARGET_TYPE>::value
@@ -1648,8 +1687,8 @@ ScalarPrimitives::destructiveMove(TARGET_TYPE *address,
                                   TARGET_TYPE *original,
                                   ALLOCATOR   *allocator)
 {
-    BSLS_ASSERT_SAFE(address);
-    BSLS_ASSERT_SAFE(original);
+    BSLS_PRE_BODY_SAFE(address);
+    BSLS_PRE_BODY_SAFE(original);
 
     enum {
         k_VALUE = bslmf::IsBitwiseMoveable<TARGET_TYPE>::value
@@ -1670,7 +1709,7 @@ void
 ScalarPrimitives::construct(TARGET_TYPE      *address,
                             bslma::Allocator *allocator)
 {
-    BSLS_ASSERT_SAFE(address);
+    BSLS_PRE_BODY_SAFE(address);
 
     enum {
         k_VALUE = bslma::UsesBslmaAllocator<TARGET_TYPE>::value
@@ -1689,7 +1728,7 @@ void
 ScalarPrimitives::construct(TARGET_TYPE *address,
                             void        *)
 {
-    BSLS_ASSERT_SAFE(address);
+    BSLS_PRE_BODY_SAFE(address);
 
     ::new (address) TARGET_TYPE();
     BSLALG_SCALARPRIMITIVES_XLC_PLACEMENT_NEW_FIX;
@@ -1702,7 +1741,7 @@ ScalarPrimitives::construct(TARGET_TYPE      *address,
                             const ARG1&       a1,
                             bslma::Allocator *allocator)
 {
-    BSLS_ASSERT_SAFE(address);
+    BSLS_PRE_BODY_SAFE(address);
 
     enum {
         k_VALUE = bslma::UsesBslmaAllocator<TARGET_TYPE>::value
@@ -1725,7 +1764,7 @@ ScalarPrimitives::construct(TARGET_TYPE *address,
                             const ARG1&  a1,
                             void        *)
 {
-    BSLS_ASSERT_SAFE(address);
+    BSLS_PRE_BODY_SAFE(address);
 
     ::new (address) TARGET_TYPE(a1);
     BSLALG_SCALARPRIMITIVES_XLC_PLACEMENT_NEW_FIX;
@@ -1739,7 +1778,7 @@ ScalarPrimitives::construct(TARGET_TYPE      *address,
                             const ARG2&       a2,
                             bslma::Allocator *allocator)
 {
-    BSLS_ASSERT_SAFE(address);
+    BSLS_PRE_BODY_SAFE(address);
 
     enum {
         k_VALUE = bslma::UsesBslmaAllocator<TARGET_TYPE>::value
@@ -1760,7 +1799,7 @@ ScalarPrimitives::construct(TARGET_TYPE *address,
                             const ARG2&  a2,
                             void        *)
 {
-    BSLS_ASSERT_SAFE(address);
+    BSLS_PRE_BODY_SAFE(address);
 
     ::new (address) TARGET_TYPE(a1, a2);
     BSLALG_SCALARPRIMITIVES_XLC_PLACEMENT_NEW_FIX;
@@ -1775,7 +1814,7 @@ ScalarPrimitives::construct(TARGET_TYPE      *address,
                             const ARG3&       a3,
                             bslma::Allocator *allocator)
 {
-    BSLS_ASSERT_SAFE(address);
+    BSLS_PRE_BODY_SAFE(address);
 
     enum {
         k_VALUE = bslma::UsesBslmaAllocator<TARGET_TYPE>::value
@@ -1799,7 +1838,7 @@ ScalarPrimitives::construct(TARGET_TYPE *address,
                             const ARG3&  a3,
                             void        *)
 {
-    BSLS_ASSERT_SAFE(address);
+    BSLS_PRE_BODY_SAFE(address);
 
     ::new (address) TARGET_TYPE(a1, a2, a3);
     BSLALG_SCALARPRIMITIVES_XLC_PLACEMENT_NEW_FIX;
@@ -1816,7 +1855,7 @@ ScalarPrimitives::construct(TARGET_TYPE      *address,
                             const ARG4&       a4,
                             bslma::Allocator *allocator)
 {
-    BSLS_ASSERT_SAFE(address);
+    BSLS_PRE_BODY_SAFE(address);
 
     enum {
         k_VALUE = bslma::UsesBslmaAllocator<TARGET_TYPE>::value
@@ -1842,7 +1881,7 @@ ScalarPrimitives::construct(TARGET_TYPE *address,
                             const ARG4&  a4,
                             void        *)
 {
-    BSLS_ASSERT_SAFE(address);
+    BSLS_PRE_BODY_SAFE(address);
 
     ::new (address) TARGET_TYPE(a1, a2, a3, a4);
     BSLALG_SCALARPRIMITIVES_XLC_PLACEMENT_NEW_FIX;
@@ -1860,7 +1899,7 @@ ScalarPrimitives::construct(TARGET_TYPE      *address,
                             const ARG5&       a5,
                             bslma::Allocator *allocator)
 {
-    BSLS_ASSERT_SAFE(address);
+    BSLS_PRE_BODY_SAFE(address);
 
     enum {
         k_VALUE = bslma::UsesBslmaAllocator<TARGET_TYPE>::value
@@ -1887,7 +1926,7 @@ ScalarPrimitives::construct(TARGET_TYPE *address,
                             const ARG5&  a5,
                             void        *)
 {
-    BSLS_ASSERT_SAFE(address);
+    BSLS_PRE_BODY_SAFE(address);
 
     ::new (address) TARGET_TYPE(a1, a2, a3, a4, a5);
     BSLALG_SCALARPRIMITIVES_XLC_PLACEMENT_NEW_FIX;
@@ -1906,7 +1945,7 @@ ScalarPrimitives::construct(TARGET_TYPE      *address,
                             const ARG6&       a6,
                             bslma::Allocator *allocator)
 {
-    BSLS_ASSERT_SAFE(address);
+    BSLS_PRE_BODY_SAFE(address);
 
     enum {
         k_VALUE = bslma::UsesBslmaAllocator<TARGET_TYPE>::value
@@ -1934,7 +1973,7 @@ ScalarPrimitives::construct(TARGET_TYPE *address,
                             const ARG6&  a6,
                             void        *)
 {
-    BSLS_ASSERT_SAFE(address);
+    BSLS_PRE_BODY_SAFE(address);
 
     ::new (address) TARGET_TYPE(a1, a2, a3, a4, a5, a6);
     BSLALG_SCALARPRIMITIVES_XLC_PLACEMENT_NEW_FIX;
@@ -1954,7 +1993,7 @@ ScalarPrimitives::construct(TARGET_TYPE      *address,
                             const ARG7&       a7,
                             bslma::Allocator *allocator)
 {
-    BSLS_ASSERT_SAFE(address);
+    BSLS_PRE_BODY_SAFE(address);
 
     enum {
         k_VALUE = bslma::UsesBslmaAllocator<TARGET_TYPE>::value
@@ -1983,7 +2022,7 @@ ScalarPrimitives::construct(TARGET_TYPE *address,
                             const ARG7&  a7,
                             void        *)
 {
-    BSLS_ASSERT_SAFE(address);
+    BSLS_PRE_BODY_SAFE(address);
 
     ::new (address) TARGET_TYPE(a1, a2, a3, a4, a5, a6, a7);
     BSLALG_SCALARPRIMITIVES_XLC_PLACEMENT_NEW_FIX;
@@ -2005,7 +2044,7 @@ ScalarPrimitives::construct(TARGET_TYPE      *address,
                             const ARG8&       a8,
                             bslma::Allocator *allocator)
 {
-    BSLS_ASSERT_SAFE(address);
+    BSLS_PRE_BODY_SAFE(address);
 
     enum {
         k_VALUE = bslma::UsesBslmaAllocator<TARGET_TYPE>::value
@@ -2036,7 +2075,7 @@ ScalarPrimitives::construct(TARGET_TYPE *address,
                             const ARG8&  a8,
                             void        *)
 {
-    BSLS_ASSERT_SAFE(address);
+    BSLS_PRE_BODY_SAFE(address);
 
     ::new (address) TARGET_TYPE(a1, a2, a3, a4, a5, a6, a7, a8);
     BSLALG_SCALARPRIMITIVES_XLC_PLACEMENT_NEW_FIX;
@@ -2059,7 +2098,7 @@ ScalarPrimitives::construct(TARGET_TYPE      *address,
                             const ARG9&       a9,
                             bslma::Allocator *allocator)
 {
-    BSLS_ASSERT_SAFE(address);
+    BSLS_PRE_BODY_SAFE(address);
 
     enum {
         k_VALUE = bslma::UsesBslmaAllocator<TARGET_TYPE>::value
@@ -2091,7 +2130,7 @@ ScalarPrimitives::construct(TARGET_TYPE *address,
                             const ARG9&  a9,
                             void        *)
 {
-    BSLS_ASSERT_SAFE(address);
+    BSLS_PRE_BODY_SAFE(address);
 
     ::new (address) TARGET_TYPE(a1, a2, a3, a4, a5, a6, a7, a8, a9);
     BSLALG_SCALARPRIMITIVES_XLC_PLACEMENT_NEW_FIX;
@@ -2115,7 +2154,7 @@ ScalarPrimitives::construct(TARGET_TYPE      *address,
                             const ARG10&      a10,
                             bslma::Allocator *allocator)
 {
-    BSLS_ASSERT_SAFE(address);
+    BSLS_PRE_BODY_SAFE(address);
 
     enum {
         k_VALUE = bslma::UsesBslmaAllocator<TARGET_TYPE>::value
@@ -2148,7 +2187,7 @@ ScalarPrimitives::construct(TARGET_TYPE  *address,
                             const ARG10&  a10,
                             void         *)
 {
-    BSLS_ASSERT_SAFE(address);
+    BSLS_PRE_BODY_SAFE(address);
 
     ::new (address) TARGET_TYPE(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10);
     BSLALG_SCALARPRIMITIVES_XLC_PLACEMENT_NEW_FIX;
@@ -2173,7 +2212,7 @@ ScalarPrimitives::construct(TARGET_TYPE      *address,
                             const ARG11&      a11,
                             bslma::Allocator *allocator)
 {
-    BSLS_ASSERT_SAFE(address);
+    BSLS_PRE_BODY_SAFE(address);
 
     enum {
         k_VALUE = bslma::UsesBslmaAllocator<TARGET_TYPE>::value
@@ -2207,7 +2246,7 @@ ScalarPrimitives::construct(TARGET_TYPE  *address,
                             const ARG11&  a11,
                             void         *)
 {
-    BSLS_ASSERT_SAFE(address);
+    BSLS_PRE_BODY_SAFE(address);
 
     ::new (address) TARGET_TYPE(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11);
     BSLALG_SCALARPRIMITIVES_XLC_PLACEMENT_NEW_FIX;
@@ -2234,7 +2273,7 @@ ScalarPrimitives::construct(TARGET_TYPE      *address,
                             const ARG12&      a12,
                             bslma::Allocator *allocator)
 {
-    BSLS_ASSERT_SAFE(address);
+    BSLS_PRE_BODY_SAFE(address);
 
     enum {
         k_VALUE = bslma::UsesBslmaAllocator<TARGET_TYPE>::value
@@ -2270,7 +2309,7 @@ ScalarPrimitives::construct(TARGET_TYPE  *address,
                             const ARG12&  a12,
                             void         *)
 {
-    BSLS_ASSERT_SAFE(address);
+    BSLS_PRE_BODY_SAFE(address);
 
     ::new (address) TARGET_TYPE(a1,  a2,  a3, a4, a5, a6, a7, a8, a9,
                                 a10, a11, a12);
@@ -2299,7 +2338,7 @@ ScalarPrimitives::construct(TARGET_TYPE      *address,
                             const ARG13&      a13,
                             bslma::Allocator *allocator)
 {
-    BSLS_ASSERT_SAFE(address);
+    BSLS_PRE_BODY_SAFE(address);
 
     enum {
         k_VALUE = bslma::UsesBslmaAllocator<TARGET_TYPE>::value
@@ -2336,7 +2375,7 @@ ScalarPrimitives::construct(TARGET_TYPE  *address,
                             const ARG13&  a13,
                             void         *)
 {
-    BSLS_ASSERT_SAFE(address);
+    BSLS_PRE_BODY_SAFE(address);
 
     ::new (address) TARGET_TYPE(
                        a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13);
@@ -2366,7 +2405,7 @@ ScalarPrimitives::construct(TARGET_TYPE      *address,
                             const ARG14&      a14,
                             bslma::Allocator *allocator)
 {
-    BSLS_ASSERT_SAFE(address);
+    BSLS_PRE_BODY_SAFE(address);
 
     enum {
         k_VALUE = bslma::UsesBslmaAllocator<TARGET_TYPE>::value
@@ -2404,7 +2443,7 @@ ScalarPrimitives::construct(TARGET_TYPE  *address,
                             const ARG14&  a14,
                             void         *)
 {
-    BSLS_ASSERT_SAFE(address);
+    BSLS_PRE_BODY_SAFE(address);
 
     ::new (address) TARGET_TYPE(
                   a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14);

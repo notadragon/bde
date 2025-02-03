@@ -21,7 +21,7 @@
 // regions of C++11 code, then this header contains no code and is not
 // '#include'd in the original header.
 //
-// Generated on Sun Sep  1 05:38:38 2024
+// Generated on Sat Feb  1 01:10:03 2025
 // Command line: sim_cpp11_features.pl bslma_sharedptrinplacerep.h
 
 #ifdef COMPILING_BSLMA_SHAREDPTRINPLACEREP_H
@@ -63,7 +63,8 @@ class SharedPtrInplaceRep : public SharedPtrRep {
     /// Instead, `disposeObject` destroys the in-place object and
     /// `disposeRep` deallocates this representation object (including the
     /// shared object's footprint).
-    ~SharedPtrInplaceRep() BSLS_KEYWORD_OVERRIDE;
+    ~SharedPtrInplaceRep() BSLS_KEYWORD_OVERRIDE
+        BSLS_PRE(0);
 
   public:
     // CREATORS
@@ -942,7 +943,7 @@ SharedPtrInplaceRep<TYPE>::SharedPtrInplaceRep(Allocator *basicAllocator,
 template <class TYPE>
 SharedPtrInplaceRep<TYPE>::~SharedPtrInplaceRep()
 {
-    BSLS_ASSERT(0);
+    BSLS_PRE_BODY(0);
 }
 
 // MANIPULATORS

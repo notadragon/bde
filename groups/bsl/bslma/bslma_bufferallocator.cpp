@@ -33,12 +33,17 @@ void *allocateFromBufferImp(int                               *cursor,
                             bslma::BufferAllocator::size_type  size,
                             int                                alignment)
 
+    BSLS_PRE(cursor)
+    BSLS_PRE(buffer)
+    BSLS_PRE(0 < alignment)
+    BSLS_PRE(alignment <= bsls::AlignmentUtil::BSLS_MAX_ALIGNMENT)
+    BSLS_PRE(0 == (alignment & (alignment - 1))) // alignment is power of 2
 {
-    BSLS_ASSERT(cursor);
-    BSLS_ASSERT(buffer);
-    BSLS_ASSERT(0 < alignment);
-    BSLS_ASSERT(alignment <= bsls::AlignmentUtil::BSLS_MAX_ALIGNMENT);
-    BSLS_ASSERT(0 == (alignment & (alignment - 1))); // alignment is power of 2
+    BSLS_PRE_BODY(cursor);
+    BSLS_PRE_BODY(buffer);
+    BSLS_PRE_BODY(0 < alignment);
+    BSLS_PRE_BODY(alignment <= bsls::AlignmentUtil::BSLS_MAX_ALIGNMENT);
+    BSLS_PRE_BODY(0 == (alignment & (alignment - 1))); // alignment is power of 2
 
     int offset = bsls::AlignmentUtil::calculateAlignmentOffset(
                                                               buffer + *cursor,
@@ -78,8 +83,8 @@ void *BufferAllocator::allocateFromBuffer(int               *cursor,
                                           size_type          size,
                                           AlignmentStrategy  strategy)
 {
-    BSLS_ASSERT(cursor);
-    BSLS_ASSERT(buffer);
+    BSLS_PRE_BODY(cursor);
+    BSLS_PRE_BODY(buffer);
 
     return 0 >= size
            ? static_cast<void *>(0)
@@ -100,11 +105,11 @@ void *BufferAllocator::allocateFromBuffer(int       *cursor,
                                           size_type  size,
                                           int        alignment)
 {
-    BSLS_ASSERT(cursor);
-    BSLS_ASSERT(buffer);
-    BSLS_ASSERT(0 < alignment);
-    BSLS_ASSERT(alignment <= bsls::AlignmentUtil::BSLS_MAX_ALIGNMENT);
-    BSLS_ASSERT(0 == (alignment & (alignment - 1))); // alignment is power of 2
+    BSLS_PRE_BODY(cursor);
+    BSLS_PRE_BODY(buffer);
+    BSLS_PRE_BODY(0 < alignment);
+    BSLS_PRE_BODY(alignment <= bsls::AlignmentUtil::BSLS_MAX_ALIGNMENT);
+    BSLS_PRE_BODY(0 == (alignment & (alignment - 1))); // alignment is power of 2
 
 
     return 0 >= size

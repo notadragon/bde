@@ -345,6 +345,7 @@ BSLS_IDENT("$Id: $")
 
 #include <bsls_assert.h>
 #include <bsls_performancehint.h>
+#include <bsls_pre.h>
 
 namespace BloombergLP {
 
@@ -429,17 +430,23 @@ class AutoDeallocator {
     template <class TYPE>
     AutoDeallocator(TYPE      **origin,
                     ALLOCATOR  *allocator,
-                    int         length = 0);
+                    int         length = 0)
+        BSLS_PRE_SAFE(allocator)
+        BSLS_PRE_SAFE(origin || !length);
     AutoDeallocator(void      **origin,
                     ALLOCATOR  *allocator,
-                    int         length = 0);
+                    int         length = 0)
+        BSLS_PRE_SAFE(allocator)
+        BSLS_PRE_SAFE(origin || !length);
+
 
     /// Destroy this range proctor and deallocate the contiguous sequence of
     /// memory blocks it manages (if any) by invoking the `deallocate`
     /// method of the allocator (or pool) supplied at construction on each
     /// memory block.  Note that the order in which the managed memory
     /// blocks are deallocated is undefined.
-    ~AutoDeallocator();
+    ~AutoDeallocator()
+        BSLS_PRE_SAFE(d_origin_p || !d_length);
 
     // MANIPULATORS
 
@@ -451,7 +458,8 @@ class AutoDeallocator {
     /// currently negative, the number of managed memory blocks will
     /// decrease by one, whereas if the length is non-negative, the number
     /// of managed memory blocks will increase by one.
-    void operator++();
+    void operator++()
+        BSLS_PRE_SAFE(d_origin_p);
 
     /// Decrease by one the (signed) length of the sequence of memory blocks
     /// managed by this range proctor.  The behavior is undefined unless the
@@ -461,7 +469,8 @@ class AutoDeallocator {
     /// currently positive, the number of managed memory blocks will
     /// decrease by one, whereas if the length is non-positive, the number
     /// of managed memory blocks will increase by one.
-    void operator--();
+    void operator--()
+        BSLS_PRE_SAFE(d_origin_p);
 
     /// Release from management the sequence of memory blocks currently
     /// managed by this range proctor by setting the length of the managed
@@ -483,13 +492,16 @@ class AutoDeallocator {
     /// management (without deallocating them), and so may be called with or
     /// without having called `release` when reusing this object.
     template <class TYPE>
-    void reset(TYPE **origin);
-    void reset(void **origin);
+    void reset(TYPE **origin)
+        BSLS_PRE_SAFE(origin);
+    void reset(void **origin)
+        BSLS_PRE_SAFE(origin);
 
     /// Set the (signed) length of the sequence of memory blocks managed by
     /// this range proctor to the specified `length`.  The behavior is
     /// undefined unless the origin of this range proctor is non-zero.
-    void setLength(int length);
+    void setLength(int length)
+        BSLS_PRE_SAFE(d_origin_p);
 
     // ACCESSORS
 
@@ -535,8 +547,8 @@ AutoDeallocator<ALLOCATOR>
 , d_length(length)
 , d_allocator_p(allocator)
 {
-    BSLS_ASSERT_SAFE(allocator);
-    BSLS_ASSERT_SAFE(origin || !length);
+    BSLS_PRE_BODY_SAFE(allocator);
+    BSLS_PRE_BODY_SAFE(origin || !length);
 }
 
 template <class ALLOCATOR>
@@ -549,15 +561,15 @@ AutoDeallocator<ALLOCATOR>
 , d_length(length)
 , d_allocator_p(allocator)
 {
-    BSLS_ASSERT_SAFE(allocator);
-    BSLS_ASSERT_SAFE(origin || !length);
+    BSLS_PRE_BODY_SAFE(allocator);
+    BSLS_PRE_BODY_SAFE(origin || !length);
 }
 
 template <class ALLOCATOR>
 inline
 AutoDeallocator<ALLOCATOR>::~AutoDeallocator()
 {
-    BSLS_ASSERT_SAFE(d_origin_p || !d_length);
+    BSLS_PRE_BODY_SAFE(d_origin_p || !d_length);
 
     if (BSLS_PERFORMANCEHINT_PREDICT_UNLIKELY(d_length)) {
         deallocate();
@@ -569,7 +581,7 @@ template <class ALLOCATOR>
 inline
 void AutoDeallocator<ALLOCATOR>::operator++()
 {
-    BSLS_ASSERT_SAFE(d_origin_p);
+    BSLS_PRE_BODY_SAFE(d_origin_p);
 
     ++d_length;
 }
@@ -578,7 +590,7 @@ template <class ALLOCATOR>
 inline
 void AutoDeallocator<ALLOCATOR>::operator--()
 {
-    BSLS_ASSERT_SAFE(d_origin_p);
+    BSLS_PRE_BODY_SAFE(d_origin_p);
 
     --d_length;
 }
@@ -595,7 +607,7 @@ template <class TYPE>
 inline
 void AutoDeallocator<ALLOCATOR>::reset(TYPE **origin)
 {
-    BSLS_ASSERT_SAFE(origin);
+    BSLS_PRE_BODY_SAFE(origin);
 
     d_origin_p = static_cast<void **>(origin);
 }
@@ -604,7 +616,7 @@ template <class ALLOCATOR>
 inline
 void AutoDeallocator<ALLOCATOR>::reset(void **origin)
 {
-    BSLS_ASSERT_SAFE(origin);
+    BSLS_PRE_BODY_SAFE(origin);
 
     d_origin_p = origin;
 }
@@ -614,7 +626,7 @@ inline
 void
 AutoDeallocator<ALLOCATOR>::setLength(int length)
 {
-    BSLS_ASSERT_SAFE(d_origin_p);
+    BSLS_PRE_BODY_SAFE(d_origin_p);
 
     d_length = length;
 }

@@ -21,7 +21,7 @@
 // regions of C++11 code, then this header contains no code and is not
 // '#include'd in the original header.
 //
-// Generated on Sun Sep  1 09:58:46 2024
+// Generated on Fri Jan 31 21:56:47 2025
 // Command line: sim_cpp11_features.pl bslma_constructionutil.h
 
 #ifdef COMPILING_BSLMA_CONSTRUCTIONUTIL_H
@@ -661,7 +661,10 @@ struct ConstructionUtil {
     template <class TARGET_TYPE, class ALLOCATOR>
     static void destructiveMove(TARGET_TYPE      *address,
                                 const ALLOCATOR&  allocator,
-                                TARGET_TYPE      *original);
+                                TARGET_TYPE      *original)
+        BSLS_PRE_SAFE(address)
+        BSLS_PRE_SAFE(original);
+
 
 #if defined(BSLS_COMPILERFEATURES_GUARANTEED_COPY_ELISION)
     /// Return, by value, an object of the specified (template parameter)
@@ -6159,8 +6162,8 @@ ConstructionUtil::destructiveMove(TARGET_TYPE      *address,
                                   const ALLOCATOR&  allocator,
                                   TARGET_TYPE      *original)
 {
-    BSLS_ASSERT_SAFE(address);
-    BSLS_ASSERT_SAFE(original);
+    BSLS_PRE_BODY_SAFE(address);
+    BSLS_PRE_BODY_SAFE(original);
 
     enum {
         k_VALUE = bslmf::IsBitwiseMoveable<TARGET_TYPE>::value

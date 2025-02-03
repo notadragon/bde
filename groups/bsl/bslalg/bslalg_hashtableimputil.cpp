@@ -25,8 +25,8 @@ void HashTableImpUtil::insertAtFrontOfBucket(HashTableAnchor   *anchor,
                                              BidirectionalLink *link,
                                              std::size_t        hashCode)
 {
-    BSLS_ASSERT(anchor);
-    BSLS_ASSERT(link);
+    BSLS_PRE_BODY(anchor);
+    BSLS_PRE_BODY(link);
 
     HashTableBucket *bucket = findBucketForHashCode(*anchor, hashCode);
     BSLS_ASSERT_SAFE(bucket);
@@ -57,8 +57,8 @@ void HashTableImpUtil::insertAtBackOfBucket(HashTableAnchor   *anchor,
                                             BidirectionalLink *link,
                                             std::size_t        hashCode)
 {
-    BSLS_ASSERT(anchor);
-    BSLS_ASSERT(link);
+    BSLS_PRE_BODY(anchor);
+    BSLS_PRE_BODY(link);
 
     HashTableBucket *bucket = findBucketForHashCode(*anchor, hashCode);
     BSLS_ASSERT_SAFE(bucket);
@@ -87,9 +87,9 @@ void HashTableImpUtil::insertAtPosition(HashTableAnchor   *anchor,
                                         std::size_t        hashCode,
                                         BidirectionalLink *position)
 {
-    BSLS_ASSERT(anchor);
-    BSLS_ASSERT(link);
-    BSLS_ASSERT(position);
+    BSLS_PRE_BODY(anchor);
+    BSLS_PRE_BODY(link);
+    BSLS_PRE_BODY(position);
 
     HashTableBucket *bucket = findBucketForHashCode(*anchor, hashCode);
 #ifdef BDE_BUILD_TARGET_SAFE_2
@@ -111,9 +111,9 @@ void HashTableImpUtil::remove(HashTableAnchor   *anchor,
                               BidirectionalLink *link,
                               std::size_t        hashCode)
 {
-    BSLS_ASSERT(link);
-    BSLS_ASSERT(anchor);
-    BSLS_ASSERT(link->previousLink() || anchor->listRootAddress() == link);
+    BSLS_PRE_BODY(link);
+    BSLS_PRE_BODY(anchor);
+    BSLS_PRE_BODY(link->previousLink() || anchor->listRootAddress() == link);
 
     // Note that we must update the bucket *before* we unlink from the list,
     // as otherwise we will lose our nextLink()/prev pointers.

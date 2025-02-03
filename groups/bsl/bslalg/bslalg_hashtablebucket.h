@@ -275,21 +275,24 @@ struct HashTableBucket {
     /// bidirectional list as the `last` element in this bucket, and `node`
     /// either precedes `last` in that list, or is the same node, or this
     /// bucket is empty and `node` has a null pointer value.
-    void setFirst(BidirectionalLink *node);
+    void setFirst(BidirectionalLink *node)
+        BSLS_PRE_SAFE(!d_first_p == !node);
 
     /// Set the `last` element of this bucket to the specified `node`.  The
     /// behavior is undefined unless `node` is an element from the same
     /// bidirectional list as the `first` element in this bucket, and `node`
     /// either follows `first` in that list, or is the same node, or this
     /// bucket is empty and `node` has a null pointer value.
-    void setLast(BidirectionalLink *node);
+    void setLast(BidirectionalLink *node)
+        BSLS_PRE_SAFE(!d_last_p == !node);
 
     /// Set `first` and `last` to the specified values.  Behavior is
     /// undefined unless unless `first == last`, or unless `first` and
     /// `last` are links from the same list, where `first` precedes `last`
     /// in the list.  Note that `first` and `last` may both have a null
     /// pointer value, indicating an empty bucket.
-    void setFirstAndLast(BidirectionalLink *first, BidirectionalLink *last);
+    void setFirstAndLast(BidirectionalLink *first, BidirectionalLink *last)
+        BSLS_PRE_SAFE(!first == !last);
 
     /// Set `first` and `last` to a null pointer value.
     void reset();
@@ -338,7 +341,7 @@ bool operator!=(const HashTableBucket& lhs, const HashTableBucket& rhs);
 inline
 void HashTableBucket::setFirst(BidirectionalLink *node)
 {
-    BSLS_ASSERT_SAFE(!d_first_p == !node);
+    BSLS_PRE_BODY_SAFE(!d_first_p == !node);
 
     d_first_p = node;
 }
@@ -346,7 +349,7 @@ void HashTableBucket::setFirst(BidirectionalLink *node)
 inline
 void HashTableBucket::setLast(BidirectionalLink *node)
 {
-    BSLS_ASSERT_SAFE(!d_last_p == !node);
+    BSLS_PRE_BODY_SAFE(!d_last_p == !node);
 
     d_last_p = node;
 }
@@ -355,7 +358,7 @@ inline
 void HashTableBucket::setFirstAndLast(BidirectionalLink *first,
                                       BidirectionalLink *last)
 {
-    BSLS_ASSERT_SAFE(!first == !last);
+    BSLS_PRE_BODY_SAFE(!first == !last);
 
     d_first_p = first;
     d_last_p  = last;

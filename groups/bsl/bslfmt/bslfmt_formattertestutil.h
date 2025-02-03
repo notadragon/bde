@@ -981,6 +981,7 @@ FormatterTestUtil_Impl<t_CHAR>::testParseFormatImpl(
     }
 #   endif
 
+#if 0   // user-space construction of basic_format_parse_context in any useful way is no longer supported
     if (alsoTestOracle) {
         // TODO: this interface changes in C++26 so we will need to modify this
         // code accordingly then.
@@ -1016,6 +1017,8 @@ FormatterTestUtil_Impl<t_CHAR>::testParseFormatImpl(
             }
         }
     }
+#endif
+    
 #else
     (void)alsoTestOracle;
     (void)haveArgIds;

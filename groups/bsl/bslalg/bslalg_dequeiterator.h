@@ -91,6 +91,7 @@ BSLS_IDENT("$Id: $")
 
 #include <bsls_assert.h>
 #include <bsls_compilerfeatures.h>
+#include <bsls_pre.h>
 
 #include <cstddef>  // std::size_t, std::ptrdiff_t
 
@@ -189,12 +190,17 @@ class DequeIterator {
     /// pointed to by the specified `blockPtrPtr`.
     explicit
     DequeIterator(BlockPtr *blockPtrPtr);
-
+    
     /// Create an iterator pointing to the element at the specified
     /// `valuePtr` address in the block pointed to by the specified
     /// `blockPtrPtr`.  The behavior is undefined unless `valuePtr` points
     /// into the block `*blockPtrPtr`.
-    DequeIterator(BlockPtr *blockPtrPtr, VALUE_TYPE *valuePtr);
+    DequeIterator(BlockPtr *blockPtrPtr, VALUE_TYPE *valuePtr)
+    BSLS_PRE_SAFE(
+          reinterpret_cast<bsls::Types::UintPtr>((void*)blockPtrPtr[0]->d_data)
+       <= reinterpret_cast<bsls::Types::UintPtr>((void*)valuePtr))
+    BSLS_PRE_SAFE(valuePtr - blockPtrPtr[0]->d_data < BLOCK_LENGTH);
+
 
     // MANIPULATORS
 
@@ -233,7 +239,10 @@ class DequeIterator {
     /// this method is used only for optimization purposes in
     /// `bslstl_Deque`, and clients of this package should not use this
     /// directly.
-    void valuePtrDecrement();
+    void valuePtrDecrement()
+        BSLS_PRE_SAFE(d_blockPtr_p[0]->d_data <= d_value_p)
+        BSLS_PRE_SAFE(d_value_p < d_blockPtr_p[0]->d_data + BLOCK_LENGTH);
+        
 
     /// Increment this iterator to point to the next element in the block of
     /// the corresponding deque.  The behavior is undefined unless this
@@ -241,7 +250,10 @@ class DequeIterator {
     /// this method is used only for optimization purposes in
     /// `bslstl_Deque`, and clients of this package should not use this
     /// directly.
-    void valuePtrIncrement();
+    void valuePtrIncrement()
+        BSLS_PRE_SAFE(d_blockPtr_p[0]->d_data <= d_value_p)
+        BSLS_PRE_SAFE(d_value_p < d_blockPtr_p[0]->d_data + BLOCK_LENGTH);
+
 
     // ACCESSORS
 
@@ -332,7 +344,8 @@ class DequeIterator<VALUE_TYPE, 1> {
     // CREATORS
     DequeIterator();
     DequeIterator(BlockPtr *blockPtrPtr);
-    DequeIterator(BlockPtr *blockPtrPtr, VALUE_TYPE *valuePtr);
+    DequeIterator(BlockPtr *blockPtrPtr, VALUE_TYPE *valuePtr)
+        BSLS_PRE_SAFE((*blockPtrPtr)->d_data == valuePtr);
 
     // MANIPULATORS
     void operator++();
@@ -343,8 +356,10 @@ class DequeIterator<VALUE_TYPE, 1> {
     void nextBlock();
     void previousBlock();
     void setBlock(BlockPtr *blockPtrPtr);
-    void valuePtrDecrement();
-    void valuePtrIncrement();
+    void valuePtrDecrement()
+        BSLS_PRE_SAFE(0);
+    void valuePtrIncrement()
+        BSLS_PRE_SAFE(0);
 
     // ACCESSORS
     VALUE_TYPE& operator*() const;
@@ -392,10 +407,10 @@ DequeIterator<VALUE_TYPE, BLOCK_LENGTH>::DequeIterator(BlockPtr   *blockPtrPtr,
 , d_value_p(valuePtr)
 {
     // Trivially true, or undefined behavior, without the cast.
-    BSLS_ASSERT_SAFE(
+    BSLS_PRE_BODY_SAFE(
           reinterpret_cast<bsls::Types::UintPtr>((void*)blockPtrPtr[0]->d_data)
        <= reinterpret_cast<bsls::Types::UintPtr>((void*)valuePtr));
-    BSLS_ASSERT_SAFE(valuePtr - blockPtrPtr[0]->d_data < BLOCK_LENGTH);
+    BSLS_PRE_BODY_SAFE(valuePtr - blockPtrPtr[0]->d_data < BLOCK_LENGTH);
 }
 
 // MANIPULATORS
@@ -472,8 +487,8 @@ template <class VALUE_TYPE, int BLOCK_LENGTH>
 inline
 void DequeIterator<VALUE_TYPE, BLOCK_LENGTH>::valuePtrDecrement()
 {
-    BSLS_ASSERT_SAFE(d_blockPtr_p[0]->d_data <= d_value_p);
-    BSLS_ASSERT_SAFE(d_value_p < d_blockPtr_p[0]->d_data + BLOCK_LENGTH);
+    BSLS_PRE_BODY_SAFE(d_blockPtr_p[0]->d_data <= d_value_p);
+    BSLS_PRE_BODY_SAFE(d_value_p < d_blockPtr_p[0]->d_data + BLOCK_LENGTH);
 
     --d_value_p;
 }
@@ -482,8 +497,8 @@ template <class VALUE_TYPE, int BLOCK_LENGTH>
 inline
 void DequeIterator<VALUE_TYPE, BLOCK_LENGTH>::valuePtrIncrement()
 {
-    BSLS_ASSERT_SAFE(d_blockPtr_p[0]->d_data <= d_value_p);
-    BSLS_ASSERT_SAFE(d_value_p < d_blockPtr_p[0]->d_data + BLOCK_LENGTH);
+    BSLS_PRE_BODY_SAFE(d_blockPtr_p[0]->d_data <= d_value_p);
+    BSLS_PRE_BODY_SAFE(d_value_p < d_blockPtr_p[0]->d_data + BLOCK_LENGTH);
 
     ++d_value_p;
 }
@@ -610,7 +625,7 @@ DequeIterator<VALUE_TYPE, 1>::DequeIterator(BlockPtr   *blockPtrPtr,
 : d_blockPtr_p(blockPtrPtr)
 , d_value_p(valuePtr)
 {
-    BSLS_ASSERT_SAFE((*blockPtrPtr)->d_data == valuePtr);
+    BSLS_PRE_BODY_SAFE((*blockPtrPtr)->d_data == valuePtr);
 }
 
 // MANIPULATORS
@@ -674,7 +689,7 @@ inline
 void DequeIterator<VALUE_TYPE, 1>::valuePtrDecrement()
 {
     // This should never be called for 'BLOCK_LENGTH' of 1
-    BSLS_ASSERT_SAFE(0);
+    BSLS_PRE_BODY_SAFE(0);
 }
 
 template <class VALUE_TYPE>
@@ -682,7 +697,7 @@ inline
 void DequeIterator<VALUE_TYPE, 1>::valuePtrIncrement()
 {
     // This should never be called for 'BLOCK_LENGTH' of 1
-    BSLS_ASSERT_SAFE(0);
+    BSLS_PRE_BODY_SAFE(0);
 }
 
 // ACCESSORS

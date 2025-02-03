@@ -600,6 +600,7 @@ BSLS_IDENT("$Id: $")
 #include <bsls_keyword.h>
 #include <bsls_performancehint.h>
 #include <bsls_platform.h>
+#include <bsls_pre.h>
 #include <bsls_types.h>
 #include <bsls_util.h>     // 'forward<T>(V)'
 
@@ -654,7 +655,9 @@ struct Vector_Util {
     /// `maxSize`.
     static std::size_t computeNewCapacity(std::size_t newLength,
                                           std::size_t capacity,
-                                          std::size_t maxSize);
+                                          std::size_t maxSize)
+        BSLS_PRE_SAFE(newLength > capacity)
+        BSLS_PRE_SAFE(newLength <= maxSize);
 
     /// Exchange the value of the specified `a` vector with that of the
     /// specified `b` vector.
@@ -821,7 +824,11 @@ class vectorBase {
     /// Adopt all outstanding memory allocations associated with the specified
     /// `base` object.  The behavior is undefined unless this object is in a
     /// default-constructed state.
-    void adopt(BloombergLP::bslmf::MovableRef<vectorBase> base);
+    void adopt(BloombergLP::bslmf::MovableRef<vectorBase> base)
+        BSLS_PRE_SAFE(0 == d_dataBegin_p)
+        BSLS_PRE_SAFE(0 == d_dataEnd_p)
+        BSLS_PRE_SAFE(0 == d_capacity);
+
 
                              // *** iterators ***
 
@@ -847,7 +854,8 @@ class vectorBase {
     /// Return a reference providing modifiable access to the element at the
     /// specified `position` in this vector.  The behavior is undefined unless
     /// `position < size()`.
-    reference operator[](size_type position);
+    reference operator[](size_type position)
+        BSLS_PRE_SAFE(size() > position);
 
     /// Return a reference providing modifiable access to the element at the
     /// specified `position` in this vector.  Throw a `std::out_of_range`
@@ -857,12 +865,14 @@ class vectorBase {
     /// Return a reference providing modifiable access to the first element in
     /// this vector.  The behavior is undefined unless this vector is not
     /// empty.
-    reference front();
+    reference front()
+        BSLS_PRE_SAFE(!empty());
 
     /// Return a reference providing modifiable access to the last element in
     /// this vector.  The behavior is undefined unless this vector is not
     /// empty.
-    reference back();
+    reference back()
+        BSLS_PRE_SAFE(!empty());
 
     /// Return the address of the modifiable first element in this vector, or a
     /// valid, but non-dereferenceable pointer value if this vector is empty.
@@ -915,7 +925,9 @@ class vectorBase {
     /// Return a reference providing non-modifiable access to the element at
     /// the specified `position` in this vector.  The behavior is undefined
     /// unless `position < size()`.
-    const_reference operator[](size_type position) const;
+    const_reference operator[](size_type position) const
+        BSLS_PRE_SAFE(size() > position);
+
 
     /// Return a reference providing non-modifiable access to the element at
     /// the specified `position` in this vector.  Throw a
@@ -925,12 +937,14 @@ class vectorBase {
     /// Return a reference providing non-modifiable access to the first
     /// element in this vector.  The behavior is undefined unless this
     /// vector is not empty.
-    const_reference front() const;
+    const_reference front() const
+        BSLS_PRE_SAFE(!empty());
 
     /// Return a reference providing non-modifiable access to the last
     /// element in this vector.  The behavior is undefined unless this
     /// vector is not empty.
-    const_reference back() const;
+    const_reference back() const
+        BSLS_PRE_SAFE(!empty());
 
     /// Return the address of the non-modifiable first element in this
     /// vector, or a valid, but non-dereferenceable pointer value if this
@@ -1065,7 +1079,8 @@ class vector : public  vectorBase<VALUE_TYPE>
     template <class FWD_ITER>
     void constructFromRange(FWD_ITER              first,
                             FWD_ITER              last,
-                            std::forward_iterator_tag);
+                            std::forward_iterator_tag)
+        BSLS_PRE_SAFE(!Vector_RangeCheck::isInvalidRange(first, last));
     template <class INPUT_ITER>
     void constructFromRange(INPUT_ITER          first,
                             INPUT_ITER          last,
@@ -1098,7 +1113,8 @@ class vector : public  vectorBase<VALUE_TYPE>
                                INPUT_ITER                  first,
                                INPUT_ITER                  last,
                                BloombergLP::bslmf::MatchAnyType ,
-                               BloombergLP::bslmf::MatchAnyType );
+                               BloombergLP::bslmf::MatchAnyType )
+        BSLS_PRE_SAFE(!Vector_RangeCheck::isInvalidRange(first, last));
 
     /// Specialized insertion for input iterators.
     template <class INPUT_ITER>
@@ -1113,7 +1129,8 @@ class vector : public  vectorBase<VALUE_TYPE>
     void privateInsert(const_iterator position,
                        FWD_ITER       first,
                        FWD_ITER       last,
-                       const          std::forward_iterator_tag&);
+                       const          std::forward_iterator_tag&)
+        BSLS_PRE_SAFE(!Vector_RangeCheck::isInvalidRange(first, last));
 
     /// Destructive move insertion from a temporary vector, to avoid
     /// duplicate copies after importing from an input iterator into a
@@ -1123,7 +1140,10 @@ class vector : public  vectorBase<VALUE_TYPE>
 
     /// Reserve exactly the specified `numElements`.  The behavior is
     /// undefined unless this vector is empty and has no capacity.
-    void privateReserveEmpty(size_type numElements);
+    void privateReserveEmpty(size_type numElements)
+        BSLS_PRE_SAFE(this->empty())
+        BSLS_PRE_SAFE(0 == this->capacity());
+
 
 #if !BSLS_COMPILERFEATURES_SIMULATE_CPP11_FEATURES
     /// Change the capacity of this vector and append to its end a newly
@@ -1221,7 +1241,8 @@ class vector : public  vectorBase<VALUE_TYPE>
     template <class INPUT_ITER>
     vector(INPUT_ITER       first,
            INPUT_ITER       last,
-           const ALLOCATOR& basicAllocator = ALLOCATOR());
+           const ALLOCATOR& basicAllocator = ALLOCATOR())
+        BSLS_PRE_SAFE(!Vector_RangeCheck::isInvalidRange(first, last));
 
     /// Create a vector having the same value as the specified `original`
     /// object.  Use the allocator returned by
@@ -1354,7 +1375,8 @@ class vector : public  vectorBase<VALUE_TYPE>
     /// behavior is undefined unless `first` and `last` refer to a range of
     /// valid values where `first` is at a position at or before `last`.
     template <class INPUT_ITER>
-    void assign(INPUT_ITER first, INPUT_ITER last);
+    void assign(INPUT_ITER first, INPUT_ITER last)
+        BSLS_PRE_SAFE(!Vector_RangeCheck::isInvalidRange(first, last));
 
     /// Assign to this object the value resulting from first clearing this
     /// vector and then inserting the specified `numElements` copies of the
@@ -1444,7 +1466,8 @@ class vector : public  vectorBase<VALUE_TYPE>
 
     /// Erase the last element from this vector.  The behavior is undefined
     /// if this vector is empty.
-    void pop_back();
+    void pop_back()
+        BSLS_PRE_SAFE(!this->empty());
 
 #if !BSLS_COMPILERFEATURES_SIMULATE_CPP11_FEATURES
     /// Insert at the specified `position` in this vector a newly created
@@ -1466,9 +1489,11 @@ class vector : public  vectorBase<VALUE_TYPE>
     /// the Sun compiler.
     template <class... Args>
     iterator emplace(const_iterator position, Args&&... arguments)
+        BSLS_PRE_SAFE(this->begin() <= position)
+        BSLS_PRE_SAFE(position      <= this->end())
     {
-        BSLS_ASSERT_SAFE(this->begin() <= position);
-        BSLS_ASSERT_SAFE(position      <= this->end());
+        BSLS_PRE_BODY_SAFE(this->begin() <= position);
+        BSLS_PRE_BODY_SAFE(position      <= this->end());
 
         const size_type index = position - this->begin();
 
@@ -1525,7 +1550,9 @@ class vector : public  vectorBase<VALUE_TYPE>
     /// requires that the (template parameter) type `VALUE_TYPE` be
     /// `copy-insertable` into this vector (see {Requirements on
     /// `VALUE_TYPE`}).
-    iterator insert(const_iterator position, const VALUE_TYPE& value);
+    iterator insert(const_iterator position, const VALUE_TYPE& value)
+        BSLS_PRE_BODY_SAFE(this->begin() <= position)
+        BSLS_PRE_BODY_SAFE(position      <= this->end());
 
     /// Insert at the specified `position` in this vector the specified
     /// move-insertable `value`, and return an iterator referring to the
@@ -1540,7 +1567,10 @@ class vector : public  vectorBase<VALUE_TYPE>
     /// `move-insertable` into this vector (see {Requirements on
     /// `VALUE_TYPE`}).
     iterator insert(const_iterator                             position,
-                    BloombergLP::bslmf::MovableRef<VALUE_TYPE> value);
+                    BloombergLP::bslmf::MovableRef<VALUE_TYPE> value)
+        BSLS_PRE_SAFE(this->begin() <= position)
+        BSLS_PRE_SAFE(position      <= this->end());
+        
 
     /// Insert at the specified `position` in this vector the specified
     /// `numElements` copies of the specified `value`, and return an
@@ -1555,7 +1585,10 @@ class vector : public  vectorBase<VALUE_TYPE>
     /// (see {Requirements on `VALUE_TYPE`}).
     iterator insert(const_iterator    position,
                     size_type         numElements,
-                    const VALUE_TYPE& value);
+                    const VALUE_TYPE& value)
+        BSLS_PRE_SAFE(this->begin() <= position)
+        BSLS_PRE_SAFE(position      <= this->end());
+
 
     /// Insert at the specified `position` in this vector the values in the
     /// range starting at the specified `first` element, and ending
@@ -1579,10 +1612,13 @@ class vector : public  vectorBase<VALUE_TYPE>
     /// the Sun compiler.
     template <class INPUT_ITER>
     iterator insert(const_iterator position, INPUT_ITER first, INPUT_ITER last)
+        BSLS_PRE_SAFE(this->begin() <= position)
+        BSLS_PRE_SAFE(position      <= this->end())
+        BSLS_PRE_SAFE(!Vector_RangeCheck::isInvalidRange(first, last))
     {
-        BSLS_ASSERT_SAFE(this->begin() <= position);
-        BSLS_ASSERT_SAFE(position      <= this->end());
-        BSLS_ASSERT_SAFE(!Vector_RangeCheck::isInvalidRange(first, last));
+        BSLS_PRE_BODY_SAFE(this->begin() <= position);
+        BSLS_PRE_BODY_SAFE(position      <= this->end());
+        BSLS_PRE_BODY_SAFE(!Vector_RangeCheck::isInvalidRange(first, last));
 
         // If 'first' and 'last' are integral, then they are not iterators and
         // we should call 'insert(position, first, last)', where 'first' is
@@ -1623,7 +1659,10 @@ class vector : public  vectorBase<VALUE_TYPE>
     /// by the method `end` if the removed element was the last in the
     /// sequence.  The behavior is undefined unless `position` is an
     /// iterator in the range `[cbegin() .. cend())`.
-    iterator erase(const_iterator position);
+    iterator erase(const_iterator position)
+        BSLS_PRE_SAFE(this->begin() <= position)
+        BSLS_PRE_SAFE(position      <  this->end());
+
 
     /// Remove from this vector the sequence of elements starting at the
     /// specified `first` position and ending before the specified `last`
@@ -1634,7 +1673,11 @@ class vector : public  vectorBase<VALUE_TYPE>
     /// an iterator in the range `[cbegin() .. cend()]` (both endpoints
     /// included) and `last` is an iterator in the range
     /// `[first .. cend()]` (both endpoints included).
-    iterator erase(const_iterator first, const_iterator last);
+    iterator erase(const_iterator first, const_iterator last)
+        BSLS_PRE_SAFE(this->begin() <= first)
+        BSLS_PRE_SAFE(first         <= this->end())
+        BSLS_PRE_SAFE(first         <= last)
+        BSLS_PRE_SAFE(last          <= this->end());
 
     /// Exchange the value of this object with that of the specified `other`
     /// object; also exchange the allocator of this object with that of `other`
@@ -2431,9 +2474,9 @@ inline
 void
 vectorBase<VALUE_TYPE>::adopt(BloombergLP::bslmf::MovableRef<vectorBase> base)
 {
-    BSLS_ASSERT_SAFE(0 == d_dataBegin_p);
-    BSLS_ASSERT_SAFE(0 == d_dataEnd_p);
-    BSLS_ASSERT_SAFE(0 == d_capacity);
+    BSLS_PRE_BODY_SAFE(0 == d_dataBegin_p);
+    BSLS_PRE_BODY_SAFE(0 == d_dataEnd_p);
+    BSLS_PRE_BODY_SAFE(0 == d_capacity);
 
     vectorBase& lvalue = base;
     d_dataBegin_p          = lvalue.d_dataBegin_p;
@@ -2484,7 +2527,7 @@ inline
 typename vectorBase<VALUE_TYPE>::reference
 vectorBase<VALUE_TYPE>::operator[](size_type position)
 {
-    BSLS_ASSERT_SAFE(size() > position);
+    BSLS_PRE_BODY_SAFE(size() > position);
 
     return d_dataBegin_p[position];
 }
@@ -2506,7 +2549,7 @@ inline
 typename vectorBase<VALUE_TYPE>::reference
 vectorBase<VALUE_TYPE>::front()
 {
-    BSLS_ASSERT_SAFE(!empty());
+    BSLS_PRE_BODY_SAFE(!empty());
 
     return *d_dataBegin_p;
 }
@@ -2516,7 +2559,7 @@ inline
 typename vectorBase<VALUE_TYPE>::reference
 vectorBase<VALUE_TYPE>::back()
 {
-    BSLS_ASSERT_SAFE(!empty());
+    BSLS_PRE_BODY_SAFE(!empty());
 
     return *(d_dataEnd_p - 1);
 }
@@ -2627,7 +2670,7 @@ inline
 typename vectorBase<VALUE_TYPE>::const_reference
 vectorBase<VALUE_TYPE>::operator[](size_type position) const
 {
-    BSLS_ASSERT_SAFE(size() > position);
+    BSLS_PRE_BODY_SAFE(size() > position);
 
     return d_dataBegin_p[position];
 }
@@ -2649,7 +2692,7 @@ inline
 typename vectorBase<VALUE_TYPE>::const_reference
 vectorBase<VALUE_TYPE>::front() const
 {
-    BSLS_ASSERT_SAFE(!empty());
+    BSLS_PRE_BODY_SAFE(!empty());
 
     return *d_dataBegin_p;
 }
@@ -2659,7 +2702,7 @@ inline
 typename vectorBase<VALUE_TYPE>::const_reference
 vectorBase<VALUE_TYPE>::back() const
 {
-    BSLS_ASSERT_SAFE(!empty());
+    BSLS_PRE_BODY_SAFE(!empty());
 
     return *(d_dataEnd_p - 1);
 }
@@ -2722,7 +2765,7 @@ void vector<VALUE_TYPE, ALLOCATOR>::constructFromRange(
 {
     // Specialization for all iterators except input iterators: 'size' can be
     // computed in advance.
-    BSLS_ASSERT_SAFE(!Vector_RangeCheck::isInvalidRange(first, last));
+    BSLS_PRE_BODY_SAFE(!Vector_RangeCheck::isInvalidRange(first, last));
 
     const size_type maxSize = max_size();
     const size_type newSize = bsl::distance(first, last);
@@ -2839,7 +2882,7 @@ void vector<VALUE_TYPE, ALLOCATOR>::privateInsertDispatch(
                                           BloombergLP::bslmf::MatchAnyType )
 {
     // Dispatch based on iterator category.
-    BSLS_ASSERT_SAFE(!Vector_RangeCheck::isInvalidRange(first, last));
+    BSLS_PRE_BODY_SAFE(!Vector_RangeCheck::isInvalidRange(first, last));
 
     typedef typename iterator_traits<INPUT_ITER>::iterator_category Tag;
     this->privateInsert(position, first, last, Tag());
@@ -2999,7 +3042,7 @@ void vector<VALUE_TYPE, ALLOCATOR>::privateInsert(
 {
     // Specialization for all iterators except input iterators: 'size' can be
     // computed in advance.
-    BSLS_ASSERT_SAFE(!Vector_RangeCheck::isInvalidRange(first, last));
+    BSLS_PRE_BODY_SAFE(!Vector_RangeCheck::isInvalidRange(first, last));
 
     const iterator& pos = const_cast<iterator>(position);
 
@@ -3100,8 +3143,8 @@ template <class VALUE_TYPE, class ALLOCATOR>
 inline
 void vector<VALUE_TYPE, ALLOCATOR>::privateReserveEmpty(size_type numElements)
 {
-    BSLS_ASSERT_SAFE(this->empty());
-    BSLS_ASSERT_SAFE(0 == this->capacity());
+    BSLS_PRE_BODY_SAFE(this->empty());
+    BSLS_PRE_BODY_SAFE(0 == this->capacity());
 
     this->d_dataBegin_p = this->d_dataEnd_p =
         AllocatorUtil::allocateObject<VALUE_TYPE>(this->allocatorRef(),
@@ -3307,7 +3350,7 @@ vector<VALUE_TYPE, ALLOCATOR>::vector(INPUT_ITER       first,
 : vectorBase<VALUE_TYPE>()
 , ContainerBase(basicAllocator)
 {
-    BSLS_ASSERT_SAFE(!Vector_RangeCheck::isInvalidRange(first, last));
+    BSLS_PRE_BODY_SAFE(!Vector_RangeCheck::isInvalidRange(first, last));
 
     typedef typename Vector_DeduceIteratorCategory<INPUT_ITER>::type Tag;
 
@@ -3529,7 +3572,7 @@ template <class INPUT_ITER>
 inline
 void vector<VALUE_TYPE, ALLOCATOR>::assign(INPUT_ITER first, INPUT_ITER last)
 {
-    BSLS_ASSERT_SAFE(!Vector_RangeCheck::isInvalidRange(first, last));
+    BSLS_PRE_BODY_SAFE(!Vector_RangeCheck::isInvalidRange(first, last));
 
     if (!this->empty()) {
         erase(this->begin(), this->end());
@@ -3731,7 +3774,7 @@ template <class VALUE_TYPE, class ALLOCATOR>
 inline
 void vector<VALUE_TYPE, ALLOCATOR>::pop_back()
 {
-    BSLS_ASSERT_SAFE(!this->empty());
+    BSLS_PRE_BODY_SAFE(!this->empty());
 
     AllocatorTraits::destroy(this->allocatorRef(),
                              --this->d_dataEnd_p);
@@ -3743,8 +3786,8 @@ typename vector<VALUE_TYPE, ALLOCATOR>::iterator
 vector<VALUE_TYPE, ALLOCATOR>::insert(const_iterator    position,
                                       const VALUE_TYPE& value)
 {
-    BSLS_ASSERT_SAFE(this->begin() <= position);
-    BSLS_ASSERT_SAFE(position      <= this->end());
+    BSLS_PRE_BODY_SAFE(this->begin() <= position);
+    BSLS_PRE_BODY_SAFE(position      <= this->end());
 
     return insert(position, size_type(1), value);
 }
@@ -3755,8 +3798,8 @@ vector<VALUE_TYPE, ALLOCATOR>::insert(
                            const_iterator                             position,
                            BloombergLP::bslmf::MovableRef<VALUE_TYPE> value)
 {
-    BSLS_ASSERT_SAFE(this->begin() <= position);
-    BSLS_ASSERT_SAFE(position      <= this->end());
+    BSLS_PRE_BODY_SAFE(this->begin() <= position);
+    BSLS_PRE_BODY_SAFE(position      <= this->end());
 
     const size_type maxSize = max_size();
     if (BSLS_PERFORMANCEHINT_PREDICT_UNLIKELY(1 > maxSize - this->size())) {
@@ -3808,8 +3851,8 @@ vector<VALUE_TYPE, ALLOCATOR>::insert(const_iterator    position,
                                       size_type         numElements,
                                       const VALUE_TYPE& value)
 {
-    BSLS_ASSERT_SAFE(this->begin() <= position);
-    BSLS_ASSERT_SAFE(position      <= this->end());
+    BSLS_PRE_BODY_SAFE(this->begin() <= position);
+    BSLS_PRE_BODY_SAFE(position      <= this->end());
 
     const size_type maxSize = max_size();
     if (BSLS_PERFORMANCEHINT_PREDICT_UNLIKELY(
@@ -3872,8 +3915,8 @@ inline
 typename vector<VALUE_TYPE, ALLOCATOR>::iterator
 vector<VALUE_TYPE, ALLOCATOR>::erase(const_iterator position)
 {
-    BSLS_ASSERT_SAFE(this->begin() <= position);
-    BSLS_ASSERT_SAFE(position      <  this->end());
+    BSLS_PRE_BODY_SAFE(this->begin() <= position);
+    BSLS_PRE_BODY_SAFE(position      <  this->end());
 
     return erase(position, position + 1);
 }
@@ -3886,10 +3929,10 @@ BSLS_PLATFORM_AGGRESSIVE_INLINE
 typename vector<VALUE_TYPE, ALLOCATOR>::iterator
 vector<VALUE_TYPE, ALLOCATOR>::erase(const_iterator first, const_iterator last)
 {
-    BSLS_ASSERT_SAFE(this->begin() <= first);
-    BSLS_ASSERT_SAFE(first         <= this->end());
-    BSLS_ASSERT_SAFE(first         <= last);
-    BSLS_ASSERT_SAFE(last          <= this->end());
+    BSLS_PRE_BODY_SAFE(this->begin() <= first);
+    BSLS_PRE_BODY_SAFE(first         <= this->end());
+    BSLS_PRE_BODY_SAFE(first         <= last);
+    BSLS_PRE_BODY_SAFE(last          <= this->end());
 
     const size_type n = last - first;
     ArrayPrimitives::erase(const_cast<VALUE_TYPE *>(first),

@@ -30,6 +30,8 @@ BSLS_IDENT("$Id: $")
 #include <bslmf_issame.h>
 #include <bslmf_nestedtraitdeclaration.h>
 
+#include <bsls_pre.h>    
+    
 namespace BloombergLP {
 namespace bslma {
 
@@ -139,7 +141,8 @@ class StdTestAllocator {
     /// mechanism object.  The optionally specified `hint` argument is
     /// ignored by this test allocator type.  The behavior is undefined
     /// unless `n <= max_size()`.
-    pointer allocate(size_type n, const void *hint = 0);
+    pointer allocate(size_type n, const void *hint = 0)
+        BSLS_PRE_SAFE(n <= this->max_size());
 
     /// Return memory previously allocated with `allocate` to the underlying
     /// mechanism object by calling `deallocate` on the mechanism object
@@ -292,7 +295,7 @@ typename StdTestAllocator<TYPE>::pointer
 StdTestAllocator<TYPE>::allocate(typename StdTestAllocator::size_type  n,
                           const void                    *hint)
 {
-    BSLS_ASSERT_SAFE(n <= this->max_size());
+    BSLS_PRE_BODY_SAFE(n <= this->max_size());
 
     (void) hint;  // suppress unused parameter warning
     return static_cast<pointer>(d_mechanism->allocate(n * sizeof(TYPE)));

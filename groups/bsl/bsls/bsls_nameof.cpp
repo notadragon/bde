@@ -45,10 +45,11 @@ namespace u {
 void substitute(char       *buffer,
                 const char *pattern,
                 const char *replacement)
+    BSLS_PRE_OPT( std::strlen(pattern) >= std::strlen(replacement))
 {
     const std::size_t patternLen     = std::strlen(pattern);
     const std::size_t replacementLen = std::strlen(replacement);
-    BSLS_ASSERT_OPT(patternLen >= replacementLen);
+    BSLS_PRE_BODY_OPT(patternLen >= replacementLen);
 
     static const unsigned char colon = ':';
 

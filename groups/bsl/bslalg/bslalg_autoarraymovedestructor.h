@@ -412,18 +412,34 @@ class AutoArrayMoveDestructor {
                             OBJECT_TYPE *begin,
                             OBJECT_TYPE *middle,
                             OBJECT_TYPE *end,
-                            ALLOCATOR    allocator = ALLOCATOR());
-
+                            ALLOCATOR    allocator = ALLOCATOR())
+        BSLS_PRE_SAFE(!begin  == !middle)  // neither or both are null
+        BSLS_PRE_SAFE(!middle == !end)     // neither or both are null
+        BSLS_PRE_SAFE(destination || begin == middle)
+        BSLS_PRE_SAFE(begin  <= middle)
+        BSLS_PRE_SAFE(middle <= end);
+    
     /// Bit-wise move the range `[ middle(), end() )` to the `destination()`
     /// address and destroy `[ begin(), middle() )`.
-    ~AutoArrayMoveDestructor();
+    ~AutoArrayMoveDestructor()
+        BSLS_PRE_SAFE(!d_begin_p  == !d_middle_p)  // neither or both are null
+        BSLS_PRE_SAFE(!d_middle_p == !d_end_p)     // neither or both are null
+        BSLS_PRE_SAFE(d_dst_p || d_begin_p == d_middle_p)
+        BSLS_PRE_SAFE(d_begin_p  <= d_middle_p)
+        BSLS_PRE_SAFE(d_middle_p <= d_end_p)
+        BSLS_PRE_SAFE(d_dst_p    <  d_begin_p
+                      || d_end_p    <= d_dst_p
+                      || d_middle_p == d_end_p);
+        
 
     // MANIPULATORS
 
     /// Increment both middle and destination pointers by one position.  The
     /// behavior is undefined if this operation result in `destination()`
     /// entering the `[ begin(), end() )` range.
-    void advance();
+    void advance()
+        BSLS_PRE_SAFE(d_middle_p < d_end_p)
+        BSLS_POST_SAFE(d_dst_p != d_begin_p || d_middle_p == d_end_p);    
 
     // ACCESSORS
 
@@ -465,25 +481,25 @@ AutoArrayMoveDestructor<OBJECT_TYPE, ALLOCATOR>::AutoArrayMoveDestructor(
 , d_end_p(end)
 , d_allocator(allocator)
 {
-    BSLS_ASSERT_SAFE(!begin  == !middle);  // neither or both are null
-    BSLS_ASSERT_SAFE(!middle == !end);     // neither or both are null
-    BSLS_ASSERT_SAFE(destination || begin == middle);
-    BSLS_ASSERT_SAFE(begin  <= middle);
-    BSLS_ASSERT_SAFE(middle <= end);
+    BSLS_PRE_BODY_SAFE(!begin  == !middle);  // neither or both are null
+    BSLS_PRE_BODY_SAFE(!middle == !end);     // neither or both are null
+    BSLS_PRE_BODY_SAFE(destination || begin == middle);
+    BSLS_PRE_BODY_SAFE(begin  <= middle);
+    BSLS_PRE_BODY_SAFE(middle <= end);
 
 }
 
 template <class OBJECT_TYPE, class ALLOCATOR>
 AutoArrayMoveDestructor<OBJECT_TYPE, ALLOCATOR>::~AutoArrayMoveDestructor()
 {
-    BSLS_ASSERT_SAFE(!d_begin_p  == !d_middle_p);  // neither or both are null
-    BSLS_ASSERT_SAFE(!d_middle_p == !d_end_p);     // neither or both are null
-    BSLS_ASSERT_SAFE(d_dst_p || d_begin_p == d_middle_p);
-    BSLS_ASSERT_SAFE(d_begin_p  <= d_middle_p);
-    BSLS_ASSERT_SAFE(d_middle_p <= d_end_p);
-    BSLS_ASSERT_SAFE(d_dst_p    <  d_begin_p
-                  || d_end_p    <= d_dst_p
-                  || d_middle_p == d_end_p);
+    BSLS_PRE_BODY_SAFE(!d_begin_p  == !d_middle_p);  // neither or both are null
+    BSLS_PRE_BODY_SAFE(!d_middle_p == !d_end_p);     // neither or both are null
+    BSLS_PRE_BODY_SAFE(d_dst_p || d_begin_p == d_middle_p);
+    BSLS_PRE_BODY_SAFE(d_begin_p  <= d_middle_p);
+    BSLS_PRE_BODY_SAFE(d_middle_p <= d_end_p);
+    BSLS_PRE_BODY_SAFE(d_dst_p    <  d_begin_p
+                       || d_end_p    <= d_dst_p
+                       || d_middle_p == d_end_p);
 
     if (d_middle_p != d_end_p) {
         std::size_t numBytes = (char *)d_end_p - (char *)d_middle_p;
@@ -499,12 +515,12 @@ template <class OBJECT_TYPE, class ALLOCATOR>
 inline
 void AutoArrayMoveDestructor<OBJECT_TYPE, ALLOCATOR>::advance()
 {
-    BSLS_ASSERT_SAFE(d_middle_p < d_end_p);
+    BSLS_PRE_BODY_SAFE(d_middle_p < d_end_p);
 
     ++d_middle_p;
     ++d_dst_p;
 
-    BSLS_ASSERT_SAFE(d_dst_p != d_begin_p || d_middle_p == d_end_p);
+    BSLS_POST_BODY_SAFE(d_dst_p != d_begin_p || d_middle_p == d_end_p);
 }
 
 // ACCESSORS

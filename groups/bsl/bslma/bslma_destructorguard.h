@@ -77,6 +77,7 @@ BSLS_IDENT("$Id: $")
 #include <bslscm_version.h>
 
 #include <bsls_assert.h>
+#include <bsls_pre.h>
 
 namespace BloombergLP {
 
@@ -105,11 +106,13 @@ class DestructorGuard {
     /// `object`, and invokes the destructor of `object` upon the
     /// destruction of this guard.  The behavior is undefined unless
     /// `object` is non-zero.
-    explicit DestructorGuard(TYPE *object);
+    explicit DestructorGuard(TYPE *object)
+        BSLS_PRE_SAFE(object);
 
     /// Destroy this destructor guard and the object it manages by invoking
     /// the destructor of the (managed) object.
-    ~DestructorGuard();
+    ~DestructorGuard()
+        BSLS_PRE_SAFE(d_object_p);
 };
 
 // ============================================================================
@@ -126,14 +129,14 @@ inline
 DestructorGuard<TYPE>::DestructorGuard(TYPE *object)
 : d_object_p(object)
 {
-    BSLS_ASSERT_SAFE(object);
+    BSLS_PRE_BODY_SAFE(object);
 }
 
 template <class TYPE>
 inline
 DestructorGuard<TYPE>::~DestructorGuard()
 {
-    BSLS_ASSERT_SAFE(d_object_p);
+    BSLS_PRE_BODY_SAFE(d_object_p);
 
     d_object_p->~TYPE();
 }

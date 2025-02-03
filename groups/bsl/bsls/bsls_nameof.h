@@ -153,6 +153,7 @@ BSLS_IDENT("$Id: $")
 #include <bsls_atomic.h>
 #include <bsls_bslonce.h>
 #include <bsls_platform.h>
+#include <bsls_pre.h>
 
 namespace BloombergLP {
 namespace bsls {

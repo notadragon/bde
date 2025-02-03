@@ -303,6 +303,7 @@ BSLS_IDENT("$Id$ $CSID$")
 #include <bsls_assert.h>
 #include <bsls_types.h>
 #include <bsls_platform.h>
+#include <bsls_pre.h>
 
 namespace BloombergLP {
 namespace bslalg {
@@ -382,7 +383,8 @@ class RbTreeNode {
     /// `address` is 0, then this node will have not have a parent node
     /// (i.e., it will be the root node).  The behavior is undefined unless
     /// `address` is aligned to at least two bytes.
-    void setParent(RbTreeNode *address);
+    void setParent(RbTreeNode *address)
+        BSLS_PRE_SAFE(0 == (toInt(address) & 0x01));
 
     /// Set the left child of this node to the specified `address`.  If
     /// `address` is 0, then this node will not have a left child.
@@ -406,7 +408,8 @@ class RbTreeNode {
     void reset(RbTreeNode *parent,
                RbTreeNode *leftChild,
                RbTreeNode *rightChild,
-               Color       color);
+               Color       color)
+        BSLS_PRE_SAFE(0 == (toInt(parent) & 0x01));
 
     /// Return the address of the (modifiable) parent of this node if one
     /// exists, and 0 otherwise.
@@ -488,7 +491,7 @@ void RbTreeNode::makeRed()
 inline
 void RbTreeNode::setParent(RbTreeNode *address)
 {
-    BSLS_ASSERT_SAFE(0 == (toInt(address) & 0x01));
+    BSLS_PRE_BODY_SAFE(0 == (toInt(address) & 0x01));
 
     d_parentWithColor_p =
                   toNode(toInt(address) | (toInt(d_parentWithColor_p) & 0x01));
@@ -527,7 +530,7 @@ void RbTreeNode::reset(RbTreeNode *parent,
                        RbTreeNode *rightChild,
                        Color       color)
 {
-    BSLS_ASSERT_SAFE(0 == (toInt(parent) & 0x01));
+    BSLS_PRE_BODY_SAFE(0 == (toInt(parent) & 0x01));
 
     d_parentWithColor_p = toNode(toInt(parent) | color);
     d_left_p = leftChild;

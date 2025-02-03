@@ -382,7 +382,7 @@ TestAllocator::TestAllocator(const char *name,
 
 TestAllocator::~TestAllocator()
 {
-    BSLS_ASSERT(d_allocator_p);
+    BSLS_PRE_BODY(d_allocator_p);
 
     if (isVerbose()) {
         print();

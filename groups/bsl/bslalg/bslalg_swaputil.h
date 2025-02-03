@@ -102,6 +102,7 @@ BSLS_IDENT("$Id: $")
 
 #include <bsls_assert.h>
 #include <bsls_platform.h>
+#include <bsls_pre.h>
 
 #include <algorithm>
 
@@ -136,7 +137,10 @@ class SwapUtil {
     /// `bsl::swap` otherwise.
     template <class T>
     static
-    void swap(T *a, T *b);
+    void swap(T *a, T *b)
+        BSLS_PRE_SAFE(a != NULL)
+        BSLS_PRE_SAFE(b != NULL);
+
 };
 
 // ============================================================================
@@ -151,8 +155,8 @@ class SwapUtil {
 template <class T>
 void SwapUtil::swap(T *a, T *b)
 {
-    BSLS_ASSERT_SAFE(a != NULL);
-    BSLS_ASSERT_SAFE(b != NULL);
+    BSLS_PRE_BODY_SAFE(a != NULL);
+    BSLS_PRE_BODY_SAFE(b != NULL);
 
     using std::swap;
 

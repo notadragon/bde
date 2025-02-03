@@ -177,6 +177,7 @@ BSLS_IDENT("$Id: $")
 
 #include <bsls_assert.h>
 #include <bsls_performancehint.h>
+#include <bsls_pre.h>
 
 namespace BloombergLP {
 
@@ -215,14 +216,16 @@ class RawDeleterProctor {
     /// undefined unless `allocator` is non-zero and supplied the memory for
     /// `object` (if non-zero).  Note that `allocator` must remain valid
     /// throughout the lifetime of this proctor.
-    RawDeleterProctor(TYPE *object, ALLOCATOR *allocator);
+    RawDeleterProctor(TYPE *object, ALLOCATOR *allocator)
+        BSLS_PRE_SAFE(allocator);
 
     /// Destroy this raw deleter proctor, and delete the object it manages
     /// (if any) by first invoking the destructor of the (managed) object,
     /// and then invoking the `deallocate` method of the allocator (or pool)
     /// that was supplied at the construction of this proctor.  If no object
     /// is currently being managed, this method has no effect.
-    ~RawDeleterProctor();
+    ~RawDeleterProctor()
+        BSLS_PRE_SAFE(d_allocator_p);
 
     // MANIPULATORS
 
@@ -237,7 +240,8 @@ class RawDeleterProctor {
     /// Note that this method releases any previously-managed object from
     /// management (without deleting it), and so may be invoked with or
     /// without having called `release` when reusing this object.
-    void reset(TYPE *object);
+    void reset(TYPE *object)
+        BSLS_PRE_SAFE(object);
 };
 
 // ============================================================================
@@ -256,14 +260,14 @@ RawDeleterProctor(TYPE *object, ALLOCATOR *allocator)
 : d_object_p(object)
 , d_allocator_p(allocator)
 {
-    BSLS_ASSERT_SAFE(allocator);
+    BSLS_PRE_BODY_SAFE(allocator);
 }
 
 template <class TYPE, class ALLOCATOR>
 inline
 RawDeleterProctor<TYPE, ALLOCATOR>::~RawDeleterProctor()
 {
-    BSLS_ASSERT_SAFE(d_allocator_p);
+    BSLS_PRE_BODY_SAFE(d_allocator_p);
 
     if (BSLS_PERFORMANCEHINT_PREDICT_UNLIKELY(0 != d_object_p)) {
         DeleterHelper::deleteObjectRaw(d_object_p, d_allocator_p);
@@ -282,7 +286,7 @@ template <class TYPE, class ALLOCATOR>
 inline
 void RawDeleterProctor<TYPE, ALLOCATOR>::reset(TYPE *object)
 {
-    BSLS_ASSERT_SAFE(object);
+    BSLS_PRE_BODY_SAFE(object);
 
     d_object_p = object;
 }
